@@ -38,6 +38,8 @@ export function CombinedCylinderMenu({
 
   // Runway horizontal ref for sideways cards
   const runwayRef = useRef<HTMLDivElement>(null);
+  const isProgrammaticScrollRef = useRef(false);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -50,7 +52,7 @@ export function CombinedCylinderMenu({
 
   const cardWidth = isMobile ? 180 : 250;
 
-  // Gesture and animation refs
+  // Gesture and animation refs for 3D cylinder
   const isDraggingRef = useRef(false);
   const hasCapturedPointerRef = useRef(false);
   const startXRef = useRef(0);
@@ -64,7 +66,25 @@ export function CombinedCylinderMenu({
   const momentumFrameRef = useRef<number | null>(null);
   const autoResumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Smooth rotation transition to a specific angle
+  // Scroll center helper for runway card
+  const scrollCardToCenter = useCallback((index: number, behavior: ScrollBehavior = "smooth") => {
+    if (!runwayRef.current) return;
+    const container = runwayRef.current;
+    const cards = container.querySelectorAll<HTMLElement>("[data-dish-card]");
+    const targetCard = cards[index];
+    if (targetCard) {
+      isProgrammaticScrollRef.current = true;
+      const targetLeft = targetCard.offsetLeft - container.clientWidth / 2 + targetCard.clientWidth / 2;
+      container.scrollTo({ left: targetLeft, behavior });
+      
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+      scrollTimeoutRef.current = setTimeout(() => {
+        isProgrammaticScrollRef.current = false;
+      }, 500);
+    }
+  }, []);
+
+  // Smooth rotation transition for 3D cylinder
   const rotateToAngle = useCallback(
     (targetAngle: number, onComplete?: () => void) => {
       if (momentumFrameRef.current) cancelAnimationFrame(momentumFrameRef.current);
@@ -105,9 +125,12 @@ export function CombinedCylinderMenu({
     [rotationY]
   );
 
+  // Bring a dish to front of 3D cylinder and center in horizontal deck
   const bringToFront = useCallback(
     (index: number, openModal: boolean = false, item?: MenuItem) => {
       setSelectedDishIndex(index);
+      scrollCardToCenter(index);
+
       const targetAngle = -index * angleStep;
       rotateToAngle(targetAngle, () => {
         if (openModal && item) {
@@ -115,52 +138,22 @@ export function CombinedCylinderMenu({
         }
       });
     },
-    [angleStep, rotateToAngle, onSelectItem]
+    [angleStep, rotateToAngle, scrollCardToCenter, onSelectItem]
   );
 
+  // Step left/right navigation button
   const stepRotate = useCallback(
     (direction: "prev" | "next") => {
-      if (momentumFrameRef.current) cancelAnimationFrame(momentumFrameRef.current);
-      if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
-
-      setIsAutoSpinning(false);
-      const delta = direction === "next" ? -angleStep : angleStep;
-      const target = rotationY + delta;
-
-      // Update selected index based on new step
       const newActive = direction === "next"
         ? (selectedDishIndex + 1) % N
         : (selectedDishIndex - 1 + N) % N;
-      setSelectedDishIndex(newActive);
 
-      const startTime = performance.now();
-      const duration = 320;
-      const startAngle = rotationY;
-      const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
-
-      const animate = (now: number) => {
-        const elapsed = now - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        const eased = easeOutCubic(progress);
-
-        setRotationY(startAngle + delta * eased);
-
-        if (progress < 1) {
-          momentumFrameRef.current = requestAnimationFrame(animate);
-        } else {
-          setRotationY(target);
-          autoResumeTimeoutRef.current = setTimeout(() => {
-            setIsAutoSpinning(true);
-          }, 3500);
-        }
-      };
-
-      momentumFrameRef.current = requestAnimationFrame(animate);
+      bringToFront(newActive, false, items[newActive]);
     },
-    [angleStep, rotationY, selectedDishIndex, N]
+    [selectedDishIndex, N, bringToFront, items]
   );
 
-  // Auto-spin RAF loop for 3D cylinder only (does not move sideways menu)
+  // Auto-spin 3D cylinder loop
   useEffect(() => {
     let prev = performance.now();
 
@@ -273,6 +266,38 @@ export function CombinedCylinderMenu({
     setRotationY((prev) => prev + delta * 0.15);
   };
 
+  // Horizontal scroll runway active item detection (detects card closest to container middle)
+  const handleRunwayScroll = () => {
+    if (isProgrammaticScrollRef.current || !runwayRef.current) return;
+
+    const container = runwayRef.current;
+    const containerCenter = container.scrollLeft + container.clientWidth / 2;
+    const cards = container.querySelectorAll<HTMLElement>("[data-dish-card]");
+
+    let closestIdx = 0;
+    let closestDist = Infinity;
+
+    cards.forEach((card, idx) => {
+      const cardCenter = card.offsetLeft + card.clientWidth / 2;
+      const dist = Math.abs(containerCenter - cardCenter);
+      if (dist < closestDist) {
+        closestDist = dist;
+        closestIdx = idx;
+      }
+    });
+
+    if (closestIdx !== selectedDishIndex) {
+      setSelectedDishIndex(closestIdx);
+      const targetAngle = -closestIdx * angleStep;
+      rotateToAngle(targetAngle);
+    }
+  };
+
+  // Initial centering of the first card on mount
+  useEffect(() => {
+    scrollCardToCenter(0, "instant");
+  }, [scrollCardToCenter]);
+
   const customStyle = {
     "--n": N,
     "--w": `${cardWidth}px`,
@@ -282,6 +307,7 @@ export function CombinedCylinderMenu({
   const handleCylinderCardClick = (dish: MenuItem, index: number, isFacingFront: boolean) => {
     if (hasMovedSignificantlyRef.current) return;
     setSelectedDishIndex(index);
+    scrollCardToCenter(index);
     if (isFacingFront) {
       onSelectItem(dish);
     } else {
@@ -290,7 +316,6 @@ export function CombinedCylinderMenu({
   };
 
   const handleSidewaysCardClick = (dish: MenuItem, index: number) => {
-    setSelectedDishIndex(index);
     bringToFront(index, false);
   };
 
@@ -473,11 +498,13 @@ export function CombinedCylinderMenu({
         </div>
       </div>
 
-      {/* 2. LOWER STAGE: Steady Sideways Cards Runway (stays static, clicking picks and centers the dish) */}
-      <div className="w-full max-w-6xl px-2 sm:px-4 flex flex-col items-center">
+      {/* 2. LOWER STAGE: Sideways Cards Runway with Centered Glowing Selection on Scroll */}
+      <div className="w-full max-w-7xl px-2 sm:px-4 flex flex-col items-center">
+        {/* Horizontal Scrolling Strip with Centering Margins */}
         <div
           ref={runwayRef}
-          className="w-full flex items-center gap-4 sm:gap-6 overflow-x-auto scrollbar-none py-6 sm:py-8 px-4 sm:px-8 snap-x snap-mandatory scroll-smooth"
+          onScroll={handleRunwayScroll}
+          className="w-full flex items-center gap-4 sm:gap-6 overflow-x-auto scrollbar-none py-6 sm:py-8 snap-x snap-mandatory scroll-smooth px-[calc(50%-100px)] sm:px-[calc(50%-125px)]"
         >
           {items.map((dish, index) => {
             const isSelected = selectedDishIndex === index;
@@ -485,6 +512,7 @@ export function CombinedCylinderMenu({
             return (
               <div
                 key={dish.id}
+                data-dish-card
                 onClick={() => {
                   if (isSelected) {
                     onSelectItem(dish);
