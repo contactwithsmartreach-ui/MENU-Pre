@@ -34,8 +34,9 @@ export function CombinedCylinderMenu({
   const [isAutoSpinning, setIsAutoSpinning] = useState(true);
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [selectedDishIndex, setSelectedDishIndex] = useState<number>(0);
 
-  // Runway horizontal ref for auto-scrolling sideways cards
+  // Runway horizontal ref for sideways cards
   const runwayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -63,23 +64,7 @@ export function CombinedCylinderMenu({
   const momentumFrameRef = useRef<number | null>(null);
   const autoResumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Active item calculation
-  const normalizedRot = ((-rotationY % 360) + 360) % 360;
-  const activeIndex = Math.round(normalizedRot / angleStep) % N;
-
-  // Auto-scroll runway when activeIndex changes
-  useEffect(() => {
-    if (!runwayRef.current) return;
-    const activeThumb = runwayRef.current.children[activeIndex] as HTMLElement;
-    if (activeThumb) {
-      const container = runwayRef.current;
-      const scrollTarget =
-        activeThumb.offsetLeft - container.clientWidth / 2 + activeThumb.clientWidth / 2;
-      container.scrollTo({ left: scrollTarget, behavior: "smooth" });
-    }
-  }, [activeIndex]);
-
-  // Smooth rotation transition
+  // Smooth rotation transition to a specific angle
   const rotateToAngle = useCallback(
     (targetAngle: number, onComplete?: () => void) => {
       if (momentumFrameRef.current) cancelAnimationFrame(momentumFrameRef.current);
@@ -122,6 +107,7 @@ export function CombinedCylinderMenu({
 
   const bringToFront = useCallback(
     (index: number, openModal: boolean = false, item?: MenuItem) => {
+      setSelectedDishIndex(index);
       const targetAngle = -index * angleStep;
       rotateToAngle(targetAngle, () => {
         if (openModal && item) {
@@ -140,6 +126,12 @@ export function CombinedCylinderMenu({
       setIsAutoSpinning(false);
       const delta = direction === "next" ? -angleStep : angleStep;
       const target = rotationY + delta;
+
+      // Update selected index based on new step
+      const newActive = direction === "next"
+        ? (selectedDishIndex + 1) % N
+        : (selectedDishIndex - 1 + N) % N;
+      setSelectedDishIndex(newActive);
 
       const startTime = performance.now();
       const duration = 320;
@@ -165,10 +157,10 @@ export function CombinedCylinderMenu({
 
       momentumFrameRef.current = requestAnimationFrame(animate);
     },
-    [angleStep, rotationY]
+    [angleStep, rotationY, selectedDishIndex, N]
   );
 
-  // Auto-spin RAF loop
+  // Auto-spin RAF loop for 3D cylinder only (does not move sideways menu)
   useEffect(() => {
     let prev = performance.now();
 
@@ -289,11 +281,17 @@ export function CombinedCylinderMenu({
 
   const handleCylinderCardClick = (dish: MenuItem, index: number, isFacingFront: boolean) => {
     if (hasMovedSignificantlyRef.current) return;
+    setSelectedDishIndex(index);
     if (isFacingFront) {
       onSelectItem(dish);
     } else {
       bringToFront(index, false);
     }
+  };
+
+  const handleSidewaysCardClick = (dish: MenuItem, index: number) => {
+    setSelectedDishIndex(index);
+    bringToFront(index, false);
   };
 
   return (
@@ -475,36 +473,36 @@ export function CombinedCylinderMenu({
         </div>
       </div>
 
-      {/* 2. LOWER STAGE: Synchronized Sideways Cards Runway with Heroic Selected Card Spotlight */}
+      {/* 2. LOWER STAGE: Steady Sideways Cards Runway (stays static, clicking picks and centers the dish) */}
       <div className="w-full max-w-6xl px-2 sm:px-4 flex flex-col items-center">
-        {/* Sideways Cards Horizontal Scrolling Strip */}
         <div
           ref={runwayRef}
           className="w-full flex items-center gap-4 sm:gap-6 overflow-x-auto scrollbar-none py-6 sm:py-8 px-4 sm:px-8 snap-x snap-mandatory scroll-smooth"
         >
           {items.map((dish, index) => {
-            const isActive = activeIndex === index;
+            const isSelected = selectedDishIndex === index;
 
             return (
               <div
                 key={dish.id}
                 onClick={() => {
-                  bringToFront(index, false);
-                  if (isActive) {
+                  if (isSelected) {
                     onSelectItem(dish);
+                  } else {
+                    handleSidewaysCardClick(dish, index);
                   }
                 }}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
-                    bringToFront(index, false);
-                    if (isActive) onSelectItem(dish);
+                    if (isSelected) onSelectItem(dish);
+                    else handleSidewaysCardClick(dish, index);
                   }
                 }}
                 className={cn(
-                  "group relative shrink-0 rounded-3xl overflow-hidden cursor-pointer transition-all duration-500 ease-out snap-center p-3 flex flex-col justify-between",
-                  isActive
+                  "group relative shrink-0 rounded-3xl overflow-hidden cursor-pointer transition-all duration-300 ease-out snap-center p-3 flex flex-col justify-between select-none",
+                  isSelected
                     ? [
                         "w-[200px] sm:w-[250px] z-30 scale-110 sm:scale-115 -translate-y-1.5",
                         "bg-gradient-to-b from-[#1c0c09] via-neutral-950 to-neutral-950",
@@ -522,21 +520,21 @@ export function CombinedCylinderMenu({
                 )}
               >
                 {/* Active Radiant Pulse Backdrop Effect */}
-                {isActive && (
+                {isSelected && (
                   <div className="absolute -inset-1 bg-gradient-to-r from-red-500/20 via-orange-500/30 to-amber-400/20 rounded-3xl blur-md pointer-events-none -z-10 animate-pulse" />
                 )}
 
                 {/* Thumbnail Image */}
                 <div
                   className={cn(
-                    "relative w-full rounded-2xl overflow-hidden mb-2.5 transition-all duration-500",
-                    isActive ? "h-32 sm:h-38 ring-1 ring-orange-400/40" : "h-22 sm:h-26"
+                    "relative w-full rounded-2xl overflow-hidden mb-2.5 transition-all duration-300",
+                    isSelected ? "h-32 sm:h-38 ring-1 ring-orange-400/40" : "h-22 sm:h-26"
                   )}
                 >
                   <img
                     src={dish.image}
                     alt={dish.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
                     loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/90 via-transparent to-transparent" />
@@ -546,14 +544,14 @@ export function CombinedCylinderMenu({
                     <span
                       className={cn(
                         "absolute top-1.5 left-1.5 rounded-full bg-gradient-to-r from-red-600 to-orange-600 text-white font-serif uppercase tracking-wider font-bold shadow-md shadow-red-500/40 flex items-center gap-1",
-                        isActive ? "px-2 py-0.5 text-[10px]" : "px-1.5 py-0.5 text-[9px]"
+                        isSelected ? "px-2 py-0.5 text-[10px]" : "px-1.5 py-0.5 text-[9px]"
                       )}
                     >
                       <Sparkles className="w-2.5 h-2.5 text-amber-200" />
                       Signature
                     </span>
                   ) : (
-                    isActive && (
+                    isSelected && (
                       <span className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-neutral-950/80 backdrop-blur-md border border-orange-400/40 text-orange-200 font-serif text-[9px] uppercase tracking-wider">
                         {dish.category}
                       </span>
@@ -572,14 +570,14 @@ export function CombinedCylinderMenu({
                     <h4
                       className={cn(
                         "font-serif font-bold tracking-tight transition-colors line-clamp-1",
-                        isActive
+                        isSelected
                           ? "text-sm sm:text-base text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-amber-200 to-white drop-shadow-[0_0_12px_rgba(249,115,22,0.6)]"
                           : "text-xs sm:text-sm text-neutral-300 group-hover:text-white"
                       )}
                     >
                       {dish.name}
                     </h4>
-                    {isActive ? (
+                    {isSelected ? (
                       <p className="text-[11px] text-orange-200/80 line-clamp-1 mt-0.5 font-light">
                         {dish.description}
                       </p>
@@ -594,7 +592,7 @@ export function CombinedCylinderMenu({
                   <div
                     className={cn(
                       "mt-2 pt-2 flex items-center justify-between transition-colors",
-                      isActive ? "border-t border-orange-500/35" : "border-t border-white/5"
+                      isSelected ? "border-t border-orange-500/35" : "border-t border-white/5"
                     )}
                   >
                     <div className="flex items-baseline gap-0.5">
@@ -602,7 +600,7 @@ export function CombinedCylinderMenu({
                       <span
                         className={cn(
                           "font-serif font-extrabold tracking-tight",
-                          isActive
+                          isSelected
                             ? "text-lg sm:text-xl text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300"
                             : "text-sm text-neutral-300"
                         )}
@@ -614,12 +612,12 @@ export function CombinedCylinderMenu({
                     <div
                       className={cn(
                         "rounded-full flex items-center justify-center transition-all duration-300",
-                        isActive
+                        isSelected
                           ? "w-7 h-7 bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-lg shadow-orange-500/50 scale-105"
                           : "w-5 h-5 bg-neutral-900 border border-white/10 text-neutral-400 group-hover:bg-orange-500 group-hover:text-neutral-950"
                       )}
                     >
-                      {isActive ? (
+                      {isSelected ? (
                         <Eye className="w-3.5 h-3.5" />
                       ) : (
                         <Plus className="w-3 h-3 stroke-[2.5]" />
