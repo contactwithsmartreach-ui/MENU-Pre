@@ -46,7 +46,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
       return () => window.removeEventListener("resize", checkMobile);
     }, []);
 
-    const actualCardWidth = customCardWidth ?? (isMobile ? 200 : 260);
+    const actualCardWidth = customCardWidth ?? (isMobile ? 190 : 250);
 
     // Physics & Gesture refs
     const isDraggingRef = useRef(false);
@@ -260,14 +260,14 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
         ref={ref}
         onWheel={handleWheel}
         className={cn(
-          "w-full h-full min-h-[580px] sm:min-h-[660px] flex flex-col items-center justify-between relative select-none touch-none",
+          "w-full h-full min-h-[500px] sm:min-h-[560px] flex flex-col items-center justify-end relative select-none touch-none",
           className
         )}
         {...props}
       >
-        {/* 3D Cylinder Stage */}
+        {/* 3D Cylinder Stage situated in the center-bottom */}
         <div
-          className="w-full flex-1 grid place-items-center cursor-grab active:cursor-grabbing overflow-visible py-2 sm:py-6 touch-none"
+          className="w-full flex-1 grid place-items-center cursor-grab active:cursor-grabbing overflow-visible py-1 sm:py-2 touch-none"
           style={{
             perspective: isMobile ? "44em" : "60em",
           }}
@@ -404,14 +404,14 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
           </div>
         </div>
 
-        {/* Quick-Access Bottom Bar: Touch/Click any dish thumbnail to rotate directly to it */}
+        {/* Quick-Access Bottom Bar */}
         <div className="relative z-30 w-full max-w-2xl px-4 py-2 flex flex-col items-center gap-2">
           {/* Active Dish Quick Focal Action Card */}
           {activeItem && (
             <button
               type="button"
               onClick={() => onSelectItem?.(activeItem)}
-              className="flex items-center gap-3 px-4 py-2 rounded-full bg-neutral-950/95 border border-orange-500/50 hover:border-orange-400 transition-all shadow-[0_0_20px_rgba(249,115,22,0.25)] text-left group active:scale-95"
+              className="flex items-center gap-3 px-4 py-2 rounded-full bg-neutral-950/95 border border-orange-500/50 hover:border-orange-400 transition-all shadow-[0_0_20px_rgba(249,115,22,0.25)] text-left group active:scale-95 cursor-pointer"
             >
               <img
                 src={activeItem.image}
