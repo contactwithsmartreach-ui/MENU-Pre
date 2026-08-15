@@ -5,7 +5,6 @@ import { MENU_ITEMS } from "@/data/menu-data";
 import { MenuItem } from "@/types/restaurant";
 import { CylinderMenuCarousel } from "@/components/restaurant/CylinderMenuCarousel";
 import { DishDetailModal } from "@/components/restaurant/DishDetailModal";
-import { CategoryDropdown3D } from "@/components/restaurant/CategoryDropdown3D";
 import { toast } from "sonner";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Sparkles } from "lucide-react";
@@ -72,8 +71,8 @@ export default function RestaurantMenuPage() {
         />
       </div>
 
-      {/* Header with 3D Category Dropdown */}
-      <header className="relative z-50 w-full pt-6 px-4 flex flex-col items-center gap-3">
+      {/* Header with Category Filter Chips */}
+      <header className="relative z-20 w-full pt-6 px-4 flex flex-col items-center gap-3">
         <div className="flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-orange-400 animate-pulse" />
           <h1 className="text-xl sm:text-2xl font-serif font-black tracking-[0.2em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300">
@@ -82,12 +81,23 @@ export default function RestaurantMenuPage() {
           <Sparkles className="w-4 h-4 text-orange-400 animate-pulse" />
         </div>
 
-        {/* 3D Dropdown with Upfront Selection and Recessed Faded Options */}
-        <CategoryDropdown3D
-          categories={CATEGORIES}
-          selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
-        />
+        {/* Category Pills */}
+        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto max-w-full py-1 px-2 scrollbar-none">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => setSelectedCategory(cat)}
+              className={`text-xs font-serif uppercase tracking-wider px-3.5 py-1.5 rounded-full transition-all whitespace-nowrap cursor-pointer ${
+                selectedCategory === cat
+                  ? "bg-gradient-to-r from-red-500 to-orange-500 text-white font-bold shadow-md shadow-orange-500/30 border-0"
+                  : "bg-neutral-950/70 border border-orange-500/30 text-orange-200/80 hover:text-white hover:border-orange-400"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
       </header>
 
       {/* Center 3D Cylinder Carousel */}
