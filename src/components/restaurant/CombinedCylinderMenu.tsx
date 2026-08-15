@@ -11,6 +11,7 @@ import {
   Eye,
   Utensils,
   Plus,
+  Sparkles,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -474,12 +475,12 @@ export function CombinedCylinderMenu({
         </div>
       </div>
 
-      {/* 2. LOWER STAGE: Synchronized Sideways Cards Runway */}
-      <div className="w-full max-w-5xl px-2 sm:px-4 flex flex-col items-center">
+      {/* 2. LOWER STAGE: Synchronized Sideways Cards Runway with Heroic Selected Card Spotlight */}
+      <div className="w-full max-w-6xl px-2 sm:px-4 flex flex-col items-center">
         {/* Sideways Cards Horizontal Scrolling Strip */}
         <div
           ref={runwayRef}
-          className="w-full flex gap-3 sm:gap-4 overflow-x-auto scrollbar-none py-2 px-1 snap-x snap-mandatory scroll-smooth"
+          className="w-full flex items-center gap-4 sm:gap-6 overflow-x-auto scrollbar-none py-6 sm:py-8 px-4 sm:px-8 snap-x snap-mandatory scroll-smooth"
         >
           {items.map((dish, index) => {
             const isActive = activeIndex === index;
@@ -489,41 +490,77 @@ export function CombinedCylinderMenu({
                 key={dish.id}
                 onClick={() => {
                   bringToFront(index, false);
-                  onSelectItem(dish);
+                  if (isActive) {
+                    onSelectItem(dish);
+                  }
                 }}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     bringToFront(index, false);
-                    onSelectItem(dish);
+                    if (isActive) onSelectItem(dish);
                   }
                 }}
                 className={cn(
-                  "group relative shrink-0 w-[150px] sm:w-[190px] rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 snap-center p-2.5 flex flex-col justify-between",
-                  "bg-neutral-950/90 backdrop-blur-xl border",
+                  "group relative shrink-0 rounded-3xl overflow-hidden cursor-pointer transition-all duration-500 ease-out snap-center p-3 flex flex-col justify-between",
                   isActive
-                    ? "border-orange-400 shadow-[0_0_25px_rgba(249,115,22,0.45)] ring-2 ring-orange-500/50 scale-[1.03] bg-gradient-to-b from-neutral-900 to-neutral-950"
-                    : "border-orange-500/25 hover:border-orange-400/70 hover:scale-[1.02] opacity-80 hover:opacity-100"
+                    ? [
+                        "w-[200px] sm:w-[250px] z-30 scale-110 sm:scale-115 -translate-y-1.5",
+                        "bg-gradient-to-b from-[#1c0c09] via-neutral-950 to-neutral-950",
+                        "border-2 border-orange-400 ring-4 ring-orange-500/30",
+                        "shadow-[0_0_40px_rgba(249,115,22,0.65),0_0_80px_rgba(239,68,68,0.35),0_20px_40px_rgba(0,0,0,0.9)]",
+                        "opacity-100",
+                      ]
+                    : [
+                        "w-[145px] sm:w-[175px] z-10 scale-95",
+                        "bg-neutral-950/70 backdrop-blur-md",
+                        "border border-orange-500/15 hover:border-orange-400/50",
+                        "opacity-40 hover:opacity-85 hover:scale-100 grayscale-[0.25] hover:grayscale-0",
+                        "shadow-[0_8px_20px_rgba(0,0,0,0.6)]",
+                      ]
                 )}
               >
+                {/* Active Radiant Pulse Backdrop Effect */}
+                {isActive && (
+                  <div className="absolute -inset-1 bg-gradient-to-r from-red-500/20 via-orange-500/30 to-amber-400/20 rounded-3xl blur-md pointer-events-none -z-10 animate-pulse" />
+                )}
+
                 {/* Thumbnail Image */}
-                <div className="relative w-full h-24 sm:h-28 rounded-xl overflow-hidden mb-2">
+                <div
+                  className={cn(
+                    "relative w-full rounded-2xl overflow-hidden mb-2.5 transition-all duration-500",
+                    isActive ? "h-32 sm:h-38 ring-1 ring-orange-400/40" : "h-22 sm:h-26"
+                  )}
+                >
                   <img
                     src={dish.image}
                     alt={dish.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                     loading="lazy"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/90 via-transparent to-transparent" />
 
-                  {dish.isSignature && (
-                    <span className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded-full bg-red-600/90 text-white font-serif text-[9px] uppercase tracking-wider font-bold">
+                  {/* Badges on Thumbnail */}
+                  {dish.isSignature ? (
+                    <span
+                      className={cn(
+                        "absolute top-1.5 left-1.5 rounded-full bg-gradient-to-r from-red-600 to-orange-600 text-white font-serif uppercase tracking-wider font-bold shadow-md shadow-red-500/40 flex items-center gap-1",
+                        isActive ? "px-2 py-0.5 text-[10px]" : "px-1.5 py-0.5 text-[9px]"
+                      )}
+                    >
+                      <Sparkles className="w-2.5 h-2.5 text-amber-200" />
                       Signature
                     </span>
+                  ) : (
+                    isActive && (
+                      <span className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-neutral-950/80 backdrop-blur-md border border-orange-400/40 text-orange-200 font-serif text-[9px] uppercase tracking-wider">
+                        {dish.category}
+                      </span>
+                    )
                   )}
 
-                  <div className="absolute bottom-1 right-1.5 flex items-center gap-0.5 text-amber-300 text-[10px] font-bold bg-neutral-950/80 px-1.5 py-0.5 rounded-md backdrop-blur-md">
+                  <div className="absolute bottom-1.5 right-1.5 flex items-center gap-0.5 text-amber-300 text-[10px] font-bold bg-neutral-950/85 px-1.5 py-0.5 rounded-md backdrop-blur-md border border-white/10">
                     <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-400" />
                     <span>{dish.rating}</span>
                   </div>
@@ -534,25 +571,59 @@ export function CombinedCylinderMenu({
                   <div>
                     <h4
                       className={cn(
-                        "text-xs sm:text-sm font-serif font-bold truncate transition-colors",
-                        isActive ? "text-orange-300" : "text-white group-hover:text-orange-200"
+                        "font-serif font-bold tracking-tight transition-colors line-clamp-1",
+                        isActive
+                          ? "text-sm sm:text-base text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-amber-200 to-white drop-shadow-[0_0_12px_rgba(249,115,22,0.6)]"
+                          : "text-xs sm:text-sm text-neutral-300 group-hover:text-white"
                       )}
                     >
                       {dish.name}
                     </h4>
-                    <p className="text-[10px] text-neutral-400 truncate mt-0.5">
-                      {dish.category}
-                    </p>
+                    {isActive ? (
+                      <p className="text-[11px] text-orange-200/80 line-clamp-1 mt-0.5 font-light">
+                        {dish.description}
+                      </p>
+                    ) : (
+                      <p className="text-[10px] text-neutral-500 truncate mt-0.5">
+                        {dish.category}
+                      </p>
+                    )}
                   </div>
 
                   {/* Price & Action */}
-                  <div className="mt-2 pt-1.5 border-t border-orange-500/20 flex items-center justify-between">
-                    <span className="text-xs font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300">
-                      ${dish.price}
-                    </span>
+                  <div
+                    className={cn(
+                      "mt-2 pt-2 flex items-center justify-between transition-colors",
+                      isActive ? "border-t border-orange-500/35" : "border-t border-white/5"
+                    )}
+                  >
+                    <div className="flex items-baseline gap-0.5">
+                      <span className="text-xs font-serif text-orange-400 font-bold">$</span>
+                      <span
+                        className={cn(
+                          "font-serif font-extrabold tracking-tight",
+                          isActive
+                            ? "text-lg sm:text-xl text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300"
+                            : "text-sm text-neutral-300"
+                        )}
+                      >
+                        {dish.price}
+                      </span>
+                    </div>
 
-                    <div className="w-5 h-5 rounded-full bg-orange-500/20 border border-orange-400/40 flex items-center justify-center text-orange-300 group-hover:bg-orange-500 group-hover:text-neutral-950 transition-colors">
-                      <Plus className="w-3 h-3 stroke-[2.5]" />
+                    <div
+                      className={cn(
+                        "rounded-full flex items-center justify-center transition-all duration-300",
+                        isActive
+                          ? "w-7 h-7 bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-lg shadow-orange-500/50 scale-105"
+                          : "w-5 h-5 bg-neutral-900 border border-white/10 text-neutral-400 group-hover:bg-orange-500 group-hover:text-neutral-950"
+                      )}
+                    >
+                      {isActive ? (
+                        <Eye className="w-3.5 h-3.5" />
+                      ) : (
+                        <Plus className="w-3 h-3 stroke-[2.5]" />
+                      )}
                     </div>
                   </div>
                 </div>
