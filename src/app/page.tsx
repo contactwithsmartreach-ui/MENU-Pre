@@ -2,28 +2,22 @@
 
 import React, { useState } from "react";
 import { MENU_ITEMS } from "@/data/menu-data";
-import { MenuItem, CartItem } from "@/types/restaurant";
+import { MenuItem } from "@/types/restaurant";
 import { CylinderMenuCarousel } from "@/components/restaurant/CylinderMenuCarousel";
 import { DishDetailModal } from "@/components/restaurant/DishDetailModal";
-import { OrderDrawer } from "@/components/restaurant/OrderDrawer";
 import { toast } from "sonner";
 import { MadeWithDyad } from "@/components/made-with-dyad";
-import { ShoppingBag } from "lucide-react";
 
 const CATEGORIES = ["All", "Chef Specials", "Starters", "Mains", "Desserts", "Cocktails"] as const;
 
 export default function RestaurantMenuPage() {
   const [selectedDish, setSelectedDish] = useState<MenuItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isOrderDrawerOpen, setIsOrderDrawerOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
-  const [cart, setCart] = useState<CartItem[]>([]);
 
   const filteredItems = selectedCategory === "All"
     ? MENU_ITEMS
     : MENU_ITEMS.filter((item) => item.category === selectedCategory);
-
-  const totalCartCount = cart.reduce((total, item) => total + item.quantity, 0);
 
   const handleOpenDish = (dish: MenuItem) => {
     setSelectedDish(dish);
@@ -31,45 +25,9 @@ export default function RestaurantMenuPage() {
   };
 
   const handleAddToCart = (dish: MenuItem, quantity: number, notes?: string) => {
-    setCart((prev) => {
-      const existing = prev.find((item) => item.dish.id === dish.id);
-      if (existing) {
-        return prev.map((item) =>
-          item.dish.id === dish.id
-            ? { ...item, quantity: item.quantity + quantity, specialInstructions: notes || item.specialInstructions }
-            : item
-        );
-      }
-      return [...prev, { dish, quantity, specialInstructions: notes }];
-    });
-
     toast.success(`Added ${quantity}x ${dish.name} to order`, {
-      description: `$${(dish.price * quantity).toFixed(2)} • Tap the Order button to review.`,
+      description: `$${(dish.price * quantity).toFixed(2)} • ${notes ? `"${notes}"` : `Ready in ~${dish.prepTime}`}`,
     });
-  };
-
-  const handleQuickAdd = (dish: MenuItem) => {
-    handleAddToCart(dish, 1);
-  };
-
-  const handleUpdateQuantity = (dishId: string, quantity: number) => {
-    if (quantity <= 0) {
-      handleRemoveItem(dishId);
-      return;
-    }
-    setCart((prev) =>
-      prev.map((item) =>
-        item.dish.id === dishId ? { ...item, quantity } : item
-      )
-    );
-  };
-
-  const handleRemoveItem = (dishId: string) => {
-    setCart((prev) => prev.filter((item) => item.dish.id !== dishId));
-  };
-
-  const handleClearCart = () => {
-    setCart([]);
   };
 
   return (
@@ -112,29 +70,12 @@ export default function RestaurantMenuPage() {
         />
       </div>
 
-      {/* Header with Brand & Table Order Button */}
-      <header className="relative z-20 w-full pt-5 px-4 sm:px-8 flex flex-col items-center gap-3">
-        <div className="w-full flex items-center justify-between max-w-5xl">
-          <div className="w-10 sm:w-24" /> {/* Spacer for symmetry */}
-
+      {/* Header with Category Filter Chips */}
+      <header className="relative z-20 w-full pt-6 px-4 flex flex-col items-center gap-3">
+        <div className="flex items-center justify-center">
           <h1 className="text-xl sm:text-2xl font-serif font-black tracking-[0.2em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300">
             L&apos;AURA SAHARA
           </h1>
-
-          {/* Table Order Cart Drawer Button */}
-          <button
-            type="button"
-            onClick={() => setIsOrderDrawerOpen(true)}
-            className="relative flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-neutral-900/90 border border-orange-500/40 hover:border-orange-400 text-orange-200 hover:text-white transition-all shadow-md shadow-orange-500/20 active:scale-95 cursor-pointer"
-          >
-            <ShoppingBag className="w-4 h-4 text-orange-400" />
-            <span className="text-xs font-serif font-semibold hidden sm:inline">Order</span>
-            {totalCartCount > 0 && (
-              <span className="w-5 h-5 rounded-full bg-gradient-to-r from-red-500 to-orange-500 text-white font-bold text-[11px] flex items-center justify-center animate-pulse">
-                {totalCartCount}
-              </span>
-            )}
-          </button>
         </div>
 
         {/* Category Pills */}
@@ -162,7 +103,6 @@ export default function RestaurantMenuPage() {
           key={selectedCategory}
           items={filteredItems}
           onSelectItem={handleOpenDish}
-          onQuickAdd={handleQuickAdd}
           animationDuration={36}
           cardWidth={260}
         />
@@ -177,16 +117,6 @@ export default function RestaurantMenuPage() {
           setSelectedDish(null);
         }}
         onAddToCart={handleAddToCart}
-      />
-
-      {/* Table Order Summary Drawer */}
-      <OrderDrawer
-        isOpen={isOrderDrawerOpen}
-        onClose={() => setIsOrderDrawerOpen(false)}
-        cart={cart}
-        onUpdateQuantity={handleUpdateQuantity}
-        onRemoveItem={handleRemoveItem}
-        onClearCart={handleClearCart}
       />
 
       {/* Footer */}
