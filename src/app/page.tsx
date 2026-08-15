@@ -7,6 +7,7 @@ import { CylinderMenuCarousel } from "@/components/restaurant/CylinderMenuCarous
 import { DishDetailModal } from "@/components/restaurant/DishDetailModal";
 import { HeroPlateScrollExperience } from "@/components/restaurant/HeroPlateScrollExperience";
 import { VerticalSpotlightNavbar } from "@/components/restaurant/VerticalSpotlightNavbar";
+import { MenuSectionDivider } from "@/components/restaurant/MenuSectionDivider";
 import { toast } from "sonner";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 
@@ -89,14 +90,17 @@ export default function RestaurantMenuPage() {
         />
       </div>
 
-      {/* Top Hero Section with Floating Plate Video Experience */}
+      {/* Part 1: Top Hero Section with Floating Plate Video Experience */}
       <HeroPlateScrollExperience onScrollToMenu={handleScrollToMenu} />
 
-      {/* Interactive 3D Cylinder Gastronomy Section */}
+      {/* Transitional Section Separation Divider */}
+      <MenuSectionDivider />
+
+      {/* Part 2: Interactive 3D Cylinder Gastronomy Section */}
       <section
         ref={menuSectionRef}
         id="cylinder-menu"
-        className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-4 pb-4 px-2 sm:px-6"
+        className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-6 pb-6 px-2 sm:px-6"
       >
         {/* Main Presentation Area: Vertical Spotlight Navbar + 3D Cylinder */}
         <div className="relative z-10 w-full flex-1 flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8 max-w-7xl mx-auto py-2">
@@ -133,7 +137,7 @@ export default function RestaurantMenuPage() {
         />
 
         {/* Footer */}
-        <footer className="relative z-10 w-full py-2">
+        <footer className="relative z-10 w-full py-4 mt-8">
           <MadeWithDyad />
         </footer>
       </section>
