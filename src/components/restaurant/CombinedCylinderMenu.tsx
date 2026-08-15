@@ -462,46 +462,50 @@ export function CombinedCylinderMenu({
         </div>
       </div>
 
-      {/* 2. GAP CONTROLS: Left and Right glowing buttons positioned directly between Upper Cylinder and Lower Runway */}
-      <div className="relative z-40 w-full max-w-xl px-4 flex items-center justify-between my-1">
-        {/* Left Glowing Stepper Arrow */}
-        <button
-          type="button"
-          aria-label="Rotate Previous Dish"
-          onClick={() => stepRotate("prev")}
-          className={cn(
-            "group relative w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer",
-            "bg-neutral-950/90 backdrop-blur-xl border border-orange-500/40 text-orange-200",
-            "shadow-[0_0_25px_rgba(249,115,22,0.4),0_8px_20px_rgba(0,0,0,0.8)]",
-            "hover:scale-110 hover:border-orange-400 hover:text-white hover:shadow-[0_0_35px_rgba(249,115,22,0.8)] active:scale-95"
-          )}
-        >
-          <span className="absolute inset-0 rounded-full bg-gradient-to-r from-red-500/30 via-orange-500/30 to-amber-500/20 blur-md opacity-70 group-hover:opacity-100 transition-opacity" />
-          <ChevronLeft className="w-5 h-5 relative z-10 transition-transform group-hover:-translate-x-0.5" />
-        </button>
-
-        {/* Center Ember Divider Dot Accent */}
-        <div className="flex items-center gap-2">
-          <div className="w-12 sm:w-20 h-px bg-gradient-to-r from-transparent to-orange-500/40" />
-          <div className="w-2 h-2 rounded-full bg-orange-400 shadow-[0_0_10px_rgba(249,115,22,0.8)] animate-pulse" />
-          <div className="w-12 sm:w-20 h-px bg-gradient-to-r from-orange-500/40 to-transparent" />
+      {/* 2. GAP CONTROLS: Left and Right vibrant full orange glowing stepper buttons between menus */}
+      <div className="relative z-40 w-full max-w-xl px-4 flex items-center justify-between my-2">
+        {/* Left Full Orange Glowing Button */}
+        <div className="relative group">
+          <span className="absolute -inset-1 rounded-full bg-gradient-to-r from-orange-600 via-amber-500 to-orange-500 blur-lg opacity-80 group-hover:opacity-100 group-hover:blur-xl transition-all duration-300 animate-pulse" />
+          <button
+            type="button"
+            aria-label="Rotate Previous Dish"
+            onClick={() => stepRotate("prev")}
+            className={cn(
+              "relative w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer",
+              "bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 text-neutral-950 font-black",
+              "border-2 border-amber-300/80 shadow-[0_0_30px_rgba(249,115,22,0.85),0_0_50px_rgba(239,68,68,0.5)]",
+              "hover:scale-110 hover:shadow-[0_0_45px_rgba(249,115,22,1),0_0_70px_rgba(239,68,68,0.8)] active:scale-95"
+            )}
+          >
+            <ChevronLeft className="w-6 h-6 text-neutral-950 stroke-[3] transition-transform group-hover:-translate-x-0.5 drop-shadow-[0_1px_2px_rgba(255,255,255,0.4)]" />
+          </button>
         </div>
 
-        {/* Right Glowing Stepper Arrow */}
-        <button
-          type="button"
-          aria-label="Rotate Next Dish"
-          onClick={() => stepRotate("next")}
-          className={cn(
-            "group relative w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer",
-            "bg-neutral-950/90 backdrop-blur-xl border border-orange-500/40 text-orange-200",
-            "shadow-[0_0_25px_rgba(249,115,22,0.4),0_8px_20px_rgba(0,0,0,0.8)]",
-            "hover:scale-110 hover:border-orange-400 hover:text-white hover:shadow-[0_0_35px_rgba(249,115,22,0.8)] active:scale-95"
-          )}
-        >
-          <span className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-500/20 via-orange-500/30 to-red-500/30 blur-md opacity-70 group-hover:opacity-100 transition-opacity" />
-          <ChevronRight className="w-5 h-5 relative z-10 transition-transform group-hover:translate-x-0.5" />
-        </button>
+        {/* Center Ember Glowing Divider Line */}
+        <div className="flex items-center gap-2">
+          <div className="w-12 sm:w-24 h-0.5 bg-gradient-to-r from-transparent via-orange-500/50 to-orange-400 shadow-[0_0_8px_rgba(249,115,22,0.8)]" />
+          <div className="w-3 h-3 rounded-full bg-gradient-to-tr from-red-500 to-amber-300 shadow-[0_0_16px_rgba(249,115,22,1),0_0_24px_rgba(239,68,68,0.9)] animate-pulse" />
+          <div className="w-12 sm:w-24 h-0.5 bg-gradient-to-r from-orange-400 via-orange-500/50 to-transparent shadow-[0_0_8px_rgba(249,115,22,0.8)]" />
+        </div>
+
+        {/* Right Full Orange Glowing Button */}
+        <div className="relative group">
+          <span className="absolute -inset-1 rounded-full bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 blur-lg opacity-80 group-hover:opacity-100 group-hover:blur-xl transition-all duration-300 animate-pulse" />
+          <button
+            type="button"
+            aria-label="Rotate Next Dish"
+            onClick={() => stepRotate("next")}
+            className={cn(
+              "relative w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer",
+              "bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 text-neutral-950 font-black",
+              "border-2 border-amber-300/80 shadow-[0_0_30px_rgba(249,115,22,0.85),0_0_50px_rgba(239,68,68,0.5)]",
+              "hover:scale-110 hover:shadow-[0_0_45px_rgba(249,115,22,1),0_0_70px_rgba(239,68,68,0.8)] active:scale-95"
+            )}
+          >
+            <ChevronRight className="w-6 h-6 text-neutral-950 stroke-[3] transition-transform group-hover:translate-x-0.5 drop-shadow-[0_1px_2px_rgba(255,255,255,0.4)]" />
+          </button>
+        </div>
       </div>
 
       {/* 3. LOWER STAGE: Sideways Cards Runway with Centered Glowing Selection on Scroll */}
