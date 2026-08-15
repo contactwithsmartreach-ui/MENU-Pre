@@ -11,7 +11,6 @@ import {
   Eye,
   Utensils,
   Plus,
-  Sparkles,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -66,7 +65,6 @@ export function CombinedCylinderMenu({
   // Active item calculation
   const normalizedRot = ((-rotationY % 360) + 360) % 360;
   const activeIndex = Math.round(normalizedRot / angleStep) % N;
-  const activeItem = items[activeIndex] || items[0];
 
   // Auto-scroll runway when activeIndex changes
   useEffect(() => {
@@ -477,28 +475,7 @@ export function CombinedCylinderMenu({
       </div>
 
       {/* 2. LOWER STAGE: Synchronized Sideways Cards Runway */}
-      <div className="w-full max-w-5xl px-2 sm:px-4 flex flex-col items-center gap-3">
-        {/* Runway Title & Active Spotlight Info */}
-        <div className="w-full flex items-center justify-between px-2">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse shadow-[0_0_8px_rgba(249,115,22,1)]" />
-            <span className="text-[11px] sm:text-xs font-serif uppercase tracking-[0.2em] text-orange-300/90 font-bold">
-              Sideways Quick-Deck &bull; Pick Any Dish
-            </span>
-          </div>
-
-          {activeItem && (
-            <button
-              type="button"
-              onClick={() => onSelectItem(activeItem)}
-              className="text-xs text-amber-300 hover:text-white font-serif flex items-center gap-1 transition-colors"
-            >
-              <span>Current Spotlight: <strong className="text-white font-bold">{activeItem.name}</strong></span>
-              <Sparkles className="w-3.5 h-3.5 text-orange-400" />
-            </button>
-          )}
-        </div>
-
+      <div className="w-full max-w-5xl px-2 sm:px-4 flex flex-col items-center">
         {/* Sideways Cards Horizontal Scrolling Strip */}
         <div
           ref={runwayRef}
@@ -539,7 +516,7 @@ export function CombinedCylinderMenu({
                     loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-transparent to-transparent" />
-                  
+
                   {dish.isSignature && (
                     <span className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded-full bg-red-600/90 text-white font-serif text-[9px] uppercase tracking-wider font-bold">
                       Signature
@@ -555,10 +532,12 @@ export function CombinedCylinderMenu({
                 {/* Info Text */}
                 <div className="flex-1 flex flex-col justify-between">
                   <div>
-                    <h4 className={cn(
-                      "text-xs sm:text-sm font-serif font-bold truncate transition-colors",
-                      isActive ? "text-orange-300" : "text-white group-hover:text-orange-200"
-                    )}>
+                    <h4
+                      className={cn(
+                        "text-xs sm:text-sm font-serif font-bold truncate transition-colors",
+                        isActive ? "text-orange-300" : "text-white group-hover:text-orange-200"
+                      )}
+                    >
                       {dish.name}
                     </h4>
                     <p className="text-[10px] text-neutral-400 truncate mt-0.5">
