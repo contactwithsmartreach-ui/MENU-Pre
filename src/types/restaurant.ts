@@ -1,23 +1,24 @@
+export type MenuCategory = "all" | "starters" | "mains" | "desserts" | "drinks";
+
 export interface MenuItem {
   id: string;
   name: string;
-  category: "Starters" | "Mains" | "Chef Specials" | "Desserts" | "Cocktails";
+  category: MenuCategory | string;
   price: number;
+  rating: number;
   description: string;
   image: string;
-  prepTime: string;
-  calories: number;
-  rating: number;
-  reviewsCount: number;
-  tags: string[];
-  chefNote?: string;
-  spicyLevel?: number; // 0 to 3
+  prepTime?: string;
   isSignature?: boolean;
-  isVegetarian?: boolean;
+  calories?: number;
+  spiceLevel?: number;
+  ingredients?: string[];
+  reviewsCount?: number;
+  tags?: string[];
 }
 
 export interface CartItem {
   dish: MenuItem;
   quantity: number;
-  specialInstructions?: string;
+  notes?: string;
 }

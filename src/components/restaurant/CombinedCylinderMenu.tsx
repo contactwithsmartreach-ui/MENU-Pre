@@ -14,6 +14,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { SaharaButton } from "./SaharaButton";
 
 export interface CombinedCylinderMenuProps {
   items: MenuItem[];
@@ -67,22 +68,26 @@ export function CombinedCylinderMenu({
   const autoResumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Scroll center helper for runway card
-  const scrollCardToCenter = useCallback((index: number, behavior: ScrollBehavior = "smooth") => {
-    if (!runwayRef.current) return;
-    const container = runwayRef.current;
-    const cards = container.querySelectorAll<HTMLElement>("[data-dish-card]");
-    const targetCard = cards[index];
-    if (targetCard) {
-      isProgrammaticScrollRef.current = true;
-      const targetLeft = targetCard.offsetLeft - container.clientWidth / 2 + targetCard.clientWidth / 2;
-      container.scrollTo({ left: targetLeft, behavior });
-      
-      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
-      scrollTimeoutRef.current = setTimeout(() => {
-        isProgrammaticScrollRef.current = false;
-      }, 500);
-    }
-  }, []);
+  const scrollCardToCenter = useCallback(
+    (index: number, behavior: ScrollBehavior = "smooth") => {
+      if (!runwayRef.current) return;
+      const container = runwayRef.current;
+      const cards = container.querySelectorAll<HTMLElement>("[data-dish-card]");
+      const targetCard = cards[index];
+      if (targetCard) {
+        isProgrammaticScrollRef.current = true;
+        const targetLeft =
+          targetCard.offsetLeft - container.clientWidth / 2 + targetCard.clientWidth / 2;
+        container.scrollTo({ left: targetLeft, behavior });
+
+        if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+        scrollTimeoutRef.current = setTimeout(() => {
+          isProgrammaticScrollRef.current = false;
+        }, 500);
+      }
+    },
+    []
+  );
 
   // Smooth rotation transition for 3D cylinder
   const rotateToAngle = useCallback(
@@ -144,9 +149,10 @@ export function CombinedCylinderMenu({
   // Step left/right navigation button
   const stepRotate = useCallback(
     (direction: "prev" | "next") => {
-      const newActive = direction === "next"
-        ? (selectedDishIndex + 1) % N
-        : (selectedDishIndex - 1 + N) % N;
+      const newActive =
+        direction === "next"
+          ? (selectedDishIndex + 1) % N
+          : (selectedDishIndex - 1 + N) % N;
 
       bringToFront(newActive, false, items[newActive]);
     },
@@ -328,7 +334,6 @@ export function CombinedCylinderMenu({
     >
       {/* 1. UPPER STAGE: 3D Cylinder Gastronomy Carousel */}
       <div className="relative w-full min-h-[440px] sm:min-h-[500px] flex items-center justify-center">
-        {/* 3D Cylinder Scene */}
         <div
           className="w-full flex-1 grid place-items-center cursor-grab active:cursor-grabbing overflow-visible py-2 touch-pan-y"
           style={{
@@ -426,10 +431,18 @@ export function CombinedCylinderMenu({
                         : "opacity-0 scale-90"
                     )}
                   >
-                    <span className="bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white font-serif tracking-widest uppercase px-3.5 py-1.5 rounded-full text-[11px] font-bold shadow-xl shadow-red-600/50 border border-orange-200/50 flex items-center gap-1.5">
-                      {isFacingFront ? <Eye className="w-3.5 h-3.5" /> : <Utensils className="w-3.5 h-3.5" />}
-                      <span>{isFacingFront ? "VIEW DETAILS" : "BRING FORWARD"}</span>
-                    </span>
+                    <SaharaButton
+                      size="sm"
+                      primaryText={isFacingFront ? "VIEW DETAILS" : "BRING FORWARD"}
+                      hoverText={isFacingFront ? "TASTE NOW" : "INSPECT"}
+                      icon={
+                        isFacingFront ? (
+                          <Eye className="w-3.5 h-3.5" />
+                        ) : (
+                          <Utensils className="w-3.5 h-3.5" />
+                        )
+                      }
+                    />
                   </div>
 
                   {/* Bottom Details */}
@@ -461,25 +474,15 @@ export function CombinedCylinderMenu({
         </div>
       </div>
 
-      {/* 2. GAP CONTROLS: Left and Right vibrant full orange glowing stepper buttons */}
+      {/* 2. GAP CONTROLS: Sahara Glowing Stepper Buttons */}
       <div className="relative z-40 w-full max-w-xl px-4 flex items-center justify-between my-2">
-        {/* Left Full Orange Glowing Button */}
-        <div className="relative group">
-          <span className="absolute -inset-1 rounded-full bg-gradient-to-r from-orange-600 via-amber-500 to-orange-500 blur-lg opacity-80 group-hover:opacity-100 group-hover:blur-xl transition-all duration-300 animate-pulse" />
-          <button
-            type="button"
-            aria-label="Rotate Previous Dish"
-            onClick={() => stepRotate("prev")}
-            className={cn(
-              "relative w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer",
-              "bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 text-neutral-950 font-black",
-              "border-2 border-amber-300/80 shadow-[0_0_30px_rgba(249,115,22,0.85),0_0_50px_rgba(239,68,68,0.5)]",
-              "hover:scale-110 hover:shadow-[0_0_45px_rgba(249,115,22,1),0_0_70px_rgba(239,68,68,0.8)] active:scale-95"
-            )}
-          >
-            <ChevronLeft className="w-6 h-6 text-neutral-950 stroke-[3] transition-transform group-hover:-translate-x-0.5 drop-shadow-[0_1px_2px_rgba(255,255,255,0.4)]" />
-          </button>
-        </div>
+        <SaharaButton
+          size="icon"
+          aria-label="Rotate Previous Dish"
+          onClick={() => stepRotate("prev")}
+        >
+          <ChevronLeft className="w-6 h-6 text-white stroke-[2.5]" />
+        </SaharaButton>
 
         {/* Center Ember Glowing Divider Line */}
         <div className="flex items-center gap-2">
@@ -488,28 +491,17 @@ export function CombinedCylinderMenu({
           <div className="w-12 sm:w-24 h-0.5 bg-gradient-to-r from-orange-400 via-orange-500/50 to-transparent shadow-[0_0_8px_rgba(249,115,22,0.8)]" />
         </div>
 
-        {/* Right Full Orange Glowing Button */}
-        <div className="relative group">
-          <span className="absolute -inset-1 rounded-full bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 blur-lg opacity-80 group-hover:opacity-100 group-hover:blur-xl transition-all duration-300 animate-pulse" />
-          <button
-            type="button"
-            aria-label="Rotate Next Dish"
-            onClick={() => stepRotate("next")}
-            className={cn(
-              "relative w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer",
-              "bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 text-neutral-950 font-black",
-              "border-2 border-amber-300/80 shadow-[0_0_30px_rgba(249,115,22,0.85),0_0_50px_rgba(239,68,68,0.5)]",
-              "hover:scale-110 hover:shadow-[0_0_45px_rgba(249,115,22,1),0_0_70px_rgba(239,68,68,0.8)] active:scale-95"
-            )}
-          >
-            <ChevronRight className="w-6 h-6 text-neutral-950 stroke-[3] transition-transform group-hover:translate-x-0.5 drop-shadow-[0_1px_2px_rgba(255,255,255,0.4)]" />
-          </button>
-        </div>
+        <SaharaButton
+          size="icon"
+          aria-label="Rotate Next Dish"
+          onClick={() => stepRotate("next")}
+        >
+          <ChevronRight className="w-6 h-6 text-white stroke-[2.5]" />
+        </SaharaButton>
       </div>
 
-      {/* 3. LOWER STAGE: Sideways Melting Down Cards Runway with Faded Smoked Purple Interiors */}
+      {/* 3. LOWER STAGE: Sideways Melting Down Cards Runway */}
       <div className="w-full max-w-7xl px-2 sm:px-4 flex flex-col items-center">
-        {/* Horizontal Scrolling Strip */}
         <div
           ref={runwayRef}
           onScroll={handleRunwayScroll}
@@ -553,7 +545,6 @@ export function CombinedCylinderMenu({
                 <div
                   className={cn(
                     "relative w-full rounded-t-[30px] rounded-b-[18px] overflow-hidden p-3 flex flex-col justify-between transition-all duration-300",
-                    // Faded smoked purple gradient backdrop
                     "bg-gradient-to-b from-[#24133b] via-[#160c26] to-[#0c0517]",
                     "border-t-2 border-x",
                     isSelected
@@ -561,7 +552,6 @@ export function CombinedCylinderMenu({
                       : "border-t-purple-400/30 border-x-purple-500/20 shadow-[0_10px_25px_rgba(0,0,0,0.7)]"
                   )}
                 >
-                  {/* Subtle Faded Purple Shimmer Mist inside card */}
                   <div className="absolute inset-0 bg-gradient-to-tr from-purple-900/30 via-violet-800/10 to-transparent pointer-events-none" />
 
                   {/* Top Molten Viscous Wax Drip Overlay Layer */}
@@ -582,7 +572,6 @@ export function CombinedCylinderMenu({
                         d="M 0,0 L 200,0 L 200,8 C 185,8 180,22 170,22 C 160,22 155,6 142,6 C 130,6 126,18 116,18 C 105,18 100,4 88,4 C 74,4 70,26 56,26 C 45,26 40,8 26,8 C 14,8 8,18 0,18 Z"
                         fill={`url(#top-melt-${dish.id})`}
                       />
-                      {/* Specular Wax Highlight line */}
                       <path
                         d="M 0,4 C 8,14 14,5 26,5 C 40,5 45,22 56,22 C 70,22 74,2 88,2 C 100,2 105,15 116,15 C 126,15 130,4 142,4 C 155,4 160,19 170,19 C 180,19 185,5 200,5"
                         fill="none"
@@ -592,7 +581,7 @@ export function CombinedCylinderMenu({
                     </svg>
                   </div>
 
-                  {/* Dish Image inside soft purple-tinted frame */}
+                  {/* Dish Image */}
                   <div
                     className={cn(
                       "relative w-full rounded-[22px] overflow-hidden mb-2.5 transition-all duration-300 z-10",
@@ -610,7 +599,6 @@ export function CombinedCylinderMenu({
                     <div className="absolute inset-0 bg-gradient-to-t from-[#120722] via-transparent to-transparent" />
                     <div className="absolute inset-0 bg-gradient-to-tr from-purple-600/25 via-transparent to-amber-500/15 mix-blend-color-dodge" />
 
-                    {/* Badges on Image */}
                     {dish.isSignature ? (
                       <span
                         className={cn(
@@ -635,7 +623,7 @@ export function CombinedCylinderMenu({
                     </div>
                   </div>
 
-                  {/* Info Text in Faded Purple interior */}
+                  {/* Info Text */}
                   <div className="flex-1 flex flex-col justify-between relative z-10 px-1">
                     <div>
                       <h4
@@ -659,7 +647,7 @@ export function CombinedCylinderMenu({
                       )}
                     </div>
 
-                    {/* Price & Action */}
+                    {/* Price & Action Button */}
                     <div
                       className={cn(
                         "mt-2.5 pt-2 flex items-center justify-between transition-colors",
@@ -680,25 +668,27 @@ export function CombinedCylinderMenu({
                         </span>
                       </div>
 
-                      <div
+                      <SaharaButton
+                        size="icon"
+                        glow={isSelected}
                         className={cn(
-                          "rounded-full flex items-center justify-center transition-all duration-300",
+                          "transition-all duration-300",
                           isSelected
-                            ? "w-7 h-7 bg-gradient-to-r from-orange-500 to-purple-600 text-white shadow-lg shadow-purple-500/50 scale-105"
-                            : "w-5 h-5 bg-purple-950/80 border border-purple-400/20 text-purple-300 group-hover:bg-orange-500 group-hover:text-neutral-950"
+                            ? "!w-8 !h-8 !min-h-[32px] scale-105"
+                            : "!w-6 !h-6 !min-h-[24px] opacity-80 group-hover:opacity-100"
                         )}
                       >
                         {isSelected ? (
-                          <Eye className="w-3.5 h-3.5" />
+                          <Eye className="w-3.5 h-3.5 text-white" />
                         ) : (
-                          <Plus className="w-3 h-3 stroke-[2.5]" />
+                          <Plus className="w-3 h-3 text-white stroke-[2.5]" />
                         )}
-                      </div>
+                      </SaharaButton>
                     </div>
                   </div>
                 </div>
 
-                {/* 4. REALISTIC LIQUID MELTING DRIP FRAME: Organic viscous drips with glass-like tears & physics */}
+                {/* 4. REALISTIC LIQUID MELTING DRIP FRAME */}
                 <div className="relative -mt-1 w-full pointer-events-none overflow-visible">
                   <svg
                     viewBox="0 0 200 48"
@@ -711,7 +701,6 @@ export function CombinedCylinderMenu({
                     )}
                   >
                     <defs>
-                      {/* Fluid Melting Gradient: Faded Purple into Molten Sunset Amber */}
                       <linearGradient id={`melt-grad-${dish.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
                         <stop offset="0%" stopColor={isSelected ? "#1b0a33" : "#120722"} />
                         <stop offset="45%" stopColor={isSelected ? "#7e22ce" : "#4c1d95"} stopOpacity="0.95" />
@@ -719,7 +708,6 @@ export function CombinedCylinderMenu({
                         <stop offset="100%" stopColor={isSelected ? "#f59e0b" : "#c084fc"} />
                       </linearGradient>
 
-                      {/* Molten Glow Rim Highlight */}
                       <linearGradient id={`glow-rim-${dish.id}`} x1="0%" y1="0%" x2="100%" y2="0%">
                         <stop offset="0%" stopColor="#c084fc" />
                         <stop offset="40%" stopColor="#fb923c" />
@@ -728,48 +716,21 @@ export function CombinedCylinderMenu({
                       </linearGradient>
                     </defs>
 
-                    {/* Smooth Organic Viscous Drip Silhouette */}
                     <path
-                      d="M 0,0 
-                         L 200,0 
-                         L 200,6 
-                         C 192,6 189,16 183,16 
-                         C 177,16 175,5 166,5 
-                         C 157,5 153,38 144,38 
-                         C 137,38 135,12 127,12 
-                         C 119,12 117,26 109,26 
-                         C 101,26 97,7 89,7 
-                         C 81,7 76,44 66,44 
-                         C 58,44 56,14 46,14 
-                         C 36,14 32,30 22,30 
-                         C 14,30 10,8 0,8 
-                         Z"
+                      d="M 0,0 L 200,0 L 200,6 C 192,6 189,16 183,16 C 177,16 175,5 166,5 C 157,5 153,38 144,38 C 137,38 135,12 127,12 C 119,12 117,26 109,26 C 101,26 97,7 89,7 C 81,7 76,44 66,44 C 58,44 56,14 46,14 C 36,14 32,30 22,30 C 14,30 10,8 0,8 Z"
                       fill={`url(#melt-grad-${dish.id})`}
                     />
 
-                    {/* Specular Liquid Light Contour Reflection */}
                     <path
-                      d="M 0,8 
-                         C 10,8 14,30 22,30 
-                         C 32,30 36,14 46,14 
-                         C 56,14 58,44 66,44 
-                         C 76,44 81,7 89,7 
-                         C 97,7 101,26 109,26 
-                         C 117,26 119,12 127,12 
-                         C 135,12 137,38 144,38 
-                         C 153,38 157,5 166,5 
-                         C 175,5 177,16 183,16 
-                         C 189,16 192,6 200,6"
+                      d="M 0,8 C 10,8 14,30 22,30 C 32,30 36,14 46,14 C 56,14 58,44 66,44 C 76,44 81,7 89,7 C 97,7 101,26 109,26 C 117,26 119,12 127,12 C 135,12 137,38 144,38 C 153,38 157,5 166,5 C 175,5 177,16 183,16 C 189,16 192,6 200,6"
                       fill="none"
                       stroke={isSelected ? `url(#glow-rim-${dish.id})` : "rgba(192,132,252,0.35)"}
                       strokeWidth={isSelected ? "2.2" : "1.2"}
                       strokeLinecap="round"
                     />
 
-                    {/* Realistic Detached Viscous Wax Teardrops */}
                     {isSelected && (
                       <>
-                        {/* Teardrop under main drip (x: 66) */}
                         <g className="animate-pulse">
                           <ellipse
                             cx="66"
@@ -779,11 +740,9 @@ export function CombinedCylinderMenu({
                             fill="#f59e0b"
                             className="drop-shadow-[0_0_8px_rgba(245,158,11,1)]"
                           />
-                          {/* Inner glossy highlight on teardrop */}
                           <circle cx="65" cy="48.5" r="0.9" fill="#fff" opacity="0.8" />
                         </g>
 
-                        {/* Teardrop under secondary drip (x: 144) */}
                         <g className="animate-pulse delay-200">
                           <ellipse
                             cx="144"
