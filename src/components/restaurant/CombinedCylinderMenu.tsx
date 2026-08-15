@@ -266,7 +266,7 @@ export function CombinedCylinderMenu({
     setRotationY((prev) => prev + delta * 0.15);
   };
 
-  // Horizontal scroll runway active item detection (detects card closest to container middle)
+  // Horizontal scroll runway active item detection
   const handleRunwayScroll = () => {
     if (isProgrammaticScrollRef.current || !runwayRef.current) return;
 
@@ -293,7 +293,6 @@ export function CombinedCylinderMenu({
     }
   };
 
-  // Initial centering of the first card on mount
   useEffect(() => {
     scrollCardToCenter(0, "instant");
   }, [scrollCardToCenter]);
@@ -508,13 +507,13 @@ export function CombinedCylinderMenu({
         </div>
       </div>
 
-      {/* 3. LOWER STAGE: Sideways Cards Runway with Centered Glowing Selection on Scroll */}
+      {/* 3. LOWER STAGE: Sideways Melting Down Cards Runway */}
       <div className="w-full max-w-7xl px-2 sm:px-4 flex flex-col items-center">
-        {/* Horizontal Scrolling Strip with Centering Margins */}
+        {/* Horizontal Scrolling Strip */}
         <div
           ref={runwayRef}
           onScroll={handleRunwayScroll}
-          className="w-full flex items-center gap-4 sm:gap-6 overflow-x-auto scrollbar-none py-4 sm:py-6 snap-x snap-mandatory scroll-smooth px-[calc(50%-100px)] sm:px-[calc(50%-125px)]"
+          className="w-full flex items-end gap-5 sm:gap-7 overflow-x-auto scrollbar-none py-6 sm:py-10 snap-x snap-mandatory scroll-smooth px-[calc(50%-100px)] sm:px-[calc(50%-125px)] overflow-y-visible"
         >
           {items.map((dish, index) => {
             const isSelected = selectedDishIndex === index;
@@ -539,129 +538,231 @@ export function CombinedCylinderMenu({
                   }
                 }}
                 className={cn(
-                  "group relative shrink-0 rounded-3xl overflow-hidden cursor-pointer transition-all duration-300 ease-out snap-center p-3 flex flex-col justify-between select-none",
+                  "group relative shrink-0 cursor-pointer transition-all duration-500 ease-out snap-center select-none",
                   isSelected
-                    ? [
-                        "w-[200px] sm:w-[250px] z-30 scale-110 sm:scale-115 -translate-y-1.5",
-                        "bg-gradient-to-b from-[#1c0c09] via-neutral-950 to-neutral-950",
-                        "border-2 border-orange-400 ring-4 ring-orange-500/30",
-                        "shadow-[0_0_40px_rgba(249,115,22,0.65),0_0_80px_rgba(239,68,68,0.35),0_20px_40px_rgba(0,0,0,0.9)]",
-                        "opacity-100",
-                      ]
-                    : [
-                        "w-[145px] sm:w-[175px] z-10 scale-95",
-                        "bg-neutral-950/70 backdrop-blur-md",
-                        "border border-orange-500/15 hover:border-orange-400/50",
-                        "opacity-40 hover:opacity-85 hover:scale-100 grayscale-[0.25] hover:grayscale-0",
-                        "shadow-[0_8px_20px_rgba(0,0,0,0.6)]",
-                      ]
+                    ? "w-[210px] sm:w-[260px] z-30 scale-110 sm:scale-115 -translate-y-2"
+                    : "w-[145px] sm:w-[175px] z-10 scale-95 opacity-50 hover:opacity-85 hover:scale-100 grayscale-[0.2] hover:grayscale-0"
                 )}
               >
-                {/* Active Radiant Pulse Backdrop Effect */}
+                {/* Outer Molten Heat Bloom Glow on Active */}
                 {isSelected && (
-                  <div className="absolute -inset-1 bg-gradient-to-r from-red-500/20 via-orange-500/30 to-amber-400/20 rounded-3xl blur-md pointer-events-none -z-10 animate-pulse" />
+                  <div className="absolute -inset-2 bg-gradient-to-b from-orange-500/20 via-red-500/35 to-amber-500/40 rounded-[32px] blur-xl pointer-events-none -z-10 animate-pulse" />
                 )}
 
-                {/* Thumbnail Image */}
+                {/* Melting Card Shell Wrapper */}
                 <div
                   className={cn(
-                    "relative w-full rounded-2xl overflow-hidden mb-2.5 transition-all duration-300",
-                    isSelected ? "h-32 sm:h-38 ring-1 ring-orange-400/40" : "h-22 sm:h-26"
+                    "relative w-full rounded-t-[28px] rounded-b-[18px] overflow-hidden p-3 flex flex-col justify-between transition-all duration-300",
+                    "bg-gradient-to-b from-[#180806] via-[#0d0504] to-[#120403]",
+                    "border-t-2 border-x border-orange-500/50",
+                    isSelected
+                      ? "border-t-amber-300 border-x-orange-400 shadow-[0_0_35px_rgba(249,115,22,0.55),0_15px_30px_rgba(0,0,0,0.9)]"
+                      : "border-t-orange-500/30 border-x-orange-500/20 shadow-[0_10px_25px_rgba(0,0,0,0.7)]"
                   )}
                 >
-                  <img
-                    src={dish.image}
-                    alt={dish.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/90 via-transparent to-transparent" />
+                  {/* Top Molten Wax Drips Overlay Layer (SVG) */}
+                  <div className="absolute top-0 inset-x-0 h-4 pointer-events-none z-20 overflow-hidden opacity-90">
+                    <svg
+                      viewBox="0 0 200 24"
+                      preserveAspectRatio="none"
+                      className="w-full h-full fill-orange-500/60 drop-shadow-[0_2px_4px_rgba(249,115,22,0.8)]"
+                    >
+                      <path d="M0,0 L200,0 L200,6 C180,6 175,18 160,18 C145,18 140,4 125,4 C110,4 105,14 90,14 C75,14 70,6 55,6 C40,6 35,22 20,22 C10,22 5,8 0,8 Z" />
+                    </svg>
+                  </div>
 
-                  {/* Badges on Thumbnail */}
-                  {dish.isSignature ? (
-                    <span
+                  {/* Dish Image in Melty Organic Frame */}
+                  <div
+                    className={cn(
+                      "relative w-full rounded-[20px] overflow-hidden mb-2.5 transition-all duration-300",
+                      isSelected
+                        ? "h-32 sm:h-40 ring-1 ring-orange-400/50 shadow-inner"
+                        : "h-22 sm:h-26"
+                    )}
+                  >
+                    <img
+                      src={dish.image}
+                      alt={dish.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#120403] via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-orange-500/15 via-transparent to-red-600/20 mix-blend-color-dodge" />
+
+                    {/* Badges on Image */}
+                    {dish.isSignature ? (
+                      <span
+                        className={cn(
+                          "absolute top-2 left-2 rounded-full bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 text-white font-serif uppercase tracking-wider font-bold shadow-md shadow-red-500/40 flex items-center gap-1",
+                          isSelected ? "px-2 py-0.5 text-[10px]" : "px-1.5 py-0.5 text-[9px]"
+                        )}
+                      >
+                        <Sparkles className="w-2.5 h-2.5 text-amber-200" />
+                        Signature
+                      </span>
+                    ) : (
+                      isSelected && (
+                        <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-neutral-950/85 backdrop-blur-md border border-orange-400/40 text-orange-200 font-serif text-[9px] uppercase tracking-wider">
+                          {dish.category}
+                        </span>
+                      )
+                    )}
+
+                    <div className="absolute bottom-2 right-2 flex items-center gap-0.5 text-amber-300 text-[10px] font-bold bg-neutral-950/90 px-1.5 py-0.5 rounded-md backdrop-blur-md border border-orange-500/30">
+                      <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-400" />
+                      <span>{dish.rating}</span>
+                    </div>
+                  </div>
+
+                  {/* Info Text */}
+                  <div className="flex-1 flex flex-col justify-between relative z-10 px-1">
+                    <div>
+                      <h4
+                        className={cn(
+                          "font-serif font-bold tracking-tight transition-colors line-clamp-1",
+                          isSelected
+                            ? "text-sm sm:text-base text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-amber-200 to-white drop-shadow-[0_0_12px_rgba(249,115,22,0.6)]"
+                            : "text-xs sm:text-sm text-neutral-300 group-hover:text-white"
+                        )}
+                      >
+                        {dish.name}
+                      </h4>
+                      {isSelected ? (
+                        <p className="text-[11px] text-orange-200/80 line-clamp-1 mt-0.5 font-light">
+                          {dish.description}
+                        </p>
+                      ) : (
+                        <p className="text-[10px] text-neutral-500 truncate mt-0.5">
+                          {dish.category}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Price & Action */}
+                    <div
                       className={cn(
-                        "absolute top-1.5 left-1.5 rounded-full bg-gradient-to-r from-red-600 to-orange-600 text-white font-serif uppercase tracking-wider font-bold shadow-md shadow-red-500/40 flex items-center gap-1",
-                        isSelected ? "px-2 py-0.5 text-[10px]" : "px-1.5 py-0.5 text-[9px]"
+                        "mt-2.5 pt-2 flex items-center justify-between transition-colors",
+                        isSelected ? "border-t border-orange-500/35" : "border-t border-white/10"
                       )}
                     >
-                      <Sparkles className="w-2.5 h-2.5 text-amber-200" />
-                      Signature
-                    </span>
-                  ) : (
-                    isSelected && (
-                      <span className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-neutral-950/80 backdrop-blur-md border border-orange-400/40 text-orange-200 font-serif text-[9px] uppercase tracking-wider">
-                        {dish.category}
-                      </span>
-                    )
-                  )}
+                      <div className="flex items-baseline gap-0.5">
+                        <span className="text-xs font-serif text-orange-400 font-bold">$</span>
+                        <span
+                          className={cn(
+                            "font-serif font-extrabold tracking-tight",
+                            isSelected
+                              ? "text-lg sm:text-xl text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300"
+                              : "text-sm text-neutral-300"
+                          )}
+                        >
+                          {dish.price}
+                        </span>
+                      </div>
 
-                  <div className="absolute bottom-1.5 right-1.5 flex items-center gap-0.5 text-amber-300 text-[10px] font-bold bg-neutral-950/85 px-1.5 py-0.5 rounded-md backdrop-blur-md border border-white/10">
-                    <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-400" />
-                    <span>{dish.rating}</span>
+                      <div
+                        className={cn(
+                          "rounded-full flex items-center justify-center transition-all duration-300",
+                          isSelected
+                            ? "w-7 h-7 bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-lg shadow-orange-500/60 scale-105"
+                            : "w-5 h-5 bg-neutral-900 border border-white/10 text-neutral-400 group-hover:bg-orange-500 group-hover:text-neutral-950"
+                        )}
+                      >
+                        {isSelected ? (
+                          <Eye className="w-3.5 h-3.5" />
+                        ) : (
+                          <Plus className="w-3 h-3 stroke-[2.5]" />
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Info Text */}
-                <div className="flex-1 flex flex-col justify-between">
-                  <div>
-                    <h4
-                      className={cn(
-                        "font-serif font-bold tracking-tight transition-colors line-clamp-1",
-                        isSelected
-                          ? "text-sm sm:text-base text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-amber-200 to-white drop-shadow-[0_0_12px_rgba(249,115,22,0.6)]"
-                          : "text-xs sm:text-sm text-neutral-300 group-hover:text-white"
-                      )}
-                    >
-                      {dish.name}
-                    </h4>
-                    {isSelected ? (
-                      <p className="text-[11px] text-orange-200/80 line-clamp-1 mt-0.5 font-light">
-                        {dish.description}
-                      </p>
-                    ) : (
-                      <p className="text-[10px] text-neutral-500 truncate mt-0.5">
-                        {dish.category}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Price & Action */}
-                  <div
+                {/* 4. MELTING DOWN BOTTOM DRIP FRAME: Liquid magma drips hanging off the bottom of each card */}
+                <div className="relative -mt-1 w-full pointer-events-none overflow-visible">
+                  {/* SVG Molten Dripping Wax Teeth/Drops */}
+                  <svg
+                    viewBox="0 0 200 42"
+                    preserveAspectRatio="none"
                     className={cn(
-                      "mt-2 pt-2 flex items-center justify-between transition-colors",
-                      isSelected ? "border-t border-orange-500/35" : "border-t border-white/5"
+                      "w-full h-8 sm:h-10 transition-all duration-500 filter drop-shadow-[0_6px_8px_rgba(0,0,0,0.8)]",
+                      isSelected
+                        ? "fill-gradient-to-b from-[#120403] to-orange-600"
+                        : "fill-[#0d0504]"
                     )}
                   >
-                    <div className="flex items-baseline gap-0.5">
-                      <span className="text-xs font-serif text-orange-400 font-bold">$</span>
-                      <span
-                        className={cn(
-                          "font-serif font-extrabold tracking-tight",
-                          isSelected
-                            ? "text-lg sm:text-xl text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300"
-                            : "text-sm text-neutral-300"
-                        )}
-                      >
-                        {dish.price}
-                      </span>
-                    </div>
+                    <defs>
+                      <linearGradient id={`melt-grad-${dish.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stopColor={isSelected ? "#1c0704" : "#120403"} />
+                        <stop offset="65%" stopColor={isSelected ? "#d946ef" : "#ea580c"} stopOpacity={isSelected ? "0.85" : "0.5"} />
+                        <stop offset="100%" stopColor={isSelected ? "#f59e0b" : "#c2410c"} />
+                      </linearGradient>
+                      <linearGradient id={`glow-rim-${dish.id}`} x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#ef4444" />
+                        <stop offset="50%" stopColor="#f97316" />
+                        <stop offset="100%" stopColor="#f59e0b" />
+                      </linearGradient>
+                    </defs>
 
-                    <div
-                      className={cn(
-                        "rounded-full flex items-center justify-center transition-all duration-300",
-                        isSelected
-                          ? "w-7 h-7 bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-lg shadow-orange-500/50 scale-105"
-                          : "w-5 h-5 bg-neutral-900 border border-white/10 text-neutral-400 group-hover:bg-orange-500 group-hover:text-neutral-950"
-                      )}
-                    >
-                      {isSelected ? (
-                        <Eye className="w-3.5 h-3.5" />
-                      ) : (
-                        <Plus className="w-3 h-3 stroke-[2.5]" />
-                      )}
-                    </div>
-                  </div>
+                    {/* Main Molten Flowing Silhouette */}
+                    <path
+                      d="M 0,0 
+                         L 200,0 
+                         L 200,6 
+                         C 192,6 188,14 182,14 
+                         C 176,14 174,4 165,4 
+                         C 156,4 152,32 144,32 
+                         C 138,32 136,10 128,10 
+                         C 120,10 118,22 110,22 
+                         C 102,22 98,6 90,6 
+                         C 82,6 78,38 68,38 
+                         C 60,38 58,12 48,12 
+                         C 38,12 34,26 24,26 
+                         C 16,26 12,8 0,8 
+                         Z"
+                      fill={`url(#melt-grad-${dish.id})`}
+                    />
+
+                    {/* Luminous Molten Rim Edge */}
+                    <path
+                      d="M 0,8 
+                         C 12,8 16,26 24,26 
+                         C 34,26 38,12 48,12 
+                         C 58,12 60,38 68,38 
+                         C 78,38 82,6 90,6 
+                         C 98,6 102,22 110,22 
+                         C 118,22 120,10 128,10 
+                         C 136,10 138,32 144,32 
+                         C 152,32 156,4 165,4 
+                         C 174,4 176,14 182,14 
+                         C 188,14 192,6 200,6"
+                      fill="none"
+                      stroke={isSelected ? `url(#glow-rim-${dish.id})` : "rgba(249,115,22,0.3)"}
+                      strokeWidth={isSelected ? "2.2" : "1.2"}
+                      strokeLinecap="round"
+                    />
+
+                    {/* Detached Suspended Falling Droplets */}
+                    {isSelected && (
+                      <>
+                        {/* Droplet under long drip #1 (x ~ 68) */}
+                        <circle
+                          cx="68"
+                          cy="44"
+                          r="2.5"
+                          fill="#f59e0b"
+                          className="animate-pulse drop-shadow-[0_0_6px_rgba(245,158,11,1)]"
+                        />
+                        {/* Droplet under long drip #2 (x ~ 144) */}
+                        <circle
+                          cx="144"
+                          cy="39"
+                          r="2"
+                          fill="#f97316"
+                          className="animate-pulse delay-150 drop-shadow-[0_0_6px_rgba(249,115,22,1)]"
+                        />
+                      </>
+                    )}
+                  </svg>
                 </div>
               </div>
             );
