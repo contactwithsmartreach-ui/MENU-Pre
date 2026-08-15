@@ -6,15 +6,25 @@ import { MenuItem } from "@/types/restaurant";
 import { CylinderMenuCarousel } from "@/components/restaurant/CylinderMenuCarousel";
 import { DishDetailModal } from "@/components/restaurant/DishDetailModal";
 import { HeroPlateScrollExperience } from "@/components/restaurant/HeroPlateScrollExperience";
-import { SpotlightCategoryDropdown } from "@/components/restaurant/SpotlightCategoryDropdown";
+import { VerticalSpotlightNavbar } from "@/components/restaurant/VerticalSpotlightNavbar";
 import { toast } from "sonner";
 import { MadeWithDyad } from "@/components/made-with-dyad";
+
+const CATEGORY_ITEMS = [
+  { label: "All Items", id: "All" },
+  { label: "Chef Specials", id: "Chef Specials" },
+  { label: "Starters", id: "Starters" },
+  { label: "Mains", id: "Mains" },
+  { label: "Desserts", id: "Desserts" },
+  { label: "Cocktails", id: "Cocktails" },
+];
 
 export default function RestaurantMenuPage() {
   const [selectedDish, setSelectedDish] = useState<MenuItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const [activeCategoryIdx, setActiveCategoryIdx] = useState<number>(0);
 
+  const selectedCategory = CATEGORY_ITEMS[activeCategoryIdx].id;
   const menuSectionRef = useRef<HTMLDivElement>(null);
 
   const filteredItems =
@@ -48,7 +58,7 @@ export default function RestaurantMenuPage() {
         <div className="absolute top-1/4 left-1/4 -translate-x-1/2 w-[550px] h-[550px] bg-amber-500/20 rounded-full blur-[160px]" />
         <div className="absolute bottom-10 right-1/4 translate-x-1/2 w-[600px] h-[450px] bg-red-700/20 rounded-full blur-[170px]" />
 
-        {/* Topographic Dune Wave Lines in background */}
+        {/* Topographic Dune Wave Lines */}
         <svg
           className="absolute inset-x-0 bottom-0 w-full h-[55%] opacity-15 pointer-events-none"
           viewBox="0 0 1440 320"
@@ -79,33 +89,37 @@ export default function RestaurantMenuPage() {
         />
       </div>
 
-      {/* Top Hero Section with Realistic Floating Culinary Plate Video Experience */}
+      {/* Top Hero Section with Floating Plate Video Experience */}
       <HeroPlateScrollExperience onScrollToMenu={handleScrollToMenu} />
 
       {/* Interactive 3D Cylinder Gastronomy Section */}
       <section
         ref={menuSectionRef}
         id="cylinder-menu"
-        className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-6 pb-4"
+        className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-4 pb-4 px-2 sm:px-6"
       >
-        {/* Vertical Dropdown Spotlight Navbar Header */}
-        <header className="relative z-30 w-full px-4 flex flex-col items-center">
-          <SpotlightCategoryDropdown
-            selectedCategory={selectedCategory}
-            onSelectCategory={setSelectedCategory}
-          />
-        </header>
+        {/* Main Presentation Area: Vertical Spotlight Navbar + 3D Cylinder */}
+        <div className="relative z-10 w-full flex-1 flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8 max-w-7xl mx-auto py-2">
+          {/* Vertical Spotlight Navbar */}
+          <div className="shrink-0 flex items-center justify-center">
+            <VerticalSpotlightNavbar
+              items={CATEGORY_ITEMS}
+              activeIndex={activeCategoryIdx}
+              onItemClick={(_, idx) => setActiveCategoryIdx(idx)}
+            />
+          </div>
 
-        {/* Center 3D Cylinder Carousel */}
-        <main className="relative z-10 w-full flex-1 flex items-center justify-center p-2">
-          <CylinderMenuCarousel
-            key={selectedCategory}
-            items={filteredItems}
-            onSelectItem={handleOpenDish}
-            animationDuration={36}
-            cardWidth={260}
-          />
-        </main>
+          {/* Center 3D Cylinder Carousel */}
+          <div className="flex-1 w-full flex items-center justify-center overflow-visible">
+            <CylinderMenuCarousel
+              key={selectedCategory}
+              items={filteredItems}
+              onSelectItem={handleOpenDish}
+              animationDuration={36}
+              cardWidth={260}
+            />
+          </div>
+        </div>
 
         {/* Dish Detail Dialog */}
         <DishDetailModal
