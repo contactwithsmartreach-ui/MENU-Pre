@@ -6,6 +6,7 @@ import { MenuItem } from "@/types/restaurant";
 import { CylinderMenuCarousel } from "@/components/restaurant/CylinderMenuCarousel";
 import { DishDetailModal } from "@/components/restaurant/DishDetailModal";
 import { HeroPlateScrollExperience } from "@/components/restaurant/HeroPlateScrollExperience";
+import { VerticalSpotlightNav } from "@/components/restaurant/VerticalSpotlightNav";
 import { toast } from "sonner";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 
@@ -87,11 +88,11 @@ export default function RestaurantMenuPage() {
       <section
         ref={menuSectionRef}
         id="cylinder-menu"
-        className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-6 pb-4"
+        className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-4 pb-4"
       >
-        {/* Category Pills Header */}
-        <header className="relative z-20 w-full px-4 flex flex-col items-center">
-          <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto max-w-full py-1 px-2 scrollbar-none">
+        {/* Mobile Horizontal Category Pills (shown on mobile, hidden on desktop) */}
+        <div className="relative z-20 w-full px-4 flex md:hidden items-center justify-center mb-2">
+          <div className="flex items-center gap-1.5 overflow-x-auto max-w-full py-1 px-2 scrollbar-none">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}
@@ -107,7 +108,14 @@ export default function RestaurantMenuPage() {
               </button>
             ))}
           </div>
-        </header>
+        </div>
+
+        {/* Desktop Vertical Spotlight Navigation */}
+        <VerticalSpotlightNav
+          categories={CATEGORIES}
+          selectedCategory={selectedCategory}
+          onSelectCategory={setSelectedCategory}
+        />
 
         {/* Center 3D Cylinder Carousel */}
         <main className="relative z-10 w-full flex-1 flex items-center justify-center p-2">
