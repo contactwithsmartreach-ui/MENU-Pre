@@ -1,151 +1,144 @@
 "use client";
 
-import React, { useState } from "react";
-import { SAMPLE_MENU_ITEMS } from "@/data/restaurantData";
-import { MenuItem, MenuCategory } from "@/types/restaurant";
+import React, { useState, useRef } from "react";
+import { MENU_ITEMS } from "@/data/menu-data";
+import { MenuItem } from "@/types/restaurant";
 import { CombinedCylinderMenu } from "@/components/restaurant/CombinedCylinderMenu";
-import { HeroPlateScrollExperience } from "@/components/restaurant/HeroPlateScrollExperience";
 import { DishDetailModal } from "@/components/restaurant/DishDetailModal";
-import { SaharaButton } from "@/components/restaurant/SaharaButton";
+import { HeroPlateScrollExperience } from "@/components/restaurant/HeroPlateScrollExperience";
+import { VerticalSpotlightNavbar } from "@/components/restaurant/VerticalSpotlightNavbar";
+import { MenuSectionDivider } from "@/components/restaurant/MenuSectionDivider";
 import { toast } from "sonner";
-import {
-  UtensilsCrossed,
-  ShoppingBag,
-  Sparkles,
-} from "lucide-react";
+import { MadeWithDyad } from "@/components/made-with-dyad";
 
-const CATEGORIES: { id: MenuCategory; label: string }[] = [
-  { id: "all", label: "Full Vault" },
-  { id: "starters", label: "Embers & Starters" },
-  { id: "mains", label: "Desert Mains" },
-  { id: "desserts", label: "Sweet Mirages" },
-  { id: "drinks", label: "Oasis Elixirs" },
+const CATEGORY_ITEMS = [
+  { label: "All Items", id: "All" },
+  { label: "Chef Specials", id: "Chef Specials" },
+  { label: "Starters", id: "Starters" },
+  { label: "Mains", id: "Mains" },
+  { label: "Desserts", id: "Desserts" },
+  { label: "Cocktails", id: "Cocktails" },
 ];
 
-export default function HomePage() {
-  const [selectedCategory, setSelectedCategory] = useState<MenuCategory>("all");
+export default function RestaurantMenuPage() {
   const [selectedDish, setSelectedDish] = useState<MenuItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
+  const [activeCategoryIdx, setActiveCategoryIdx] = useState<number>(0);
 
-  const filteredItems: MenuItem[] =
-    selectedCategory === "all"
-      ? SAMPLE_MENU_ITEMS
-      : SAMPLE_MENU_ITEMS.filter((item: MenuItem) => item.category === selectedCategory);
+  const selectedCategory = CATEGORY_ITEMS[activeCategoryIdx].id;
+  const menuSectionRef = useRef<HTMLDivElement>(null);
 
-  const handleScrollToMenu = () => {
-    const menuEl = document.getElementById("cylinder-menu-section");
-    if (menuEl) {
-      menuEl.scrollIntoView({ behavior: "smooth" });
-    }
-  };
+  const filteredItems =
+    selectedCategory === "All"
+      ? MENU_ITEMS
+      : MENU_ITEMS.filter((item) => item.category === selectedCategory);
 
-  const handleSelectDish = (dish: MenuItem) => {
+  const handleOpenDish = (dish: MenuItem) => {
     setSelectedDish(dish);
     setIsModalOpen(true);
   };
 
-  const handleAddToCart = (dish: MenuItem, quantity: number) => {
-    setCartCount((prev) => prev + quantity);
-    toast.success(`Added ${quantity}x ${dish.name} to experience order`, {
-      description: `$${(dish.price * quantity).toFixed(2)} added to tasting tab`,
+  const handleAddToCart = (dish: MenuItem, quantity: number, notes?: string) => {
+    toast.success(`Added ${quantity}x ${dish.name} to order`, {
+      description: `$${(dish.price * quantity).toFixed(2)} • ${
+        notes ? `"${notes}"` : `Ready in ~${dish.prepTime}`
+      }`,
     });
   };
 
+  const handleScrollToMenu = () => {
+    menuSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
-    <main className="min-h-screen bg-[#070206] text-white selection:bg-orange-500 selection:text-white relative overflow-x-hidden">
-      {/* Dynamic Desert Atmosphere Glows */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[850px] h-[500px] bg-gradient-to-b from-orange-600/15 via-purple-900/10 to-transparent rounded-full blur-3xl opacity-70" />
-        <div className="absolute bottom-10 right-0 w-[450px] h-[450px] bg-purple-900/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-1/2 left-0 w-[400px] h-[400px] bg-orange-600/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="relative min-h-screen w-full bg-[#0a0504] text-neutral-100 flex flex-col items-center justify-between select-none overflow-x-hidden">
+      {/* Sahara Sunset Ambient Glowing Atmospheric Background */}
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        {/* Sahara Sunset Solar Core */}
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[550px] bg-gradient-to-tr from-red-600/25 via-orange-500/25 to-pink-600/15 rounded-full blur-[180px] animate-pulse duration-1000" />
+        <div className="absolute top-1/4 left-1/4 -translate-x-1/2 w-[550px] h-[550px] bg-amber-500/20 rounded-full blur-[160px]" />
+        <div className="absolute bottom-10 right-1/4 translate-x-1/2 w-[600px] h-[450px] bg-red-700/20 rounded-full blur-[170px]" />
+
+        {/* Topographic Dune Wave Lines */}
+        <svg
+          className="absolute inset-x-0 bottom-0 w-full h-[55%] opacity-15 pointer-events-none"
+          viewBox="0 0 1440 320"
+          preserveAspectRatio="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <linearGradient id="bg-sahara-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="hsl(37, 99%, 67%)" />
+              <stop offset="50%" stopColor="#ef4444" />
+              <stop offset="100%" stopColor="hsl(316, 73%, 52%)" />
+            </linearGradient>
+          </defs>
+          <path
+            fill="url(#bg-sahara-grad)"
+            d="M0,192L48,176C96,160,192,128,288,138.7C384,149,480,203,576,213.3C672,224,768,192,864,165.3C960,139,1056,117,1152,128C1248,139,1344,181,1392,202.7L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+          />
+        </svg>
+
+        {/* Subtle Stardust Texture */}
+        <div
+          className="absolute inset-0 opacity-[0.035]"
+          style={{
+            backgroundImage:
+              "radial-gradient(rgba(249, 115, 22, 0.8) 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
+          }}
+        />
       </div>
 
-      {/* Top Navbar */}
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-neutral-950/80 border-b border-orange-500/20 px-4 sm:px-8 py-3.5 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-red-600 via-orange-500 to-amber-400 p-0.5 shadow-[0_0_15px_rgba(249,115,22,0.8)]">
-            <div className="w-full h-full bg-neutral-950 rounded-full flex items-center justify-center">
-              <UtensilsCrossed className="w-4 h-4 text-orange-400" />
-            </div>
-          </div>
-          <span className="font-serif font-black tracking-[0.2em] text-sm sm:text-base text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-200 to-white">
-            L&apos;AURA SAHARA
-          </span>
-        </div>
-
-        {/* Cart Action Button styled with Sahara glow */}
-        <SaharaButton
-          size="sm"
-          onClick={() =>
-            toast.info(`Current Tab: ${cartCount} items selected for dining experience.`)
-          }
-          icon={<ShoppingBag className="w-4 h-4" />}
-          primaryText={`TAB (${cartCount})`}
-          hoverText="RESERVE"
-        />
-      </header>
-
-      {/* Hero Section */}
+      {/* Part 1: Top Hero Section with Floating Plate Video Experience */}
       <HeroPlateScrollExperience onScrollToMenu={handleScrollToMenu} />
 
-      {/* 3D Gastronomy & Runway Section */}
+      {/* Transitional Section Separation Divider */}
+      <MenuSectionDivider />
+
+      {/* Part 2: Interactive Gastronomy Section with Combined 3D Cylinder + Sideways Cards */}
       <section
-        id="cylinder-menu-section"
-        className="relative z-10 w-full min-h-screen py-10 sm:py-16 flex flex-col items-center justify-center gap-6"
+        ref={menuSectionRef}
+        id="cylinder-menu"
+        className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-6 pb-6 px-2 sm:px-6"
       >
-        <div className="text-center space-y-2 px-4 max-w-2xl">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-950/60 border border-purple-400/40 text-purple-200 text-xs font-serif tracking-widest uppercase shadow-lg">
-            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-            <span>Interactive 3D Cylinder Gastronomy</span>
+        {/* Main Presentation Area: Vertical Spotlight Navbar + Combined 3D Cylinder & Sideways Cards */}
+        <div className="relative z-10 w-full flex-1 flex flex-col lg:flex-row items-center lg:items-start justify-center gap-6 lg:gap-8 max-w-7xl mx-auto py-2">
+          {/* Vertical Spotlight Navbar */}
+          <div className="shrink-0 flex items-center justify-center lg:sticky lg:top-24">
+            <VerticalSpotlightNavbar
+              items={CATEGORY_ITEMS}
+              activeIndex={activeCategoryIdx}
+              onItemClick={(_, idx) => setActiveCategoryIdx(idx)}
+            />
           </div>
-          <h2 className="text-2xl sm:text-4xl font-serif font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-white via-orange-100 to-amber-300 uppercase">
-            Curated Sahara Tasting Menu
-          </h2>
-          <p className="text-xs sm:text-sm text-neutral-400 font-light">
-            Drag the 3D rotating cylinder or scroll the molten cards below to inspect each dish.
-          </p>
+
+          {/* Unified Combined 3D Cylinder & Sideways Cards Carousel */}
+          <div className="flex-1 w-full flex items-center justify-center overflow-visible">
+            <CombinedCylinderMenu
+              key={selectedCategory}
+              items={filteredItems}
+              onSelectItem={handleOpenDish}
+            />
+          </div>
         </div>
 
-        {/* Category Filter Pills styled in SaharaButton aesthetics */}
-        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 px-4 max-w-3xl">
-          {CATEGORIES.map((cat) => {
-            const isActive = selectedCategory === cat.id;
-            return (
-              <SaharaButton
-                key={cat.id}
-                size="sm"
-                glow={isActive}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={
-                  isActive
-                    ? "!bg-gradient-to-r !from-red-600 !via-orange-500 !to-amber-500 !text-white ring-2 ring-amber-300/60"
-                    : "!bg-neutral-950/80 !text-neutral-300 !border-orange-500/20 hover:!text-white hover:!border-orange-400"
-                }
-              >
-                {cat.label}
-              </SaharaButton>
-            );
-          })}
-        </div>
+        {/* Dish Detail Dialog */}
+        <DishDetailModal
+          dish={selectedDish}
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedDish(null);
+          }}
+          onAddToCart={handleAddToCart}
+        />
 
-        {/* Main Combined 3D Cylinder & Runway Experience */}
-        <div className="w-full flex-1 flex items-center justify-center overflow-visible">
-          <CombinedCylinderMenu
-            key={selectedCategory}
-            items={filteredItems}
-            onSelectItem={handleSelectDish}
-          />
-        </div>
+        {/* Footer */}
+        <footer className="relative z-10 w-full py-4 mt-8">
+          <MadeWithDyad />
+        </footer>
       </section>
-
-      {/* Dish Detail Inspection Modal */}
-      <DishDetailModal
-        dish={selectedDish}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onAddToCart={handleAddToCart}
-      />
-    </main>
+    </div>
   );
 }
