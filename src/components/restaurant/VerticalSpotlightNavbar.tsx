@@ -64,9 +64,9 @@ export function VerticalSpotlightNavbar({
     >
       {/* Background Soft Glow centered behind the active element */}
       <div
-        className="pointer-events-none absolute left-0 w-36 h-36 -translate-x-6 bg-gradient-to-r from-red-600/20 via-orange-500/25 to-amber-400/20 rounded-full blur-3xl transition-all duration-500 ease-out"
+        className="pointer-events-none absolute left-0 w-44 h-44 -translate-x-8 bg-gradient-to-r from-red-600/30 via-orange-500/35 to-amber-400/25 rounded-full blur-3xl transition-all duration-500 ease-out"
         style={{
-          transform: `translateY(${activeIndex * 48 - 16}px)`,
+          transform: `translateY(${activeIndex * 48 - 20}px)`,
         }}
       />
 
@@ -79,32 +79,27 @@ export function VerticalSpotlightNavbar({
           const distance = Math.abs(activeIndex - idx);
           const isActive = activeIndex === idx;
 
-          // Compute dynamic depth styling based on distance from active item
+          // Clear, legible depth scaling with elevated visibility
           let scale = 1;
           let opacity = 1;
           let translateZ = 0;
-          let blur = "0px";
 
           if (isActive) {
-            scale = 1.15;
+            scale = 1.18;
             opacity = 1;
             translateZ = 20;
-            blur = "0px";
           } else if (distance === 1) {
-            scale = 0.92;
-            opacity = 0.45;
-            translateZ = -30;
-            blur = "0.5px";
+            scale = 0.96;
+            opacity = 0.75;
+            translateZ = -15;
           } else if (distance === 2) {
-            scale = 0.82;
-            opacity = 0.25;
-            translateZ = -60;
-            blur = "1px";
+            scale = 0.88;
+            opacity = 0.55;
+            translateZ = -35;
           } else {
-            scale = 0.72;
-            opacity = 0.12;
-            translateZ = -90;
-            blur = "1.5px";
+            scale = 0.82;
+            opacity = 0.42;
+            translateZ = -55;
           }
 
           return (
@@ -120,27 +115,26 @@ export function VerticalSpotlightNavbar({
                 onClick={() => handleItemClick(item, idx)}
                 style={{
                   opacity,
-                  filter: `blur(${blur})`,
                 }}
                 className={cn(
                   "group relative py-1 px-3 text-left transition-all duration-300 cursor-pointer focus:outline-none flex items-center gap-3",
-                  "hover:opacity-100 hover:scale-105"
+                  "hover:!opacity-100 hover:scale-105"
                 )}
               >
-                {/* Active Leading Ember Indicator */}
+                {/* Leading Ember Indicator */}
                 {isActive ? (
-                  <span className="w-2 h-2 rounded-full bg-gradient-to-r from-red-500 to-amber-300 shadow-[0_0_12px_rgba(249,115,22,1),0_0_20px_rgba(239,68,68,0.8)] shrink-0 animate-pulse" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-red-500 to-amber-300 shadow-[0_0_14px_rgba(249,115,22,1),0_0_24px_rgba(239,68,68,0.9)] shrink-0 animate-pulse" />
                 ) : (
-                  <span className="w-1.5 h-1.5 rounded-full bg-neutral-600/40 group-hover:bg-orange-400/70 group-hover:shadow-[0_0_8px_rgba(249,115,22,0.6)] transition-all shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-orange-400/50 shadow-[0_0_8px_rgba(249,115,22,0.4)] group-hover:bg-amber-300 group-hover:shadow-[0_0_12px_rgba(251,191,36,0.9)] transition-all shrink-0" />
                 )}
 
-                {/* Course Label with Upfront Glow or Far-away Fade */}
+                {/* Course Label with Enhanced Luminance */}
                 <span
                   className={cn(
                     "font-serif tracking-widest uppercase transition-all duration-300 truncate",
                     isActive
-                      ? "text-base sm:text-lg md:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-orange-300 to-amber-200 drop-shadow-[0_0_18px_rgba(249,115,22,0.7)]"
-                      : "text-xs sm:text-sm font-medium text-neutral-400 group-hover:text-orange-200 group-hover:drop-shadow-[0_0_10px_rgba(249,115,22,0.5)]"
+                      ? "text-base sm:text-lg md:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-orange-300 to-amber-200 drop-shadow-[0_0_22px_rgba(249,115,22,0.85)]"
+                      : "text-xs sm:text-sm font-semibold text-orange-200/80 drop-shadow-[0_0_10px_rgba(249,115,22,0.25)] group-hover:text-amber-200 group-hover:drop-shadow-[0_0_16px_rgba(249,115,22,0.7)]"
                   )}
                 >
                   {item.label}
