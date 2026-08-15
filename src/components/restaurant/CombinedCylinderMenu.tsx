@@ -531,15 +531,29 @@ export function CombinedCylinderMenu({
                   }
                 }}
                 className={cn(
-                  "group relative shrink-0 cursor-pointer transition-all duration-500 ease-out snap-center select-none",
+                  "group relative shrink-0 cursor-pointer transition-all duration-500 ease-out snap-center select-none flex flex-col items-center",
                   isSelected
                     ? "w-[210px] sm:w-[260px] z-30 scale-110 sm:scale-115 -translate-y-2"
                     : "w-[145px] sm:w-[175px] z-10 scale-95 opacity-55 hover:opacity-85 hover:scale-100 grayscale-[0.2] hover:grayscale-0"
                 )}
               >
+                {/* OUTSIDE CARD TITLE: Big, Hard, Simple, Pure White Text */}
+                <div className="w-full text-center mb-2 px-1">
+                  <h4
+                    className={cn(
+                      "text-white font-sans font-black tracking-tight leading-tight uppercase line-clamp-1 transition-all duration-300",
+                      isSelected
+                        ? "text-sm sm:text-base md:text-lg opacity-100 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
+                        : "text-xs sm:text-sm opacity-65 group-hover:opacity-100"
+                    )}
+                  >
+                    {dish.name}
+                  </h4>
+                </div>
+
                 {/* Outer Purple/Orange Molten Heat Glow on Active */}
                 {isSelected && (
-                  <div className="absolute -inset-3 bg-gradient-to-b from-purple-600/30 via-orange-500/25 to-violet-900/40 rounded-[36px] blur-2xl pointer-events-none -z-10 animate-pulse" />
+                  <div className="absolute -inset-3 top-8 bg-gradient-to-b from-purple-600/30 via-orange-500/25 to-violet-900/40 rounded-[36px] blur-2xl pointer-events-none -z-10 animate-pulse" />
                 )}
 
                 {/* Melting Card Shell Wrapper with Smoked Faded Purple Interior */}
@@ -631,22 +645,12 @@ export function CombinedCylinderMenu({
                   {/* Info Text in Faded Purple interior */}
                   <div className="flex-1 flex flex-col justify-between relative z-10 px-1">
                     <div>
-                      <h4
-                        className={cn(
-                          "font-serif font-bold tracking-tight transition-colors line-clamp-1",
-                          isSelected
-                            ? "text-sm sm:text-base text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-purple-100 to-white drop-shadow-[0_0_12px_rgba(192,132,252,0.6)]"
-                            : "text-xs sm:text-sm text-purple-100/90 group-hover:text-white"
-                        )}
-                      >
-                        {dish.name}
-                      </h4>
                       {isSelected ? (
-                        <p className="text-[11px] text-purple-200/80 line-clamp-1 mt-0.5 font-light">
+                        <p className="text-[11px] text-purple-200/80 line-clamp-2 mt-0.5 font-light leading-snug">
                           {dish.description}
                         </p>
                       ) : (
-                        <p className="text-[10px] text-purple-300/60 truncate mt-0.5">
+                        <p className="text-[10px] text-purple-300/70 truncate mt-0.5 uppercase tracking-wider font-semibold">
                           {dish.category}
                         </p>
                       )}
