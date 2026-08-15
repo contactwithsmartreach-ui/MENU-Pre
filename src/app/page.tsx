@@ -8,7 +8,6 @@ import { DishDetailModal } from "@/components/restaurant/DishDetailModal";
 import { HeroPlateScrollExperience } from "@/components/restaurant/HeroPlateScrollExperience";
 import { toast } from "sonner";
 import { MadeWithDyad } from "@/components/made-with-dyad";
-import { Compass } from "lucide-react";
 
 const CATEGORIES = ["All", "Chef Specials", "Starters", "Mains", "Desserts", "Cocktails"] as const;
 
@@ -88,21 +87,10 @@ export default function RestaurantMenuPage() {
       <section
         ref={menuSectionRef}
         id="cylinder-menu"
-        className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-8 pb-4"
+        className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-6 pb-4"
       >
-        {/* Section Header with Category Filter Chips */}
-        <header className="relative z-20 w-full px-4 flex flex-col items-center gap-3">
-          <div className="flex items-center gap-2">
-            <Compass className="w-4 h-4 text-orange-400" />
-            <h2 className="text-xl sm:text-2xl font-serif font-black tracking-[0.2em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300">
-              ROTATING CYLINDER MENU
-            </h2>
-          </div>
-          <p className="text-xs text-neutral-400 font-serif tracking-wider">
-            Drag to rotate &bull; Click any dish to order
-          </p>
-
-          {/* Category Pills */}
+        {/* Category Pills Header */}
+        <header className="relative z-20 w-full px-4 flex flex-col items-center">
           <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto max-w-full py-1 px-2 scrollbar-none">
             {CATEGORIES.map((cat) => (
               <button
