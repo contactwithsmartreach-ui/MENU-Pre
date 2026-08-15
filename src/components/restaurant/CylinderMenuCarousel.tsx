@@ -3,426 +3,445 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { MenuItem } from "@/types/restaurant";
 import { cn } from "@/lib/utils";
-import { Star, Flame, ChevronRight, Eye, Utensils } from "lucide-react";
+import {
+  Star,
+  Clock,
+  Flame,
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  Sparkles,
+  UtensilsCrossed,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { SaharaButton } from "./SaharaButton";
 
 export interface CylinderMenuCarouselProps extends React.HTMLAttributes<HTMLDivElement> {
   items: MenuItem[];
   onSelectItem?: (item: MenuItem) => void;
-  cardWidth?: number;
   autoSpinSpeed?: number;
-  animationDuration?: number;
 }
 
-export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMenuCarouselProps>(
-  (
-    {
-      items,
-      onSelectItem,
-      className,
-      cardWidth: customCardWidth,
-      autoSpinSpeed,
-      animationDuration,
-      ...props
-    },
-    ref
-  ) => {
-    const N = items.length;
-    const angleStep = 360 / N;
-    const defaultSpeed = autoSpinSpeed ?? (animationDuration ? 360 / animationDuration : 8);
+export function CylinderMenuCarousel({
+  items,
+  onSelectItem,
+  className,
+  ...props
+}: CylinderMenuCarouselProps) {
+  const N = items.length;
+  const angleStep = 360 / Math.max(N, 1);
 
-    const [rotationY, setRotationY] = useState(0);
-    const [isAutoSpinning, setIsAutoSpinning] = useState(true);
-    const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
-    const [isMobile, setIsMobile] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [rotationAngle, setRotationAngle] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isAutoSpinning, setIsAutoSpinning] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
 
-    // Responsive sizing
-    useEffect(() => {
-      const checkMobile = () => {
-        setIsMobile(window.innerWidth < 640);
-      };
-      checkMobile();
-      window.addEventListener("resize", checkMobile);
-      return () => window.removeEventListener("resize", checkMobile);
-    }, []);
+  // Responsive radius calculation
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
-    const actualCardWidth = customCardWidth ?? (isMobile ? 190 : 250);
+  const radius = isMobile ? 145 : 220;
+  const plateSize = isMobile ? 64 : 88;
 
-    // Physics & Gesture refs
-    const isDraggingRef = useRef(false);
-    const startXRef = useRef(0);
-    const startRotRef = useRef(0);
-    const lastXRef = useRef(0);
-    const lastTimeRef = useRef(0);
-    const velocityRef = useRef(0);
-    const hasMovedRef = useRef(false);
-    const animFrameRef = useRef<number | null>(null);
-    const momentumFrameRef = useRef<number | null>(null);
-    const autoResumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // Refs for physics & drag gesture
+  const startAngleRef = useRef(0);
+  const startXRef = useRef(0);
+  const startYRef = useRef(0);
+  const centerRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const animFrameRef = useRef<number | null>(null);
+  const resumeTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const wheelContainerRef = useRef<HTMLDivElement>(null);
 
-    // Smooth transition to target rotation
-    const rotateToAngle = useCallback((targetAngle: number, onComplete?: () => void) => {
-      if (momentumFrameRef.current) cancelAnimationFrame(momentumFrameRef.current);
-      if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
+  // Rotate smoothly to a specific dish index
+  const goToIndex = useCallback(
+    (targetIdx: number) => {
+      const normalizedIdx = ((targetIdx % N) + N) % N;
+      setActiveIndex(normalizedIdx);
 
-      velocityRef.current = 0;
-      setIsAutoSpinning(false);
+      // Rotate target dish to top (270deg or 90deg depending on orientation)
+      const targetAngle = -normalizedIdx * angleStep;
 
-      const current = rotationY;
-      const diff = ((targetAngle - current + 180) % 360 + 360) % 360 - 180;
-      const finalTarget = current + diff;
-
-      const startTime = performance.now();
-      const duration = 400; // faster snap duration for maximum snappiness
-      const startAngle = current;
-
-      const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
-
-      const animateSnap = (now: number) => {
-        const elapsed = now - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        const eased = easeOutCubic(progress);
-
-        setRotationY(startAngle + (finalTarget - startAngle) * eased);
-
-        if (progress < 1) {
-          momentumFrameRef.current = requestAnimationFrame(animateSnap);
-        } else {
-          setRotationY(finalTarget);
-          onComplete?.();
-          autoResumeTimeoutRef.current = setTimeout(() => {
-            setIsAutoSpinning(true);
-          }, 3000);
-        }
-      };
-
-      momentumFrameRef.current = requestAnimationFrame(animateSnap);
-    }, [rotationY]);
-
-    const bringToFront = useCallback((index: number, openModal: boolean = false, item?: MenuItem) => {
-      const targetAngle = -index * angleStep;
-      rotateToAngle(targetAngle, () => {
-        if (openModal && item) {
-          onSelectItem?.(item);
-        }
+      // Find shortest angular distance
+      setRotationAngle((curr) => {
+        const diff = ((((targetAngle - curr) % 360) + 540) % 360) - 180;
+        return curr + diff;
       });
-    }, [angleStep, rotateToAngle, onSelectItem]);
 
-    // Continuous smooth auto-spin loop with requestAnimationFrame
-    useEffect(() => {
-      let previousTimestamp = performance.now();
+      setIsAutoSpinning(false);
+      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+      resumeTimerRef.current = setTimeout(() => {
+        setIsAutoSpinning(true);
+      }, 5000);
+    },
+    [N, angleStep]
+  );
 
-      const spinLoop = (timestamp: number) => {
-        const delta = (timestamp - previousTimestamp) / 1000;
-        previousTimestamp = timestamp;
+  const handleNext = () => goToIndex(activeIndex + 1);
+  const handlePrev = () => goToIndex(activeIndex - 1);
 
-        if (
-          isAutoSpinning &&
-          !isDraggingRef.current &&
-          hoveredIdx === null &&
-          Math.abs(velocityRef.current) < 0.05
-        ) {
-          setRotationY((prev) => (prev + defaultSpeed * delta) % 360);
-        }
+  // Gentle ambient slow spin
+  useEffect(() => {
+    let lastTime = performance.now();
+    const spinLoop = (time: number) => {
+      const delta = (time - lastTime) / 1000;
+      lastTime = time;
 
-        animFrameRef.current = requestAnimationFrame(spinLoop);
-      };
+      if (isAutoSpinning && !isDragging) {
+        setRotationAngle((prev) => {
+          const next = (prev + 3.5 * delta) % 360;
+          // Determine active index from top position (-90 deg offset)
+          const normalized = (((-next % 360) + 360) % 360);
+          const rawIdx = Math.round(normalized / angleStep) % N;
+          if (rawIdx !== activeIndex) {
+            setActiveIndex(rawIdx);
+          }
+          return next;
+        });
+      }
 
       animFrameRef.current = requestAnimationFrame(spinLoop);
-      return () => {
-        if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
-      };
-    }, [isAutoSpinning, defaultSpeed, hoveredIdx]);
-
-    // Inertia on release
-    const applyMomentum = useCallback(() => {
-      const decay = 0.92;
-      const step = () => {
-        if (Math.abs(velocityRef.current) > 0.05) {
-          setRotationY((prev) => prev - velocityRef.current);
-          velocityRef.current *= decay;
-          momentumFrameRef.current = requestAnimationFrame(step);
-        } else {
-          velocityRef.current = 0;
-        }
-      };
-      if (momentumFrameRef.current) cancelAnimationFrame(momentumFrameRef.current);
-      momentumFrameRef.current = requestAnimationFrame(step);
-    }, []);
-
-    // Pointer events for ultra responsive touch & drag
-    const handlePointerDown = (e: React.PointerEvent) => {
-      if (momentumFrameRef.current) cancelAnimationFrame(momentumFrameRef.current);
-      if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
-
-      isDraggingRef.current = true;
-      hasMovedRef.current = false;
-      startXRef.current = e.clientX;
-      lastXRef.current = e.clientX;
-      lastTimeRef.current = performance.now();
-      startRotRef.current = rotationY;
-      velocityRef.current = 0;
-
-      try {
-        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-      } catch {
-        // Safe fallback
-      }
     };
 
-    const handlePointerMove = (e: React.PointerEvent) => {
-      if (!isDraggingRef.current) return;
+    animFrameRef.current = requestAnimationFrame(spinLoop);
+    return () => {
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+    };
+  }, [isAutoSpinning, isDragging, activeIndex, angleStep, N]);
 
-      const deltaX = e.clientX - startXRef.current;
-      if (Math.abs(deltaX) > 4) {
-        hasMovedRef.current = true;
-      }
+  // Pointer drag to spin circle
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (!wheelContainerRef.current) return;
+    setIsDragging(true);
+    setIsAutoSpinning(false);
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
 
-      const sensitivity = isMobile ? 0.48 : 0.38;
-      const newRotation = startRotRef.current - deltaX * sensitivity;
-      setRotationY(newRotation);
-
-      const now = performance.now();
-      const dt = Math.max(now - lastTimeRef.current, 8);
-      const instantaneousVelocity = ((e.clientX - lastXRef.current) / dt) * 8;
-
-      velocityRef.current = velocityRef.current * 0.3 + instantaneousVelocity * 0.7;
-      lastXRef.current = e.clientX;
-      lastTimeRef.current = now;
+    const rect = wheelContainerRef.current.getBoundingClientRect();
+    centerRef.current = {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
     };
 
-    const handlePointerUp = (e: React.PointerEvent) => {
-      if (!isDraggingRef.current) return;
-      isDraggingRef.current = false;
+    startXRef.current = e.clientX;
+    startYRef.current = e.clientY;
+    startAngleRef.current = rotationAngle;
 
-      try {
-        (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
-      } catch {
-        // Safe fallback
-      }
+    try {
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    } catch {
+      // Fallback
+    }
+  };
 
-      if (hasMovedRef.current && Math.abs(velocityRef.current) > 0.3) {
-        applyMomentum();
-      }
-    };
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDragging) return;
+    const { x: cx, y: cy } = centerRef.current;
 
-    const handleWheel = (e: React.WheelEvent) => {
-      const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-      setRotationY((prev) => prev + delta * 0.15);
-    };
+    // Calculate rotational angle from center
+    const startAngle = Math.atan2(startYRef.current - cy, startXRef.current - cx);
+    const currAngle = Math.atan2(e.clientY - cy, e.clientX - cx);
+    const deltaDeg = ((currAngle - startAngle) * 180) / Math.PI;
 
-    // Active dish index
-    const normalizedRot = ((-rotationY % 360) + 360) % 360;
-    const activeIndex = Math.round(normalizedRot / angleStep) % N;
-    const activeItem = items[activeIndex];
+    const newAngle = startAngleRef.current + deltaDeg;
+    setRotationAngle(newAngle);
 
-    const customStyle = {
-      "--n": N,
-      "--w": `${actualCardWidth}px`,
-      "--ba": `calc(1turn / var(--n))`,
-    } as React.CSSProperties;
+    // Update active index
+    const normalized = (((-newAngle % 360) + 360) % 360);
+    const rawIdx = Math.round(normalized / angleStep) % N;
+    setActiveIndex(rawIdx);
+  };
 
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    try {
+      (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    } catch {
+      // Fallback
+    }
+
+    // Snap to closest dish
+    goToIndex(activeIndex);
+  };
+
+  // Keyboard navigation
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+      e.preventDefault();
+      handleNext();
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+      e.preventDefault();
+      handlePrev();
+    } else if (e.key === "Enter" && activeDish) {
+      e.preventDefault();
+      onSelectItem?.(activeDish);
+    }
+  };
+
+  const activeDish = items[activeIndex] || items[0];
+
+  if (!items.length) {
     return (
-      <div
-        ref={ref}
-        onWheel={handleWheel}
-        className={cn(
-          "w-full h-full min-h-[560px] sm:min-h-[640px] flex flex-col items-center justify-between relative select-none touch-none",
-          className
-        )}
-        {...props}
-      >
-        {/* 3D Cylinder Stage */}
+      <div className="py-20 text-center text-neutral-400 font-serif">
+        No dishes available in this category.
+      </div>
+    );
+  }
+
+  return (
+    <div
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
+      className={cn(
+        "relative w-full max-w-5xl mx-auto flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12 py-4 select-none focus:outline-none",
+        className
+      )}
+      {...props}
+    >
+      {/* LEFT: INTERACTIVE CIRCULAR DISH WHEEL */}
+      <div className="relative flex flex-col items-center justify-center shrink-0">
+        {/* Ambient Ring Glow */}
+        <div className="absolute w-72 h-72 sm:w-96 sm:h-96 rounded-full bg-gradient-to-tr from-red-600/20 via-orange-500/25 to-amber-400/20 blur-3xl pointer-events-none" />
+
+        {/* Circular Wheel Container */}
         <div
-          className="w-full flex-1 grid place-items-center cursor-grab active:cursor-grabbing overflow-visible py-2 sm:py-6 touch-none"
-          style={{
-            perspective: isMobile ? "40em" : "55em",
-          }}
+          ref={wheelContainerRef}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
+          className="relative rounded-full flex items-center justify-center cursor-grab active:cursor-grabbing touch-none"
+          style={{
+            width: radius * 2 + plateSize + 20,
+            height: radius * 2 + plateSize + 20,
+          }}
         >
+          {/* Subtle Outer Track Ring */}
           <div
-            className="grid place-items-center [transform-style:preserve-3d] will-change-transform"
+            className="absolute rounded-full border border-orange-500/25 pointer-events-none"
             style={{
-              ...customStyle,
-              transform: `rotateY(${rotationY}deg)`,
-              WebkitBoxReflect:
-                "below 12px linear-gradient(to bottom, transparent 60%, rgba(249, 115, 22, 0.2) 100%)",
+              width: radius * 2,
+              height: radius * 2,
+            }}
+          />
+
+          {/* Dotted Orbit Path Accent */}
+          <div
+            className="absolute rounded-full border border-dashed border-orange-400/20 pointer-events-none animate-[spin_60s_linear_infinite]"
+            style={{
+              width: radius * 2 + 30,
+              height: radius * 2 + 30,
+            }}
+          />
+
+          {/* CENTER CORE: Active Plate Showcase */}
+          <div
+            onClick={() => activeDish && onSelectItem?.(activeDish)}
+            role="button"
+            tabIndex={0}
+            className="group relative rounded-full p-2 bg-gradient-to-br from-orange-500/30 via-neutral-900/90 to-black border-2 border-orange-500/60 shadow-[0_0_40px_rgba(249,115,22,0.35)] cursor-pointer z-20 hover:scale-105 transition-transform duration-300"
+            style={{
+              width: isMobile ? 128 : 176,
+              height: isMobile ? 128 : 176,
             }}
           >
-            {items.map((dish, i) => {
-              const cardAngle = ((i * angleStep + rotationY) % 360 + 360) % 360;
-              const angleFromFront = Math.min(cardAngle, 360 - cardAngle);
-              const isFacingFront = angleFromFront < angleStep * 0.75;
-              const isHovered = hoveredIdx === i;
-
-              return (
-                <div
-                  key={dish.id}
-                  onMouseEnter={() => !isMobile && setHoveredIdx(i)}
-                  onMouseLeave={() => !isMobile && setHoveredIdx(null)}
-                  onClick={(e) => {
-                    if (hasMovedRef.current) {
-                      e.preventDefault();
-                      return;
-                    }
-                    if (isFacingFront) {
-                      onSelectItem?.(dish);
-                    } else {
-                      bringToFront(i, false);
-                    }
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      bringToFront(i, true, dish);
-                    }
-                  }}
-                  className={cn(
-                    "group relative [grid-area:1/1] rounded-[24px] sm:rounded-[28px] overflow-hidden [backface-visibility:hidden] transition-all duration-200 transform-gpu cursor-pointer",
-                    "border bg-neutral-950/95 backdrop-blur-xl",
-                    isFacingFront
-                      ? "border-orange-400 shadow-[0_20px_50px_rgba(249,115,22,0.5)] ring-2 ring-orange-500/50 scale-105 z-30"
-                      : "border-orange-500/30 shadow-[0_10px_25px_rgba(0,0,0,0.6)] opacity-85 hover:opacity-100 hover:border-orange-400 hover:scale-102"
-                  )}
-                  style={{
-                    width: "var(--w)",
-                    aspectRatio: "7/10",
-                    "--i": i,
-                    transform:
-                      "rotateY(calc(var(--i) * var(--ba))) translateZ(calc(-1 * (0.5 * var(--w) + 0.5em) / tan(0.5 * var(--ba))))",
-                  } as React.CSSProperties}
-                >
-                  {/* Dish image */}
-                  <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-                    <img
-                      src={dish.image}
-                      alt={dish.name}
-                      className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
-                      loading="lazy"
-                      draggable={false}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/50 to-transparent" />
-                    <div className="absolute inset-0 bg-gradient-to-tr from-red-600/30 via-orange-500/20 to-pink-500/10 mix-blend-color-dodge" />
-                  </div>
-
-                  {/* Top Bar */}
-                  <div className="relative z-10 p-3 sm:p-4 flex items-center justify-between w-full pointer-events-none">
-                    {dish.isSignature ? (
-                      <Badge className="bg-gradient-to-r from-red-500 to-orange-500 text-white font-serif tracking-wider uppercase px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-[11px] shadow-lg shadow-red-500/30 border-0">
-                        <Flame className="w-3.5 h-3.5 fill-current mr-1 text-amber-200 animate-pulse" />
-                        Sahara Pick
-                      </Badge>
-                    ) : (
-                      <span className="text-[10px] sm:text-[11px] font-serif uppercase tracking-widest text-orange-200 bg-neutral-950/80 px-2.5 py-0.5 sm:py-1 rounded-full backdrop-blur-md border border-orange-500/30">
-                        {dish.category}
-                      </span>
-                    )}
-
-                    <div className="flex items-center gap-1 bg-neutral-950/85 backdrop-blur-md px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full border border-orange-500/30 text-amber-300 text-[11px] sm:text-xs font-bold">
-                      <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                      <span>{dish.rating}</span>
-                    </div>
-                  </div>
-
-                  {/* Tap Hint */}
-                  <div
-                    className={cn(
-                      "absolute inset-0 flex items-center justify-center z-20 transition-all duration-200 pointer-events-none",
-                      isFacingFront || isHovered
-                        ? "opacity-100 scale-100"
-                        : "opacity-0 scale-90"
-                    )}
-                  >
-                    <span className="bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white font-serif tracking-widest uppercase px-3.5 py-1.5 rounded-full text-[11px] font-bold shadow-xl shadow-red-600/50 border border-orange-200/50 flex items-center gap-1.5">
-                      {isFacingFront ? <Eye className="w-3.5 h-3.5" /> : <Utensils className="w-3.5 h-3.5" />}
-                      <span>{isFacingFront ? "TAP TO PICK" : "ROTATE TO FRONT"}</span>
+            <div className="relative w-full h-full rounded-full overflow-hidden border border-orange-400/40">
+              {activeDish && (
+                <>
+                  <img
+                    src={activeDish.image}
+                    alt={activeDish.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    draggable={false}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-end p-2.5 text-center">
+                    <span className="text-[10px] sm:text-xs font-serif font-black uppercase text-orange-200 tracking-wider truncate max-w-full">
+                      {activeDish.name}
+                    </span>
+                    <span className="text-[11px] sm:text-xs font-serif font-bold text-amber-400">
+                      ${activeDish.price}
                     </span>
                   </div>
+                </>
+              )}
+            </div>
 
-                  {/* Bottom Dish Information */}
-                  <div className="absolute bottom-0 inset-x-0 z-10 p-3.5 sm:p-5 pt-10 bg-gradient-to-t from-neutral-950 via-neutral-950/95 to-transparent flex flex-col justify-end pointer-events-none">
-                    <h3 className="text-sm sm:text-base font-serif font-bold text-white tracking-wide truncate group-hover:text-orange-300 transition-colors">
-                      {dish.name}
-                    </h3>
-                    <p className="text-[11px] sm:text-xs text-neutral-300/85 line-clamp-1 mt-0.5 font-light">
-                      {dish.description}
-                    </p>
+            {/* Quick Tap Badge Indicator */}
+            <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-neutral-950/90 border border-orange-400/50 px-2 py-0.5 rounded-full text-[9px] font-serif uppercase tracking-widest text-orange-300 flex items-center gap-1 shadow-lg whitespace-nowrap">
+              <UtensilsCrossed className="w-2.5 h-2.5 text-orange-400" />
+              <span>Tap to Pick</span>
+            </div>
+          </div>
 
-                    <div className="mt-2.5 sm:mt-3.5 pt-2 sm:pt-2.5 border-t border-orange-500/20 flex items-center justify-between">
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-[11px] sm:text-xs font-serif text-orange-400 font-bold">$</span>
-                        <span className="text-xl sm:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300 font-serif tracking-tight">
-                          {dish.price}
-                        </span>
-                      </div>
+          {/* CIRCULAR DISH ITEMS ORBITING AROUND CENTER */}
+          {items.map((dish, idx) => {
+            const itemAngleDeg = idx * angleStep + rotationAngle;
+            const itemAngleRad = (itemAngleDeg * Math.PI) / 180;
+            const x = Math.cos(itemAngleRad) * radius;
+            const y = Math.sin(itemAngleRad) * radius;
+            const isSelected = activeIndex === idx;
 
-                      <span className="text-[10px] sm:text-xs text-orange-200/70 font-mono tracking-wider">
-                        {dish.prepTime}
-                      </span>
-                    </div>
+            return (
+              <div
+                key={dish.id}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  goToIndex(idx);
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label={`Select ${dish.name}`}
+                className={cn(
+                  "absolute rounded-full transition-all duration-300 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer",
+                  "flex items-center justify-center p-1 group/plate",
+                  isSelected
+                    ? "z-30 scale-125 ring-2 ring-orange-400 shadow-[0_0_25px_rgba(249,115,22,0.8)]"
+                    : "z-10 opacity-70 hover:opacity-100 hover:scale-110 shadow-lg"
+                )}
+                style={{
+                  left: `calc(50% + ${x}px)`,
+                  top: `calc(50% + ${y}px)`,
+                  width: plateSize,
+                  height: plateSize,
+                }}
+              >
+                {/* Ceramic Plate Dish Rim */}
+                <div className="w-full h-full rounded-full bg-gradient-to-b from-neutral-800 to-black p-1 border border-orange-500/40 overflow-hidden relative shadow-inner">
+                  <img
+                    src={dish.image}
+                    alt={dish.name}
+                    className="w-full h-full object-cover rounded-full group-hover/plate:scale-110 transition-transform duration-300"
+                    draggable={false}
+                  />
+
+                  {/* Shimmer overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-orange-500/20 via-transparent to-white/20 pointer-events-none rounded-full" />
+
+                  {/* Price Tag Pill */}
+                  <div className="absolute bottom-0.5 inset-x-0 flex justify-center pointer-events-none">
+                    <span className="bg-neutral-950/90 text-orange-300 font-serif font-black text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded-full border border-orange-400/30 shadow">
+                      ${dish.price}
+                    </span>
                   </div>
                 </div>
-              );
-            })}
-          </div>
+
+                {/* Orbiting Ember Glow on Selected */}
+                {isSelected && (
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-red-500 to-amber-300 rounded-full shadow-[0_0_10px_rgba(249,115,22,1)] animate-ping" />
+                )}
+              </div>
+            );
+          })}
         </div>
 
-        {/* Quick-Access Bottom Bar */}
-        <div className="relative z-30 w-full max-w-2xl px-4 py-2 flex flex-col items-center gap-2">
-          {activeItem && (
-            <button
-              type="button"
-              onClick={() => onSelectItem?.(activeItem)}
-              className="flex items-center gap-3 px-4 py-2 rounded-full bg-neutral-950/95 border border-orange-500/50 hover:border-orange-400 transition-all shadow-[0_0_20px_rgba(249,115,22,0.25)] text-left group active:scale-95"
-            >
-              <img
-                src={activeItem.image}
-                alt={activeItem.name}
-                className="w-8 h-8 rounded-full object-cover border border-orange-400/60"
-              />
-              <div className="flex flex-col">
-                <span className="text-xs font-serif font-bold text-white group-hover:text-orange-300 transition-colors">
-                  {activeItem.name}
-                </span>
-                <span className="text-[10px] text-orange-400 font-serif font-bold">
-                  ${activeItem.price} &bull; Tap to view & order
-                </span>
-              </div>
-              <ChevronRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform ml-1" />
-            </button>
-          )}
+        {/* Circular Wheel Controls */}
+        <div className="flex items-center gap-4 mt-2 z-20">
+          <button
+            type="button"
+            onClick={handlePrev}
+            aria-label="Previous dish"
+            className="w-9 h-9 rounded-full bg-neutral-950/90 border border-orange-500/40 flex items-center justify-center text-orange-300 hover:text-white hover:border-orange-400 hover:scale-110 active:scale-95 transition-all shadow-md"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
 
-          {/* Horizontal Quick-Pick Thumbnail Strip */}
-          <div className="flex items-center gap-1.5 overflow-x-auto max-w-full px-2 py-1 scrollbar-none bg-neutral-950/70 backdrop-blur-md rounded-full border border-orange-500/20">
-            {items.map((item, idx) => (
-              <button
-                key={item.id}
-                type="button"
-                aria-label={`Jump to ${item.name}`}
-                onClick={() => bringToFront(idx, false)}
-                className={cn(
-                  "relative rounded-full transition-all duration-200 shrink-0 overflow-hidden cursor-pointer",
-                  activeIndex === idx
-                    ? "w-8 h-8 ring-2 ring-orange-400 scale-110 shadow-lg shadow-orange-500/50"
-                    : "w-6 h-6 opacity-50 hover:opacity-100 hover:scale-105"
-                )}
-              >
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="w-full h-full object-cover"
-                />
-              </button>
-            ))}
-          </div>
+          <span className="text-xs font-serif uppercase tracking-widest text-orange-200/80">
+            Dish {activeIndex + 1} of {N}
+          </span>
+
+          <button
+            type="button"
+            onClick={handleNext}
+            aria-label="Next dish"
+            className="w-9 h-9 rounded-full bg-neutral-950/90 border border-orange-500/40 flex items-center justify-center text-orange-300 hover:text-white hover:border-orange-400 hover:scale-110 active:scale-95 transition-all shadow-md"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
       </div>
-    );
-  }
-);
 
-CylinderMenuCarousel.displayName = "CylinderMenuCarousel";
+      {/* RIGHT: FOCUSED ACTIVE MEAL CARD FOR INSTANT ORDERING */}
+      {activeDish && (
+        <div className="relative w-full max-w-md bg-neutral-950/90 backdrop-blur-2xl border border-orange-500/35 rounded-3xl p-6 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(249,115,22,0.15)] flex flex-col gap-4">
+          {/* Card Header & Badges */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge className="bg-gradient-to-r from-red-500 to-orange-500 text-white font-serif uppercase tracking-wider text-[11px] border-0">
+                {activeDish.category}
+              </Badge>
+              {activeDish.isSignature && (
+                <Badge className="bg-neutral-900 border border-orange-400/40 text-amber-300 text-[11px]">
+                  <Sparkles className="w-3 h-3 mr-1 fill-amber-300" />
+                  Chef Signature
+                </Badge>
+              )}
+            </div>
+
+            <div className="flex items-center gap-1 text-amber-300 font-bold text-xs bg-neutral-900/90 px-2.5 py-1 rounded-full border border-orange-500/30">
+              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+              <span>{activeDish.rating}</span>
+              <span className="text-neutral-500 font-normal">({activeDish.reviewsCount})</span>
+            </div>
+          </div>
+
+          {/* Dish Title & Price */}
+          <div className="flex items-start justify-between gap-4">
+            <h3 className="text-xl sm:text-2xl font-serif font-black text-white tracking-wide">
+              {activeDish.name}
+            </h3>
+            <div className="text-2xl sm:text-3xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300 whitespace-nowrap">
+              ${activeDish.price}
+            </div>
+          </div>
+
+          {/* Description */}
+          <p className="text-xs sm:text-sm text-neutral-300 font-light leading-relaxed">
+            {activeDish.description}
+          </p>
+
+          {/* Quick Metrics */}
+          <div className="flex items-center gap-4 text-xs text-orange-200/80 pt-1 border-t border-orange-500/20">
+            <span className="flex items-center gap-1 font-mono">
+              <Clock className="w-3.5 h-3.5 text-orange-400" />
+              {activeDish.prepTime}
+            </span>
+            <span className="flex items-center gap-1 font-mono">
+              <Flame className="w-3.5 h-3.5 text-red-400" />
+              {activeDish.calories} kcal
+            </span>
+          </div>
+
+          {/* Tags */}
+          <div className="flex flex-wrap gap-1.5">
+            {activeDish.tags.map((tag) => (
+              <span
+                key={tag}
+                className="text-[10px] font-medium bg-neutral-900/80 border border-orange-500/20 px-2 py-0.5 rounded-full text-orange-200/75"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+
+          {/* Action Button to Pick / Order */}
+          <div className="pt-2">
+            <SaharaButton
+              onClick={() => onSelectItem?.(activeDish)}
+              primaryText={`PICK • $${activeDish.price}`}
+              hoverText="ADD TO ORDER"
+              size="md"
+              className="w-full py-3.5"
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
