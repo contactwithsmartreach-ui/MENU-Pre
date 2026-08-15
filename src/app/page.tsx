@@ -3,16 +3,13 @@
 import React, { useState, useRef } from "react";
 import { MENU_ITEMS } from "@/data/menu-data";
 import { MenuItem } from "@/types/restaurant";
-import { CylinderMenuCarousel } from "@/components/restaurant/CylinderMenuCarousel";
-import { HorizontalMenuScroll } from "@/components/restaurant/HorizontalMenuScroll";
+import { CombinedCylinderMenu } from "@/components/restaurant/CombinedCylinderMenu";
 import { DishDetailModal } from "@/components/restaurant/DishDetailModal";
 import { HeroPlateScrollExperience } from "@/components/restaurant/HeroPlateScrollExperience";
 import { VerticalSpotlightNavbar } from "@/components/restaurant/VerticalSpotlightNavbar";
 import { MenuSectionDivider } from "@/components/restaurant/MenuSectionDivider";
 import { toast } from "sonner";
 import { MadeWithDyad } from "@/components/made-with-dyad";
-import { Layers, Columns3 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 const CATEGORY_ITEMS = [
   { label: "All Items", id: "All" },
@@ -27,7 +24,6 @@ export default function RestaurantMenuPage() {
   const [selectedDish, setSelectedDish] = useState<MenuItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeCategoryIdx, setActiveCategoryIdx] = useState<number>(0);
-  const [viewMode, setViewMode] = useState<"cylinder" | "runway">("cylinder");
 
   const selectedCategory = CATEGORY_ITEMS[activeCategoryIdx].id;
   const menuSectionRef = useRef<HTMLDivElement>(null);
@@ -100,58 +96,16 @@ export default function RestaurantMenuPage() {
       {/* Transitional Section Separation Divider */}
       <MenuSectionDivider />
 
-      {/* Part 2: Interactive Menu Gastronomy Section */}
+      {/* Part 2: Interactive Gastronomy Section with Combined 3D Cylinder + Sideways Cards */}
       <section
         ref={menuSectionRef}
         id="cylinder-menu"
         className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-6 pb-6 px-2 sm:px-6"
       >
-        {/* View Mode Switcher Header */}
-        <div className="w-full max-w-6xl mx-auto flex items-center justify-between mb-4 px-3">
-          <div className="flex flex-col">
-            <span className="text-xs uppercase font-serif tracking-widest text-orange-300/80">
-              Interactive Display
-            </span>
-            <h3 className="text-lg sm:text-xl font-serif font-bold text-white">
-              {viewMode === "cylinder" ? "3D Cylinder Rotation" : "Sideways Scrolling Runway"}
-            </h3>
-          </div>
-
-          {/* Toggle Button */}
-          <div className="flex items-center gap-1 bg-neutral-950/90 border border-orange-500/30 p-1 rounded-full backdrop-blur-xl shadow-lg">
-            <button
-              type="button"
-              onClick={() => setViewMode("cylinder")}
-              className={cn(
-                "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-serif uppercase tracking-wider transition-all duration-200 cursor-pointer",
-                viewMode === "cylinder"
-                  ? "bg-gradient-to-r from-red-500 to-orange-500 text-white font-bold shadow-md shadow-orange-500/30"
-                  : "text-neutral-400 hover:text-white"
-              )}
-            >
-              <Layers className="w-3.5 h-3.5" />
-              <span>3D Cylinder</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode("runway")}
-              className={cn(
-                "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-serif uppercase tracking-wider transition-all duration-200 cursor-pointer",
-                viewMode === "runway"
-                  ? "bg-gradient-to-r from-red-500 to-orange-500 text-white font-bold shadow-md shadow-orange-500/30"
-                  : "text-neutral-400 hover:text-white"
-              )}
-            >
-              <Columns3 className="w-3.5 h-3.5" />
-              <span>Sideways Cards</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Main Presentation Area: Vertical Spotlight Navbar + Menu View (Cylinder / Runway) */}
-        <div className="relative z-10 w-full flex-1 flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8 max-w-7xl mx-auto py-2">
+        {/* Main Presentation Area: Vertical Spotlight Navbar + Combined 3D Cylinder & Sideways Cards */}
+        <div className="relative z-10 w-full flex-1 flex flex-col lg:flex-row items-center lg:items-start justify-center gap-6 lg:gap-8 max-w-7xl mx-auto py-2">
           {/* Vertical Spotlight Navbar */}
-          <div className="shrink-0 flex items-center justify-center">
+          <div className="shrink-0 flex items-center justify-center lg:sticky lg:top-24">
             <VerticalSpotlightNavbar
               items={CATEGORY_ITEMS}
               activeIndex={activeCategoryIdx}
@@ -159,23 +113,13 @@ export default function RestaurantMenuPage() {
             />
           </div>
 
-          {/* Menu Presentation Container */}
+          {/* Unified Combined 3D Cylinder & Sideways Cards Carousel */}
           <div className="flex-1 w-full flex items-center justify-center overflow-visible">
-            {viewMode === "cylinder" ? (
-              <CylinderMenuCarousel
-                key={`cylinder-${selectedCategory}`}
-                items={filteredItems}
-                onSelectItem={handleOpenDish}
-                animationDuration={36}
-                cardWidth={260}
-              />
-            ) : (
-              <HorizontalMenuScroll
-                key={`runway-${selectedCategory}`}
-                items={filteredItems}
-                onSelectItem={handleOpenDish}
-              />
-            )}
+            <CombinedCylinderMenu
+              key={selectedCategory}
+              items={filteredItems}
+              onSelectItem={handleOpenDish}
+            />
           </div>
         </div>
 
