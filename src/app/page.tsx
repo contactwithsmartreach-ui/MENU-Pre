@@ -1,12 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { MENU_ITEMS } from "@/data/menu-data";
 import { MenuItem } from "@/types/restaurant";
 import { CylinderMenuCarousel } from "@/components/restaurant/CylinderMenuCarousel";
 import { DishDetailModal } from "@/components/restaurant/DishDetailModal";
+import { HeroPlateScrollExperience } from "@/components/restaurant/HeroPlateScrollExperience";
 import { toast } from "sonner";
 import { MadeWithDyad } from "@/components/made-with-dyad";
+import { Compass } from "lucide-react";
 
 const CATEGORIES = ["All", "Chef Specials", "Starters", "Mains", "Desserts", "Cocktails"] as const;
 
@@ -15,9 +17,12 @@ export default function RestaurantMenuPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
-  const filteredItems = selectedCategory === "All"
-    ? MENU_ITEMS
-    : MENU_ITEMS.filter((item) => item.category === selectedCategory);
+  const menuSectionRef = useRef<HTMLDivElement>(null);
+
+  const filteredItems =
+    selectedCategory === "All"
+      ? MENU_ITEMS
+      : MENU_ITEMS.filter((item) => item.category === selectedCategory);
 
   const handleOpenDish = (dish: MenuItem) => {
     setSelectedDish(dish);
@@ -26,12 +31,18 @@ export default function RestaurantMenuPage() {
 
   const handleAddToCart = (dish: MenuItem, quantity: number, notes?: string) => {
     toast.success(`Added ${quantity}x ${dish.name} to order`, {
-      description: `$${(dish.price * quantity).toFixed(2)} • ${notes ? `"${notes}"` : `Ready in ~${dish.prepTime}`}`,
+      description: `$${(dish.price * quantity).toFixed(2)} • ${
+        notes ? `"${notes}"` : `Ready in ~${dish.prepTime}`
+      }`,
     });
   };
 
+  const handleScrollToMenu = () => {
+    menuSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
-    <div className="relative min-h-screen w-full bg-[#0a0504] text-neutral-100 flex flex-col items-center justify-between overflow-hidden select-none">
+    <div className="relative min-h-screen w-full bg-[#0a0504] text-neutral-100 flex flex-col items-center justify-between select-none overflow-x-hidden">
       {/* Sahara Sunset Ambient Glowing Atmospheric Background */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         {/* Sahara Sunset Solar Core */}
@@ -70,59 +81,73 @@ export default function RestaurantMenuPage() {
         />
       </div>
 
-      {/* Header with Category Filter Chips */}
-      <header className="relative z-20 w-full pt-6 px-4 flex flex-col items-center gap-3">
-        <div className="flex items-center justify-center">
-          <h1 className="text-xl sm:text-2xl font-serif font-black tracking-[0.2em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300">
-            L&apos;AURA SAHARA
-          </h1>
-        </div>
+      {/* Top Hero Section with Realistic Floating Culinary Plate Video Experience */}
+      <HeroPlateScrollExperience onScrollToMenu={handleScrollToMenu} />
 
-        {/* Category Pills */}
-        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto max-w-full py-1 px-2 scrollbar-none">
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              type="button"
-              onClick={() => setSelectedCategory(cat)}
-              className={`text-xs font-serif uppercase tracking-wider px-3.5 py-1.5 rounded-full transition-all whitespace-nowrap cursor-pointer ${
-                selectedCategory === cat
-                  ? "bg-gradient-to-r from-red-500 to-orange-500 text-white font-bold shadow-md shadow-orange-500/30 border-0"
-                  : "bg-neutral-950/70 border border-orange-500/30 text-orange-200/80 hover:text-white hover:border-orange-400"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-      </header>
+      {/* Interactive 3D Cylinder Gastronomy Section */}
+      <section
+        ref={menuSectionRef}
+        id="cylinder-menu"
+        className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-8 pb-4"
+      >
+        {/* Section Header with Category Filter Chips */}
+        <header className="relative z-20 w-full px-4 flex flex-col items-center gap-3">
+          <div className="flex items-center gap-2">
+            <Compass className="w-4 h-4 text-orange-400" />
+            <h2 className="text-xl sm:text-2xl font-serif font-black tracking-[0.2em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300">
+              ROTATING CYLINDER MENU
+            </h2>
+          </div>
+          <p className="text-xs text-neutral-400 font-serif tracking-wider">
+            Drag to rotate &bull; Click any dish to order
+          </p>
 
-      {/* Center 3D Cylinder Carousel */}
-      <main className="relative z-10 w-full flex-1 flex items-center justify-center p-2">
-        <CylinderMenuCarousel
-          key={selectedCategory}
-          items={filteredItems}
-          onSelectItem={handleOpenDish}
-          animationDuration={36}
-          cardWidth={260}
+          {/* Category Pills */}
+          <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto max-w-full py-1 px-2 scrollbar-none">
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setSelectedCategory(cat)}
+                className={`text-xs font-serif uppercase tracking-wider px-3.5 py-1.5 rounded-full transition-all whitespace-nowrap cursor-pointer ${
+                  selectedCategory === cat
+                    ? "bg-gradient-to-r from-red-500 to-orange-500 text-white font-bold shadow-md shadow-orange-500/30 border-0"
+                    : "bg-neutral-950/70 border border-orange-500/30 text-orange-200/80 hover:text-white hover:border-orange-400"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </header>
+
+        {/* Center 3D Cylinder Carousel */}
+        <main className="relative z-10 w-full flex-1 flex items-center justify-center p-2">
+          <CylinderMenuCarousel
+            key={selectedCategory}
+            items={filteredItems}
+            onSelectItem={handleOpenDish}
+            animationDuration={36}
+            cardWidth={260}
+          />
+        </main>
+
+        {/* Dish Detail Dialog */}
+        <DishDetailModal
+          dish={selectedDish}
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedDish(null);
+          }}
+          onAddToCart={handleAddToCart}
         />
-      </main>
 
-      {/* Dish Detail Dialog */}
-      <DishDetailModal
-        dish={selectedDish}
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setSelectedDish(null);
-        }}
-        onAddToCart={handleAddToCart}
-      />
-
-      {/* Footer */}
-      <footer className="relative z-10 w-full py-2">
-        <MadeWithDyad />
-      </footer>
+        {/* Footer */}
+        <footer className="relative z-10 w-full py-2">
+          <MadeWithDyad />
+        </footer>
+      </section>
     </div>
   );
 }
