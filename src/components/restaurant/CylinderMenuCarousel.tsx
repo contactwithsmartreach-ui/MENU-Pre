@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { MenuItem } from "@/types/restaurant";
 import { cn } from "@/lib/utils";
-import { Star, Flame, ChevronLeft, ChevronRight, Eye, Utensils } from "lucide-react";
+import { Star, Flame, ChevronRight, Eye, Utensils } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export interface CylinderMenuCarouselProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -265,26 +265,6 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
         )}
         {...props}
       >
-        {/* Left Side Spin Control Arrow */}
-        <button
-          type="button"
-          aria-label="Previous Dish"
-          onClick={handlePrev}
-          className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-40 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-neutral-950/80 hover:bg-neutral-900 border border-orange-500/40 text-orange-400 hover:text-white flex items-center justify-center shadow-[0_0_25px_rgba(249,115,22,0.35)] backdrop-blur-md transition-all hover:scale-110 active:scale-90 cursor-pointer group"
-        >
-          <ChevronLeft className="w-6 h-6 sm:w-7 sm:h-7 group-hover:-translate-x-0.5 transition-transform" />
-        </button>
-
-        {/* Right Side Spin Control Arrow */}
-        <button
-          type="button"
-          aria-label="Next Dish"
-          onClick={handleNext}
-          className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-40 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-neutral-950/80 hover:bg-neutral-900 border border-orange-500/40 text-orange-400 hover:text-white flex items-center justify-center shadow-[0_0_25px_rgba(249,115,22,0.35)] backdrop-blur-md transition-all hover:scale-110 active:scale-90 cursor-pointer group"
-        >
-          <ChevronRight className="w-6 h-6 sm:w-7 sm:h-7 group-hover:translate-x-0.5 transition-transform" />
-        </button>
-
         {/* 3D Cylinder Stage */}
         <div
           className="w-full flex-1 grid place-items-center cursor-grab active:cursor-grabbing overflow-visible py-2 sm:py-6 touch-none"
