@@ -28,7 +28,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
     ref
   ) => {
     const N = items.length;
-    const angleStep = 360 / N;
+    const angleStep = 360 / Math.max(N, 1);
     const defaultSpeed = autoSpinSpeed ?? (animationDuration ? 360 / animationDuration : 8);
 
     const [rotationY, setRotationY] = useState(0);
@@ -46,16 +46,18 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
       return () => window.removeEventListener("resize", checkMobile);
     }, []);
 
-    const actualCardWidth = customCardWidth ?? (isMobile ? 190 : 250);
+    const actualCardWidth = customCardWidth ?? (isMobile ? 180 : 240);
 
-    // Physics & Gesture refs
+    // Physics & Gesture tracking refs
     const isDraggingRef = useRef(false);
+    const hasCapturedPointerRef = useRef(false);
     const startXRef = useRef(0);
+    const startYRef = useRef(0);
     const startRotRef = useRef(0);
     const lastXRef = useRef(0);
     const lastTimeRef = useRef(0);
     const velocityRef = useRef(0);
-    const hasMovedRef = useRef(false);
+    const hasMovedSignificantlyRef = useRef(false);
     const animFrameRef = useRef<number | null>(null);
     const momentumFrameRef = useRef<number | null>(null);
     const autoResumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -73,9 +75,8 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
       const finalTarget = current + diff;
 
       const startTime = performance.now();
-      const duration = 400;
+      const duration = 420;
       const startAngle = current;
-
       const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
       const animateSnap = (now: number) => {
@@ -168,7 +169,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
       };
     }, [isAutoSpinning, defaultSpeed, hoveredIdx]);
 
-    // Inertia on release
+    // Inertia physics on release
     const applyMomentum = useCallback(() => {
       const decay = 0.92;
       const step = () => {
@@ -184,58 +185,70 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
       momentumFrameRef.current = requestAnimationFrame(step);
     }, []);
 
-    // Pointer events for touch & drag
+    // Pointer events on container (Non-blocking for child clicks)
     const handlePointerDown = (e: React.PointerEvent) => {
       if (momentumFrameRef.current) cancelAnimationFrame(momentumFrameRef.current);
       if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
 
       isDraggingRef.current = true;
-      hasMovedRef.current = false;
+      hasMovedSignificantlyRef.current = false;
+      hasCapturedPointerRef.current = false;
       startXRef.current = e.clientX;
+      startYRef.current = e.clientY;
       lastXRef.current = e.clientX;
       lastTimeRef.current = performance.now();
       startRotRef.current = rotationY;
       velocityRef.current = 0;
-
-      try {
-        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-      } catch {
-        // Safe fallback
-      }
     };
 
     const handlePointerMove = (e: React.PointerEvent) => {
       if (!isDraggingRef.current) return;
 
       const deltaX = e.clientX - startXRef.current;
-      if (Math.abs(deltaX) > 4) {
-        hasMovedRef.current = true;
+      const deltaY = e.clientY - startYRef.current;
+
+      // Only capture and treat as drag if movement exceeds threshold
+      if (Math.abs(deltaX) > 6 || Math.abs(deltaY) > 6) {
+        hasMovedSignificantlyRef.current = true;
+        if (!hasCapturedPointerRef.current) {
+          try {
+            (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+            hasCapturedPointerRef.current = true;
+          } catch {
+            // Safe fallback
+          }
+        }
       }
 
-      const sensitivity = isMobile ? 0.48 : 0.38;
-      const newRotation = startRotRef.current - deltaX * sensitivity;
-      setRotationY(newRotation);
+      if (hasMovedSignificantlyRef.current) {
+        const sensitivity = isMobile ? 0.48 : 0.38;
+        const newRotation = startRotRef.current - deltaX * sensitivity;
+        setRotationY(newRotation);
 
-      const now = performance.now();
-      const dt = Math.max(now - lastTimeRef.current, 8);
-      const instantaneousVelocity = ((e.clientX - lastXRef.current) / dt) * 8;
+        const now = performance.now();
+        const dt = Math.max(now - lastTimeRef.current, 8);
+        const instantaneousVelocity = ((e.clientX - lastXRef.current) / dt) * 8;
 
-      velocityRef.current = velocityRef.current * 0.3 + instantaneousVelocity * 0.7;
-      lastXRef.current = e.clientX;
-      lastTimeRef.current = now;
+        velocityRef.current = velocityRef.current * 0.3 + instantaneousVelocity * 0.7;
+        lastXRef.current = e.clientX;
+        lastTimeRef.current = now;
+      }
     };
 
     const handlePointerUp = (e: React.PointerEvent) => {
       if (!isDraggingRef.current) return;
       isDraggingRef.current = false;
 
-      try {
-        (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
-      } catch {
-        // Safe fallback
+      if (hasCapturedPointerRef.current) {
+        try {
+          (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+        } catch {
+          // Safe fallback
+        }
+        hasCapturedPointerRef.current = false;
       }
 
-      if (hasMovedRef.current && Math.abs(velocityRef.current) > 0.3) {
+      if (hasMovedSignificantlyRef.current && Math.abs(velocityRef.current) > 0.3) {
         applyMomentum();
       }
     };
@@ -245,7 +258,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
       setRotationY((prev) => prev + delta * 0.15);
     };
 
-    // Active dish index
+    // Calculate currently active front item
     const normalizedRot = ((-rotationY % 360) + 360) % 360;
     const activeIndex = Math.round(normalizedRot / angleStep) % N;
     const activeItem = items[activeIndex];
@@ -256,17 +269,29 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
       "--ba": `calc(1turn / var(--n))`,
     } as React.CSSProperties;
 
+    // Card click handler: smoothly rotates side cards to front or opens modal if front
+    const handleCardClick = (dish: MenuItem, index: number, isFacingFront: boolean) => {
+      if (hasMovedSignificantlyRef.current) return;
+
+      if (isFacingFront) {
+        onSelectItem?.(dish);
+      } else {
+        // Center the selected side card immediately
+        bringToFront(index, false);
+      }
+    };
+
     return (
       <div
         ref={ref}
         onWheel={handleWheel}
         className={cn(
-          "w-full h-full min-h-[560px] sm:min-h-[640px] flex flex-col items-center justify-between relative select-none touch-none",
+          "w-full h-full min-h-[560px] sm:min-h-[640px] flex flex-col items-center justify-between relative select-none",
           className
         )}
         {...props}
       >
-        {/* Main 3D Cylinder Stage with Flanking Glowing Side Scrolling Buttons */}
+        {/* Main 3D Cylinder Stage with Side Glowing Scroll Buttons */}
         <div className="relative w-full flex-1 flex items-center justify-center">
           {/* Left Glowing Scroll Button */}
           <div className="absolute left-2 sm:left-6 z-40 flex items-center justify-center">
@@ -275,13 +300,12 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
               aria-label="Rotate Cylinder Previous"
               onClick={() => stepRotate("prev")}
               className={cn(
-                "group relative w-11 h-11 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer",
-                "bg-neutral-950/80 backdrop-blur-xl border border-orange-500/40 text-orange-200",
+                "group relative w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer",
+                "bg-neutral-950/85 backdrop-blur-xl border border-orange-500/40 text-orange-200",
                 "shadow-[0_0_20px_rgba(249,115,22,0.35),0_10px_25px_rgba(0,0,0,0.8)]",
                 "hover:scale-110 hover:border-orange-400 hover:text-white hover:shadow-[0_0_35px_rgba(249,115,22,0.8)] active:scale-95"
               )}
             >
-              {/* Radial Ember Pulse Halo */}
               <span className="absolute inset-0 rounded-full bg-gradient-to-r from-red-500/30 via-orange-500/30 to-amber-500/20 blur-md opacity-70 group-hover:opacity-100 transition-opacity" />
               <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 relative z-10 transition-transform group-hover:-translate-x-0.5 group-hover:drop-shadow-[0_0_8px_rgba(251,191,36,1)]" />
             </button>
@@ -294,13 +318,12 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
               aria-label="Rotate Cylinder Next"
               onClick={() => stepRotate("next")}
               className={cn(
-                "group relative w-11 h-11 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer",
-                "bg-neutral-950/80 backdrop-blur-xl border border-orange-500/40 text-orange-200",
+                "group relative w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer",
+                "bg-neutral-950/85 backdrop-blur-xl border border-orange-500/40 text-orange-200",
                 "shadow-[0_0_20px_rgba(249,115,22,0.35),0_10px_25px_rgba(0,0,0,0.8)]",
                 "hover:scale-110 hover:border-orange-400 hover:text-white hover:shadow-[0_0_35px_rgba(249,115,22,0.8)] active:scale-95"
               )}
             >
-              {/* Radial Ember Pulse Halo */}
               <span className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-500/20 via-orange-500/30 to-red-500/30 blur-md opacity-70 group-hover:opacity-100 transition-opacity" />
               <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 relative z-10 transition-transform group-hover:translate-x-0.5 group-hover:drop-shadow-[0_0_8px_rgba(251,191,36,1)]" />
             </button>
@@ -308,9 +331,9 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
 
           {/* 3D Cylinder Container */}
           <div
-            className="w-full flex-1 grid place-items-center cursor-grab active:cursor-grabbing overflow-visible py-2 sm:py-6 touch-none"
+            className="w-full flex-1 grid place-items-center cursor-grab active:cursor-grabbing overflow-visible py-2 sm:py-6 touch-pan-y"
             style={{
-              perspective: isMobile ? "40em" : "55em",
+              perspective: isMobile ? "44em" : "60em",
             }}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
@@ -330,6 +353,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
                 const cardAngle = ((i * angleStep + rotationY) % 360 + 360) % 360;
                 const angleFromFront = Math.min(cardAngle, 360 - cardAngle);
                 const isFacingFront = angleFromFront < angleStep * 0.75;
+                const isSideVisible = angleFromFront < 110;
                 const isHovered = hoveredIdx === i;
 
                 return (
@@ -337,17 +361,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
                     key={dish.id}
                     onMouseEnter={() => !isMobile && setHoveredIdx(i)}
                     onMouseLeave={() => !isMobile && setHoveredIdx(null)}
-                    onClick={(e) => {
-                      if (hasMovedRef.current) {
-                        e.preventDefault();
-                        return;
-                      }
-                      if (isFacingFront) {
-                        onSelectItem?.(dish);
-                      } else {
-                        bringToFront(i, false);
-                      }
-                    }}
+                    onClick={() => handleCardClick(dish, i, isFacingFront)}
                     role="button"
                     tabIndex={0}
                     onKeyDown={(e) => {
@@ -356,11 +370,13 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
                       }
                     }}
                     className={cn(
-                      "group relative [grid-area:1/1] rounded-[24px] sm:rounded-[28px] overflow-hidden [backface-visibility:hidden] transition-all duration-200 transform-gpu cursor-pointer",
+                      "group relative [grid-area:1/1] rounded-[24px] sm:rounded-[28px] overflow-hidden [backface-visibility:hidden] transition-all duration-300 transform-gpu cursor-pointer",
                       "border bg-neutral-950/95 backdrop-blur-xl",
                       isFacingFront
-                        ? "border-orange-400 shadow-[0_20px_50px_rgba(249,115,22,0.5)] ring-2 ring-orange-500/50 scale-105 z-30"
-                        : "border-orange-500/30 shadow-[0_10px_25px_rgba(0,0,0,0.6)] opacity-85 hover:opacity-100 hover:border-orange-400 hover:scale-102"
+                        ? "border-orange-400 shadow-[0_20px_50px_rgba(249,115,22,0.55)] ring-2 ring-orange-500/50 scale-105 z-30 opacity-100"
+                        : isSideVisible
+                        ? "border-orange-500/40 shadow-[0_10px_30px_rgba(0,0,0,0.7)] opacity-90 hover:opacity-100 hover:border-orange-400 hover:scale-105 z-20"
+                        : "border-orange-500/20 opacity-40 hover:opacity-80 z-10"
                     )}
                     style={{
                       width: "var(--w)",
@@ -402,7 +418,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
                       </div>
                     </div>
 
-                    {/* Tap Hint */}
+                    {/* Interactive Callout Button Overlay */}
                     <div
                       className={cn(
                         "absolute inset-0 flex items-center justify-center z-20 transition-all duration-200 pointer-events-none",
@@ -413,11 +429,11 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
                     >
                       <span className="bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white font-serif tracking-widest uppercase px-3.5 py-1.5 rounded-full text-[11px] font-bold shadow-xl shadow-red-600/50 border border-orange-200/50 flex items-center gap-1.5">
                         {isFacingFront ? <Eye className="w-3.5 h-3.5" /> : <Utensils className="w-3.5 h-3.5" />}
-                        <span>{isFacingFront ? "TAP TO PICK" : "ROTATE TO FRONT"}</span>
+                        <span>{isFacingFront ? "TAP TO ORDER" : "TAP TO PICK"}</span>
                       </span>
                     </div>
 
-                    {/* Bottom Dish Information */}
+                    {/* Bottom Dish Details */}
                     <div className="absolute bottom-0 inset-x-0 z-10 p-3.5 sm:p-5 pt-10 bg-gradient-to-t from-neutral-950 via-neutral-950/95 to-transparent flex flex-col justify-end pointer-events-none">
                       <h3 className="text-sm sm:text-base font-serif font-bold text-white tracking-wide truncate group-hover:text-orange-300 transition-colors">
                         {dish.name}
@@ -452,7 +468,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
             <button
               type="button"
               onClick={() => onSelectItem?.(activeItem)}
-              className="flex items-center gap-3 px-4 py-2 rounded-full bg-neutral-950/95 border border-orange-500/50 hover:border-orange-400 transition-all shadow-[0_0_20px_rgba(249,115,22,0.25)] text-left group active:scale-95"
+              className="flex items-center gap-3 px-4 py-2 rounded-full bg-neutral-950/95 border border-orange-500/50 hover:border-orange-400 transition-all shadow-[0_0_20px_rgba(249,115,22,0.25)] text-left group active:scale-95 cursor-pointer"
             >
               <img
                 src={activeItem.image}
@@ -464,26 +480,26 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
                   {activeItem.name}
                 </span>
                 <span className="text-[10px] text-orange-400 font-serif font-bold">
-                  ${activeItem.price} &bull; Tap to view & order
+                  ${activeItem.price} &bull; Tap to view details & customize
                 </span>
               </div>
               <ChevronRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform ml-1" />
             </button>
           )}
 
-          {/* Horizontal Quick-Pick Thumbnail Strip */}
-          <div className="flex items-center gap-1.5 overflow-x-auto max-w-full px-2 py-1 scrollbar-none bg-neutral-950/70 backdrop-blur-md rounded-full border border-orange-500/20">
+          {/* Quick-Pick Thumbnail Strip with Direct Jump Access */}
+          <div className="flex items-center gap-1.5 overflow-x-auto max-w-full px-2.5 py-1.5 scrollbar-none bg-neutral-950/80 backdrop-blur-md rounded-full border border-orange-500/30 shadow-lg">
             {items.map((item, idx) => (
               <button
                 key={item.id}
                 type="button"
-                aria-label={`Jump to ${item.name}`}
+                aria-label={`Jump directly to ${item.name}`}
                 onClick={() => bringToFront(idx, false)}
                 className={cn(
                   "relative rounded-full transition-all duration-200 shrink-0 overflow-hidden cursor-pointer",
                   activeIndex === idx
                     ? "w-8 h-8 ring-2 ring-orange-400 scale-110 shadow-lg shadow-orange-500/50"
-                    : "w-6 h-6 opacity-50 hover:opacity-100 hover:scale-105"
+                    : "w-6 h-6 opacity-60 hover:opacity-100 hover:scale-110 hover:ring-1 hover:ring-amber-300"
                 )}
               >
                 <img
