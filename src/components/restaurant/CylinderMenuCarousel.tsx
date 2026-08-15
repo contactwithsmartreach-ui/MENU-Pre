@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { MenuItem } from "@/types/restaurant";
 import { cn } from "@/lib/utils";
-import { Star, Flame, ChevronRight, Eye, Utensils, ChevronLeft } from "lucide-react";
+import { Star, Flame, ChevronRight, Eye, Utensils } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export interface CylinderMenuCarouselProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -32,8 +32,6 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
     const defaultSpeed = autoSpinSpeed ?? (animationDuration ? 360 / animationDuration : 8);
 
     const [rotationY, setRotationY] = useState(0);
-    const [panX, setPanX] = useState(0); // Lateral side-to-side shift
-    const [tiltZ, setTiltZ] = useState(0); // Subtle dynamic banking
     const [isAutoSpinning, setIsAutoSpinning] = useState(true);
     const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
     const [isMobile, setIsMobile] = useState(false);
@@ -53,37 +51,30 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
     // Physics & Gesture refs
     const isDraggingRef = useRef(false);
     const startXRef = useRef(0);
-    const startYRef = useRef(0);
     const startRotRef = useRef(0);
-    const startPanXRef = useRef(0);
     const lastXRef = useRef(0);
     const lastTimeRef = useRef(0);
     const velocityRef = useRef(0);
-    const panVelocityRef = useRef(0);
     const hasMovedRef = useRef(false);
     const animFrameRef = useRef<number | null>(null);
     const momentumFrameRef = useRef<number | null>(null);
     const autoResumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    // Smooth transition to target rotation and optional side pan
+    // Smooth transition to target rotation
     const rotateToAngle = useCallback((targetAngle: number, onComplete?: () => void) => {
       if (momentumFrameRef.current) cancelAnimationFrame(momentumFrameRef.current);
       if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
 
       velocityRef.current = 0;
-      panVelocityRef.current = 0;
       setIsAutoSpinning(false);
 
-      const currentRot = rotationY;
-      const diff = ((targetAngle - currentRot + 180) % 360 + 360) % 360 - 180;
-      const finalTargetRot = currentRot + diff;
-
-      const currentPan = panX;
-      const finalTargetPan = 0; // Return to center when snapping to item
+      const current = rotationY;
+      const diff = ((targetAngle - current + 180) % 360 + 360) % 360 - 180;
+      const finalTarget = current + diff;
 
       const startTime = performance.now();
-      const duration = 450;
-      const startAngle = currentRot;
+      const duration = 400; // faster snap duration for maximum snappiness
+      const startAngle = current;
 
       const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
@@ -92,25 +83,21 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
         const progress = Math.min(elapsed / duration, 1);
         const eased = easeOutCubic(progress);
 
-        setRotationY(startAngle + (finalTargetRot - startAngle) * eased);
-        setPanX(currentPan + (finalTargetPan - currentPan) * eased);
-        setTiltZ((1 - eased) * 2);
+        setRotationY(startAngle + (finalTarget - startAngle) * eased);
 
         if (progress < 1) {
           momentumFrameRef.current = requestAnimationFrame(animateSnap);
         } else {
-          setRotationY(finalTargetRot);
-          setPanX(0);
-          setTiltZ(0);
+          setRotationY(finalTarget);
           onComplete?.();
           autoResumeTimeoutRef.current = setTimeout(() => {
             setIsAutoSpinning(true);
-          }, 2500);
+          }, 3000);
         }
       };
 
       momentumFrameRef.current = requestAnimationFrame(animateSnap);
-    }, [rotationY, panX]);
+    }, [rotationY]);
 
     const bringToFront = useCallback((index: number, openModal: boolean = false, item?: MenuItem) => {
       const targetAngle = -index * angleStep;
@@ -121,18 +108,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
       });
     }, [angleStep, rotateToAngle, onSelectItem]);
 
-    // Next / Previous helpers for lateral movement
-    const shiftNext = () => {
-      const target = rotationY - angleStep;
-      rotateToAngle(target);
-    };
-
-    const shiftPrev = () => {
-      const target = rotationY + angleStep;
-      rotateToAngle(target);
-    };
-
-    // Continuous smooth auto-spin loop with organic side-to-side floating wave
+    // Continuous smooth auto-spin loop with requestAnimationFrame
     useEffect(() => {
       let previousTimestamp = performance.now();
 
@@ -146,16 +122,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
           hoveredIdx === null &&
           Math.abs(velocityRef.current) < 0.05
         ) {
-          // Continuous rotational spin
           setRotationY((prev) => (prev + defaultSpeed * delta) % 360);
-
-          // Organic sinusoidal side-to-side lateral glide (~35px horizontal amplitude)
-          const sway = Math.sin(timestamp * 0.0012) * (isMobile ? 18 : 32);
-          setPanX(sway);
-
-          // Gentle banking tilt during the lateral movement
-          const tilt = Math.cos(timestamp * 0.0012) * -1.8;
-          setTiltZ(tilt);
         }
 
         animFrameRef.current = requestAnimationFrame(spinLoop);
@@ -165,42 +132,25 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
       return () => {
         if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
       };
-    }, [isAutoSpinning, defaultSpeed, hoveredIdx, isMobile]);
+    }, [isAutoSpinning, defaultSpeed, hoveredIdx]);
 
-    // Inertia decay on drag release
+    // Inertia on release
     const applyMomentum = useCallback(() => {
       const decay = 0.92;
       const step = () => {
-        let active = false;
-
         if (Math.abs(velocityRef.current) > 0.05) {
           setRotationY((prev) => prev - velocityRef.current);
           velocityRef.current *= decay;
-          active = true;
+          momentumFrameRef.current = requestAnimationFrame(step);
         } else {
           velocityRef.current = 0;
         }
-
-        if (Math.abs(panVelocityRef.current) > 0.1) {
-          setPanX((prev) => prev + panVelocityRef.current);
-          panVelocityRef.current *= 0.88;
-          active = true;
-        } else {
-          panVelocityRef.current = 0;
-        }
-
-        setTiltZ((prev) => prev * 0.9);
-
-        if (active) {
-          momentumFrameRef.current = requestAnimationFrame(step);
-        }
       };
-
       if (momentumFrameRef.current) cancelAnimationFrame(momentumFrameRef.current);
       momentumFrameRef.current = requestAnimationFrame(step);
     }, []);
 
-    // Pointer events for responsive touch, lateral pan & 3D cylinder drag
+    // Pointer events for ultra responsive touch & drag
     const handlePointerDown = (e: React.PointerEvent) => {
       if (momentumFrameRef.current) cancelAnimationFrame(momentumFrameRef.current);
       if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
@@ -208,13 +158,10 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
       isDraggingRef.current = true;
       hasMovedRef.current = false;
       startXRef.current = e.clientX;
-      startYRef.current = e.clientY;
       lastXRef.current = e.clientX;
       lastTimeRef.current = performance.now();
       startRotRef.current = rotationY;
-      startPanXRef.current = panX;
       velocityRef.current = 0;
-      panVelocityRef.current = 0;
 
       try {
         (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
@@ -231,28 +178,15 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
         hasMovedRef.current = true;
       }
 
-      // Rotate cylinder around Y
-      const rotSensitivity = isMobile ? 0.44 : 0.36;
-      const newRotation = startRotRef.current - deltaX * rotSensitivity;
+      const sensitivity = isMobile ? 0.48 : 0.38;
+      const newRotation = startRotRef.current - deltaX * sensitivity;
       setRotationY(newRotation);
-
-      // Concurrently slide the cylinder laterally to the sides on X
-      const lateralSensitivity = isMobile ? 0.35 : 0.55;
-      const maxLateralOffset = isMobile ? 120 : 220;
-      const rawPan = startPanXRef.current + deltaX * lateralSensitivity;
-      const clampedPan = Math.max(-maxLateralOffset, Math.min(maxLateralOffset, rawPan));
-      setPanX(clampedPan);
-
-      // Dynamic banking tilt when dragged sideways
-      const currentTilt = Math.max(-6, Math.min(6, (deltaX * 0.04)));
-      setTiltZ(currentTilt);
 
       const now = performance.now();
       const dt = Math.max(now - lastTimeRef.current, 8);
       const instantaneousVelocity = ((e.clientX - lastXRef.current) / dt) * 8;
 
       velocityRef.current = velocityRef.current * 0.3 + instantaneousVelocity * 0.7;
-      panVelocityRef.current = instantaneousVelocity * 0.4;
       lastXRef.current = e.clientX;
       lastTimeRef.current = now;
     };
@@ -267,7 +201,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
         // Safe fallback
       }
 
-      if (hasMovedRef.current && (Math.abs(velocityRef.current) > 0.3 || Math.abs(panVelocityRef.current) > 0.3)) {
+      if (hasMovedRef.current && Math.abs(velocityRef.current) > 0.3) {
         applyMomentum();
       }
     };
@@ -275,10 +209,9 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
     const handleWheel = (e: React.WheelEvent) => {
       const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
       setRotationY((prev) => prev + delta * 0.15);
-      setPanX((prev) => Math.max(-100, Math.min(100, prev - delta * 0.1)));
     };
 
-    // Active dish index calculation
+    // Active dish index
     const normalizedRot = ((-rotationY % 360) + 360) % 360;
     const activeIndex = Math.round(normalizedRot / angleStep) % N;
     const activeItem = items[activeIndex];
@@ -294,33 +227,12 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
         ref={ref}
         onWheel={handleWheel}
         className={cn(
-          "w-full h-full min-h-[560px] sm:min-h-[640px] flex flex-col items-center justify-between relative select-none touch-none overflow-visible",
+          "w-full h-full min-h-[560px] sm:min-h-[640px] flex flex-col items-center justify-between relative select-none touch-none",
           className
         )}
         {...props}
       >
-        {/* Lateral Side Navigation Quick Buttons */}
-        <div className="absolute inset-y-1/2 -translate-y-1/2 left-1 right-1 sm:left-4 sm:right-4 z-40 flex items-center justify-between pointer-events-none">
-          <button
-            type="button"
-            onClick={shiftPrev}
-            aria-label="Previous dishes"
-            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-neutral-950/80 backdrop-blur-xl border border-orange-500/40 hover:border-orange-400 text-orange-200 hover:text-white flex items-center justify-center pointer-events-auto transition-all shadow-[0_0_20px_rgba(0,0,0,0.8)] hover:shadow-[0_0_20px_rgba(249,115,22,0.4)] active:scale-90 hover:scale-105"
-          >
-            <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
-          </button>
-
-          <button
-            type="button"
-            onClick={shiftNext}
-            aria-label="Next dishes"
-            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-neutral-950/80 backdrop-blur-xl border border-orange-500/40 hover:border-orange-400 text-orange-200 hover:text-white flex items-center justify-center pointer-events-auto transition-all shadow-[0_0_20px_rgba(0,0,0,0.8)] hover:shadow-[0_0_20px_rgba(249,115,22,0.4)] active:scale-90 hover:scale-105"
-          >
-            <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
-          </button>
-        </div>
-
-        {/* 3D Cylinder Stage with Lateral Side Movement & Y-Rotation */}
+        {/* 3D Cylinder Stage */}
         <div
           className="w-full flex-1 grid place-items-center cursor-grab active:cursor-grabbing overflow-visible py-2 sm:py-6 touch-none"
           style={{
@@ -332,10 +244,10 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
           onPointerCancel={handlePointerUp}
         >
           <div
-            className="grid place-items-center [transform-style:preserve-3d] will-change-transform transition-transform duration-75 ease-out"
+            className="grid place-items-center [transform-style:preserve-3d] will-change-transform"
             style={{
               ...customStyle,
-              transform: `translate3d(${panX}px, 0, 0) rotateY(${rotationY}deg) rotateZ(${tiltZ}deg)`,
+              transform: `rotateY(${rotationY}deg)`,
               WebkitBoxReflect:
                 "below 12px linear-gradient(to bottom, transparent 60%, rgba(249, 115, 22, 0.2) 100%)",
             }}
