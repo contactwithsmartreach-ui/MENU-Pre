@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { MenuItem } from "@/types/restaurant";
 import { cn } from "@/lib/utils";
-import { Star, Flame, ChevronLeft, ChevronRight, Play, Pause, RotateCcw } from "lucide-react";
+import { Star, Flame } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export interface CylinderMenuCarouselProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -32,7 +32,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
     const effectiveSpeed = autoSpinSpeed ?? (animationDuration ? 360 / animationDuration : 10);
 
     const [rotationY, setRotationY] = useState(0);
-    const [isAutoSpinning, setIsAutoSpinning] = useState(true);
+    const [isAutoSpinning] = useState(true);
     const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
     const [isMobile, setIsMobile] = useState(false);
 
@@ -170,25 +170,6 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
       setRotationY((prev) => prev + delta * 0.14);
     };
 
-    // Step Navigation
-    const stepNext = useCallback(() => {
-      if (momentumFrameRef.current) cancelAnimationFrame(momentumFrameRef.current);
-      velocityRef.current = 0;
-      setRotationY((prev) => prev - angleStep);
-    }, [angleStep]);
-
-    const stepPrev = useCallback(() => {
-      if (momentumFrameRef.current) cancelAnimationFrame(momentumFrameRef.current);
-      velocityRef.current = 0;
-      setRotationY((prev) => prev + angleStep);
-    }, [angleStep]);
-
-    const resetPosition = () => {
-      if (momentumFrameRef.current) cancelAnimationFrame(momentumFrameRef.current);
-      velocityRef.current = 0;
-      setRotationY(0);
-    };
-
     // Active dish index calculated from rotation for indicator dots
     const normalizedRot = ((-rotationY % 360) + 360) % 360;
     const activeIndex = Math.round(normalizedRot / angleStep) % N;
@@ -284,7 +265,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
                   <div className="relative z-10 p-3 sm:p-4 flex items-center justify-between w-full pointer-events-none">
                     {dish.isSignature ? (
                       <Badge className="bg-gradient-to-r from-red-500 to-orange-500 text-white font-serif tracking-wider uppercase px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-[11px] shadow-lg shadow-red-500/30 border-0">
-                        <Flame className="w-3 h-3 fill-current mr-1 text-amber-200 animate-pulse" />
+                        <Flame className="w-3.5 h-3.5 fill-current mr-1 text-amber-200 animate-pulse" />
                         Sahara Pick
                       </Badge>
                     ) : (
@@ -339,8 +320,8 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
           </div>
         </div>
 
-        {/* Mobile Swipe Indicators / Quick Jump Dots */}
-        <div className="relative z-30 flex items-center gap-1.5 my-2">
+        {/* Swipe Indicators / Quick Jump Dots */}
+        <div className="relative z-30 flex items-center gap-1.5 mt-2">
           {items.map((item, idx) => (
             <button
               key={item.id}
@@ -359,58 +340,6 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
               )}
             />
           ))}
-        </div>
-
-        {/* Mobile-Friendly Tactile Control Dock */}
-        <div className="relative z-30 flex items-center gap-2 sm:gap-3 bg-neutral-950/85 backdrop-blur-xl border border-orange-500/30 p-1.5 sm:p-2 px-3 sm:px-4 rounded-full shadow-[0_10px_30px_rgba(239,68,68,0.25)]">
-          <button
-            type="button"
-            onClick={stepPrev}
-            aria-label="Rotate Previous"
-            className="p-2 sm:p-2.5 text-orange-300 hover:text-white hover:bg-orange-500/20 active:bg-orange-500/40 rounded-full transition-colors active:scale-90"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setIsAutoSpinning((prev) => !prev)}
-            aria-label={isAutoSpinning ? "Pause Auto-Rotation" : "Start Auto-Rotation"}
-            className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-red-500/20 to-orange-500/20 border border-orange-500/40 text-[11px] sm:text-xs uppercase tracking-widest font-serif font-bold text-orange-200 hover:text-white active:scale-95"
-          >
-            {isAutoSpinning ? (
-              <>
-                <Pause className="w-3.5 h-3.5 fill-current text-orange-400" />
-                <span className="hidden xs:inline">Pause</span>
-              </>
-            ) : (
-              <>
-                <Play className="w-3.5 h-3.5 fill-current text-orange-400" />
-                <span className="hidden xs:inline">Spin</span>
-              </>
-            )}
-          </button>
-
-          <button
-            type="button"
-            onClick={stepNext}
-            aria-label="Rotate Next"
-            className="p-2 sm:p-2.5 text-orange-300 hover:text-white hover:bg-orange-500/20 active:bg-orange-500/40 rounded-full transition-colors active:scale-90"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
-
-          <div className="h-4 w-px bg-orange-500/30 mx-0.5 sm:mx-1" />
-
-          <button
-            type="button"
-            onClick={resetPosition}
-            aria-label="Reset Rotation"
-            title="Reset position"
-            className="p-2 text-orange-400/80 hover:text-orange-200 hover:bg-orange-500/20 active:bg-orange-500/40 rounded-full transition-colors active:scale-90"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
         </div>
       </div>
     );
