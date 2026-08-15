@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { MenuItem } from "@/types/restaurant";
 import { cn } from "@/lib/utils";
-import { Star, Flame } from "lucide-react";
+import { Star, Flame, Sparkles, ChevronRight, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export interface CylinderMenuCarouselProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -29,14 +29,14 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
   ) => {
     const N = items.length;
     const angleStep = 360 / N;
-    const effectiveSpeed = autoSpinSpeed ?? (animationDuration ? 360 / animationDuration : 10);
+    const defaultSpeed = autoSpinSpeed ?? (animationDuration ? 360 / animationDuration : 8);
 
     const [rotationY, setRotationY] = useState(0);
-    const [isAutoSpinning] = useState(true);
+    const [isAutoSpinning, setIsAutoSpinning] = useState(true);
     const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
     const [isMobile, setIsMobile] = useState(false);
 
-    // Dynamic responsive card width
+    // Responsive card width
     useEffect(() => {
       const checkMobile = () => {
         setIsMobile(window.innerWidth < 640);
@@ -46,7 +46,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
       return () => window.removeEventListener("resize", checkMobile);
     }, []);
 
-    const actualCardWidth = customCardWidth ?? (isMobile ? 210 : 270);
+    const actualCardWidth = customCardWidth ?? (isMobile ? 220 : 280);
 
     // Gesture & physics refs
     const isDraggingRef = useRef(false);
@@ -59,6 +59,58 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
     const hasMovedRef = useRef(false);
     const animFrameRef = useRef<number | null>(null);
     const momentumFrameRef = useRef<number | null>(null);
+    const smoothTargetRotRef = useRef<number | null>(null);
+
+    // Smooth transition to a specific rotation angle (bringing card to front)
+    const rotateToAngle = useCallback((targetAngle: number, onComplete?: () => void) => {
+      if (momentumFrameRef.current) cancelAnimationFrame(momentumFrameRef.current);
+      velocityRef.current = 0;
+      setIsAutoSpinning(false);
+
+      // Find shortest rotation path
+      let current = rotationY;
+      let target = targetAngle;
+      
+      const diff = ((target - current + 180) % 360 + 360) % 360 - 180;
+      const finalTarget = current + diff;
+
+      const startTime = performance.now();
+      const duration = 600; // ms
+      const startAngle = current;
+
+      const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+
+      const animateSnap = (now: number) => {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = easeOutCubic(progress);
+
+        setRotationY(startAngle + (finalTarget - startAngle) * eased);
+
+        if (progress < 1) {
+          momentumFrameRef.current = requestAnimationFrame(animateSnap);
+        } else {
+          setRotationY(finalTarget);
+          onComplete?.();
+          // Resume slow auto spin after 4 seconds of inactivity
+          setTimeout(() => {
+            setIsAutoSpinning(true);
+          }, 3500);
+        }
+      };
+
+      momentumFrameRef.current = requestAnimationFrame(animateSnap);
+    }, [rotationY]);
+
+    // Bring specific card index to the front (0 degrees relative to viewer)
+    const bringToFront = useCallback((index: number, openModal: boolean = false, item?: MenuItem) => {
+      const targetAngle = -index * angleStep;
+      rotateToAngle(targetAngle, () => {
+        if (openModal && item) {
+          onSelectItem?.(item);
+        }
+      });
+    }, [angleStep, rotateToAngle, onSelectItem]);
 
     // Auto-spin animation loop
     useEffect(() => {
@@ -74,7 +126,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
           hoveredIdx === null &&
           Math.abs(velocityRef.current) < 0.05
         ) {
-          setRotationY((prev) => (prev + effectiveSpeed * delta) % 360);
+          setRotationY((prev) => (prev + defaultSpeed * delta) % 360);
         }
 
         animFrameRef.current = requestAnimationFrame(spinLoop);
@@ -84,13 +136,13 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
       return () => {
         if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
       };
-    }, [isAutoSpinning, effectiveSpeed, hoveredIdx]);
+    }, [isAutoSpinning, defaultSpeed, hoveredIdx]);
 
     // Apply smooth inertia gliding on release
     const applyMomentum = useCallback(() => {
-      const decay = 0.92;
+      const decay = 0.93;
       const step = () => {
-        if (Math.abs(velocityRef.current) > 0.08) {
+        if (Math.abs(velocityRef.current) > 0.06) {
           setRotationY((prev) => prev - velocityRef.current);
           velocityRef.current *= decay;
           momentumFrameRef.current = requestAnimationFrame(step);
@@ -102,7 +154,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
       momentumFrameRef.current = requestAnimationFrame(step);
     }, []);
 
-    // Pointer events (Mobile Touch + Desktop Mouse unified)
+    // Pointer events
     const handlePointerDown = (e: React.PointerEvent) => {
       if (momentumFrameRef.current) cancelAnimationFrame(momentumFrameRef.current);
 
@@ -129,22 +181,19 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
       const deltaX = e.clientX - startXRef.current;
       const deltaY = e.clientY - startYRef.current;
 
-      // Check if real movement occurred
-      if (Math.sqrt(deltaX * deltaX + deltaY * deltaY) > 8) {
+      if (Math.sqrt(deltaX * deltaX + deltaY * deltaY) > 6) {
         hasMovedRef.current = true;
       }
 
-      // Responsive sensitivity
-      const sensitivity = isMobile ? 0.48 : 0.38;
+      const sensitivity = isMobile ? 0.44 : 0.35;
       const newRotation = startRotRef.current - deltaX * sensitivity;
       setRotationY(newRotation);
 
       const now = performance.now();
       const dt = Math.max(now - lastTimeRef.current, 8);
-      const instantaneousVelocity = ((e.clientX - lastXRef.current) / dt) * 7.5;
+      const instantaneousVelocity = ((e.clientX - lastXRef.current) / dt) * 7;
 
-      // Smoothed velocity tracking
-      velocityRef.current = velocityRef.current * 0.4 + instantaneousVelocity * 0.6;
+      velocityRef.current = velocityRef.current * 0.35 + instantaneousVelocity * 0.65;
       lastXRef.current = e.clientX;
       lastTimeRef.current = now;
     };
@@ -159,20 +208,21 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
         // Safe fallback
       }
 
-      if (hasMovedRef.current && Math.abs(velocityRef.current) > 0.4) {
+      if (hasMovedRef.current && Math.abs(velocityRef.current) > 0.35) {
         applyMomentum();
       }
     };
 
-    // Wheel listener for trackpads & mice
+    // Wheel listener for trackpads
     const handleWheel = (e: React.WheelEvent) => {
       const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-      setRotationY((prev) => prev + delta * 0.14);
+      setRotationY((prev) => prev + delta * 0.12);
     };
 
-    // Active dish index calculated from rotation for indicator dots
+    // Active dish index calculated from rotation for indicator dots & highlights
     const normalizedRot = ((-rotationY % 360) + 360) % 360;
     const activeIndex = Math.round(normalizedRot / angleStep) % N;
+    const activeItem = items[activeIndex];
 
     const customStyle = {
       "--n": N,
@@ -185,20 +235,20 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
         ref={ref}
         onWheel={handleWheel}
         className={cn(
-          "w-full h-full min-h-[580px] sm:min-h-[640px] flex flex-col items-center justify-center relative select-none touch-none",
+          "w-full h-full min-h-[600px] sm:min-h-[670px] flex flex-col items-center justify-center relative select-none touch-none",
           className
         )}
         {...props}
       >
         {/* 3D Cylinder Stage */}
         <div
-          className="w-full flex-1 grid place-items-center cursor-grab active:cursor-grabbing overflow-visible py-4 sm:py-8 touch-none"
+          className="w-full flex-1 grid place-items-center cursor-grab active:cursor-grabbing overflow-visible py-2 sm:py-6 touch-none"
           style={{
-            perspective: isMobile ? "38em" : "54em",
+            perspective: isMobile ? "40em" : "55em",
             maskImage:
-              "linear-gradient(90deg, transparent 0%, #000 8% 92%, transparent 100%)",
+              "linear-gradient(90deg, transparent 0%, #000 7% 93%, transparent 100%)",
             WebkitMaskImage:
-              "linear-gradient(90deg, transparent 0%, #000 8% 92%, transparent 100%)",
+              "linear-gradient(90deg, transparent 0%, #000 7% 93%, transparent 100%)",
           }}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
@@ -211,11 +261,16 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
               ...customStyle,
               transform: `rotateY(${rotationY}deg)`,
               WebkitBoxReflect:
-                "below 16px linear-gradient(to bottom, transparent 45%, rgba(249, 115, 22, 0.22) 100%)",
+                "below 14px linear-gradient(to bottom, transparent 50%, rgba(249, 115, 22, 0.2) 100%)",
             }}
           >
             {items.map((dish, i) => {
+              // Calculate angular distance to front (0 degrees)
+              const cardAngle = ((i * angleStep + rotationY) % 360 + 360) % 360;
+              const angleFromFront = Math.min(cardAngle, 360 - cardAngle);
+              const isFacingFront = angleFromFront < angleStep * 0.75;
               const isHovered = hoveredIdx === i;
+
               return (
                 <div
                   key={dish.id}
@@ -226,19 +281,27 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
                       e.preventDefault();
                       return;
                     }
-                    onSelectItem?.(dish);
+                    if (isFacingFront) {
+                      // Already in front, open detail modal
+                      onSelectItem?.(dish);
+                    } else {
+                      // Bring this card straight to the front!
+                      bringToFront(i, false);
+                    }
                   }}
                   role="button"
                   tabIndex={0}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
-                      onSelectItem?.(dish);
+                      bringToFront(i, true, dish);
                     }
                   }}
                   className={cn(
-                    "group relative [grid-area:1/1] rounded-[24px] sm:rounded-[28px] overflow-hidden [backface-visibility:hidden] transition-all duration-300 transform-gpu",
-                    "border border-orange-500/35 bg-neutral-950/95 shadow-[0_12px_35px_rgba(239,68,68,0.22)] backdrop-blur-xl",
-                    "hover:border-orange-400 hover:shadow-[0_20px_50px_rgba(249,115,22,0.45)] hover:scale-105 hover:saturate-[1.2] active:scale-95 active:saturate-[1.3]"
+                    "group relative [grid-area:1/1] rounded-[24px] sm:rounded-[28px] overflow-hidden [backface-visibility:hidden] transition-all duration-300 transform-gpu cursor-pointer",
+                    "border bg-neutral-950/95 backdrop-blur-xl",
+                    isFacingFront
+                      ? "border-orange-400 shadow-[0_20px_50px_rgba(249,115,22,0.5)] ring-2 ring-orange-500/50 scale-105"
+                      : "border-orange-500/25 shadow-[0_10px_25px_rgba(0,0,0,0.5)] opacity-80 hover:opacity-100 hover:border-orange-400 hover:scale-102"
                   )}
                   style={{
                     width: "var(--w)",
@@ -280,15 +343,18 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
                     </div>
                   </div>
 
-                  {/* Hover / Tap Hint */}
+                  {/* Centered Pick Button on Front Card or Hover */}
                   <div
                     className={cn(
                       "absolute inset-0 flex items-center justify-center z-20 transition-all duration-300 pointer-events-none",
-                      isHovered ? "opacity-100 scale-100" : "opacity-0 scale-90"
+                      isFacingFront || isHovered
+                        ? "opacity-100 scale-100"
+                        : "opacity-0 scale-90"
                     )}
                   >
-                    <span className="bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white font-serif tracking-widest uppercase px-3.5 py-1.5 rounded-full text-[11px] font-bold shadow-xl shadow-red-600/40 border border-orange-200/40">
-                      Tap to View
+                    <span className="bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white font-serif tracking-widest uppercase px-3.5 py-1.5 rounded-full text-[11px] font-bold shadow-xl shadow-red-600/50 border border-orange-200/50 flex items-center gap-1.5">
+                      {isFacingFront ? <Eye className="w-3.5 h-3.5" /> : null}
+                      <span>{isFacingFront ? "TAP TO PICK" : "ROTATE TO FRONT"}</span>
                     </span>
                   </div>
 
@@ -320,20 +386,42 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
           </div>
         </div>
 
+        {/* Quick Pick Front Focal Bar: Always displays the current front card and allows 1-tap view */}
+        {activeItem && (
+          <div className="relative z-30 mb-2 flex items-center justify-center">
+            <button
+              type="button"
+              onClick={() => onSelectItem?.(activeItem)}
+              className="flex items-center gap-3 px-4 py-2 rounded-full bg-neutral-950/90 border border-orange-500/40 text-left hover:border-orange-400 transition-all shadow-lg shadow-orange-500/20 group active:scale-95"
+            >
+              <img
+                src={activeItem.image}
+                alt={activeItem.name}
+                className="w-7 h-7 rounded-full object-cover border border-orange-400/50"
+              />
+              <div className="flex flex-col">
+                <span className="text-xs font-serif font-bold text-white group-hover:text-orange-300 transition-colors">
+                  {activeItem.name}
+                </span>
+                <span className="text-[10px] text-orange-400 font-serif font-bold">
+                  ${activeItem.price} • Tap to customize
+                </span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform ml-1" />
+            </button>
+          </div>
+        )}
+
         {/* Swipe Indicators / Quick Jump Dots */}
-        <div className="relative z-30 flex items-center gap-1.5 mt-2">
+        <div className="relative z-30 flex items-center gap-1.5 mt-1">
           {items.map((item, idx) => (
             <button
               key={item.id}
               type="button"
               aria-label={`Jump to ${item.name}`}
-              onClick={() => {
-                if (momentumFrameRef.current) cancelAnimationFrame(momentumFrameRef.current);
-                velocityRef.current = 0;
-                setRotationY(-idx * angleStep);
-              }}
+              onClick={() => bringToFront(idx, false)}
               className={cn(
-                "h-1.5 rounded-full transition-all duration-300",
+                "h-1.5 rounded-full transition-all duration-300 cursor-pointer",
                 activeIndex === idx
                   ? "w-6 bg-gradient-to-r from-red-500 to-orange-400 shadow-md shadow-orange-500/50"
                   : "w-1.5 bg-orange-500/30 hover:bg-orange-500/60"
