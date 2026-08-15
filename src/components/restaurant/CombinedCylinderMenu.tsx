@@ -59,6 +59,7 @@ export function CombinedCylinderMenu({
   const startYRef = useRef(0);
   const startRotRef = useRef(0);
   const lastXRef = useRef(0);
+  lastTimeRef: useRef<number>(0);
   const lastTimeRef = useRef(0);
   const velocityRef = useRef(0);
   const hasMovedSignificantlyRef = useRef(false);
@@ -329,8 +330,8 @@ export function CombinedCylinderMenu({
     >
       {/* 1. UPPER STAGE: 3D Cylinder Gastronomy Carousel */}
       <div className="relative w-full min-h-[480px] sm:min-h-[550px] flex items-center justify-center">
-        {/* Left Glowing Stepper Arrow */}
-        <div className="absolute left-2 sm:left-4 z-40 flex items-center justify-center">
+        {/* Left Glowing Stepper Arrow - Shifted slightly down */}
+        <div className="absolute left-2 sm:left-4 top-1/2 translate-y-6 sm:translate-y-8 z-40 flex items-center justify-center">
           <button
             type="button"
             aria-label="Rotate Previous"
@@ -347,8 +348,8 @@ export function CombinedCylinderMenu({
           </button>
         </div>
 
-        {/* Right Glowing Stepper Arrow */}
-        <div className="absolute right-2 sm:right-4 z-40 flex items-center justify-center">
+        {/* Right Glowing Stepper Arrow - Shifted slightly down */}
+        <div className="absolute right-2 sm:right-4 top-1/2 translate-y-6 sm:translate-y-8 z-40 flex items-center justify-center">
           <button
             type="button"
             aria-label="Rotate Next"
