@@ -7,7 +7,6 @@ import { CylinderMenuCarousel } from "@/components/restaurant/CylinderMenuCarous
 import { DishDetailModal } from "@/components/restaurant/DishDetailModal";
 import { toast } from "sonner";
 import { MadeWithDyad } from "@/components/made-with-dyad";
-import { Sparkles } from "lucide-react";
 
 const CATEGORIES = ["All", "Chef Specials", "Starters", "Mains", "Desserts", "Cocktails"] as const;
 
@@ -73,12 +72,10 @@ export default function RestaurantMenuPage() {
 
       {/* Header with Category Filter Chips */}
       <header className="relative z-20 w-full pt-6 px-4 flex flex-col items-center gap-3">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-orange-400 animate-pulse" />
+        <div className="flex items-center justify-center">
           <h1 className="text-xl sm:text-2xl font-serif font-black tracking-[0.2em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300">
             L&apos;AURA SAHARA
           </h1>
-          <Sparkles className="w-4 h-4 text-orange-400 animate-pulse" />
         </div>
 
         {/* Category Pills */}
