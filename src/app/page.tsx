@@ -31,12 +31,12 @@ export default function RestaurantMenuPage() {
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-[#0a0504] text-neutral-100 flex flex-col justify-between overflow-hidden select-none">
+    <div className="relative min-h-screen w-full bg-[#0a0504] text-neutral-100 flex flex-col items-center justify-between overflow-hidden select-none">
       {/* Sahara Sunset Ambient Glowing Atmospheric Background */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        {/* Sahara Sunset Solar Core positioned lower to match cylinder */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/3 w-[900px] h-[600px] bg-gradient-to-tr from-red-600/25 via-orange-500/25 to-pink-600/15 rounded-full blur-[180px] animate-pulse duration-1000" />
-        <div className="absolute top-1/2 left-1/4 -translate-x-1/2 w-[550px] h-[550px] bg-amber-500/20 rounded-full blur-[160px]" />
+        {/* Sahara Sunset Solar Core */}
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[550px] bg-gradient-to-tr from-red-600/25 via-orange-500/25 to-pink-600/15 rounded-full blur-[180px] animate-pulse duration-1000" />
+        <div className="absolute top-1/4 left-1/4 -translate-x-1/2 w-[550px] h-[550px] bg-amber-500/20 rounded-full blur-[160px]" />
         <div className="absolute bottom-10 right-1/4 translate-x-1/2 w-[600px] h-[450px] bg-red-700/20 rounded-full blur-[170px]" />
 
         {/* Topographic Dune Wave Lines in background */}
@@ -70,22 +70,22 @@ export default function RestaurantMenuPage() {
         />
       </div>
 
-      {/* Header Bar */}
-      <header className="relative z-20 w-full pt-5 sm:pt-6 px-4 flex flex-col items-center gap-3">
+      {/* Header with Category Filter Chips */}
+      <header className="relative z-20 w-full pt-6 px-4 flex flex-col items-center gap-3">
         <div className="flex items-center justify-center">
-          <h1 className="text-lg sm:text-xl font-serif font-black tracking-[0.25em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300">
+          <h1 className="text-xl sm:text-2xl font-serif font-black tracking-[0.2em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300">
             L&apos;AURA SAHARA
           </h1>
         </div>
 
-        {/* Category Filter Pills */}
+        {/* Category Pills */}
         <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto max-w-full py-1 px-2 scrollbar-none">
           {CATEGORIES.map((cat) => (
             <button
               key={cat}
               type="button"
               onClick={() => setSelectedCategory(cat)}
-              className={`text-xs font-serif uppercase tracking-wider px-3.5 py-1 rounded-full transition-all whitespace-nowrap cursor-pointer ${
+              className={`text-xs font-serif uppercase tracking-wider px-3.5 py-1.5 rounded-full transition-all whitespace-nowrap cursor-pointer ${
                 selectedCategory === cat
                   ? "bg-gradient-to-r from-red-500 to-orange-500 text-white font-bold shadow-md shadow-orange-500/30 border-0"
                   : "bg-neutral-950/70 border border-orange-500/30 text-orange-200/80 hover:text-white hover:border-orange-400"
@@ -97,17 +97,14 @@ export default function RestaurantMenuPage() {
         </div>
       </header>
 
-      {/* Spacious Upper Header Room / Spacer */}
-      <div className="hidden sm:block h-10 md:h-16 w-full pointer-events-none" />
-
-      {/* Main Cylinder Section situated in the middle/lower portion */}
-      <main className="relative z-10 w-full flex-1 flex flex-col items-center justify-end pb-2 sm:pb-4 px-2">
+      {/* Center 3D Cylinder Carousel */}
+      <main className="relative z-10 w-full flex-1 flex items-center justify-center p-2">
         <CylinderMenuCarousel
           key={selectedCategory}
           items={filteredItems}
           onSelectItem={handleOpenDish}
           animationDuration={36}
-          cardWidth={250}
+          cardWidth={260}
         />
       </main>
 
@@ -123,7 +120,7 @@ export default function RestaurantMenuPage() {
       />
 
       {/* Footer */}
-      <footer className="relative z-10 w-full py-1">
+      <footer className="relative z-10 w-full py-2">
         <MadeWithDyad />
       </footer>
     </div>
