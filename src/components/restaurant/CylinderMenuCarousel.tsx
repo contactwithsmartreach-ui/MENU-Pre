@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { MenuItem } from "@/types/restaurant";
 import { cn } from "@/lib/utils";
-import { Star, Flame, Sparkles, ChevronRight, Eye } from "lucide-react";
+import { Star, Flame, ChevronLeft, ChevronRight, Eye, Utensils } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export interface CylinderMenuCarouselProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -29,14 +29,14 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
   ) => {
     const N = items.length;
     const angleStep = 360 / N;
-    const defaultSpeed = autoSpinSpeed ?? (animationDuration ? 360 / animationDuration : 8);
+    const defaultSpeed = autoSpinSpeed ?? (animationDuration ? 360 / animationDuration : 6);
 
     const [rotationY, setRotationY] = useState(0);
     const [isAutoSpinning, setIsAutoSpinning] = useState(true);
     const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
     const [isMobile, setIsMobile] = useState(false);
 
-    // Responsive card width
+    // Responsive sizing
     useEffect(() => {
       const checkMobile = () => {
         setIsMobile(window.innerWidth < 640);
@@ -46,9 +46,9 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
       return () => window.removeEventListener("resize", checkMobile);
     }, []);
 
-    const actualCardWidth = customCardWidth ?? (isMobile ? 220 : 280);
+    const actualCardWidth = customCardWidth ?? (isMobile ? 200 : 260);
 
-    // Gesture & physics refs
+    // Physics & Gesture refs
     const isDraggingRef = useRef(false);
     const startXRef = useRef(0);
     const startYRef = useRef(0);
@@ -59,23 +59,22 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
     const hasMovedRef = useRef(false);
     const animFrameRef = useRef<number | null>(null);
     const momentumFrameRef = useRef<number | null>(null);
-    const smoothTargetRotRef = useRef<number | null>(null);
+    const autoResumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    // Smooth transition to a specific rotation angle (bringing card to front)
+    // Smooth transition to target rotation
     const rotateToAngle = useCallback((targetAngle: number, onComplete?: () => void) => {
       if (momentumFrameRef.current) cancelAnimationFrame(momentumFrameRef.current);
+      if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
+
       velocityRef.current = 0;
       setIsAutoSpinning(false);
 
-      // Find shortest rotation path
-      let current = rotationY;
-      let target = targetAngle;
-      
-      const diff = ((target - current + 180) % 360 + 360) % 360 - 180;
+      const current = rotationY;
+      const diff = ((targetAngle - current + 180) % 360 + 360) % 360 - 180;
       const finalTarget = current + diff;
 
       const startTime = performance.now();
-      const duration = 600; // ms
+      const duration = 500; // ms
       const startAngle = current;
 
       const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
@@ -93,16 +92,16 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
           setRotationY(finalTarget);
           onComplete?.();
           // Resume slow auto spin after 4 seconds of inactivity
-          setTimeout(() => {
+          autoResumeTimeoutRef.current = setTimeout(() => {
             setIsAutoSpinning(true);
-          }, 3500);
+          }, 4000);
         }
       };
 
       momentumFrameRef.current = requestAnimationFrame(animateSnap);
     }, [rotationY]);
 
-    // Bring specific card index to the front (0 degrees relative to viewer)
+    // Bring specific dish index to the front
     const bringToFront = useCallback((index: number, openModal: boolean = false, item?: MenuItem) => {
       const targetAngle = -index * angleStep;
       rotateToAngle(targetAngle, () => {
@@ -112,7 +111,33 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
       });
     }, [angleStep, rotateToAngle, onSelectItem]);
 
-    // Auto-spin animation loop
+    // Step Left (Previous dish)
+    const handlePrev = useCallback(() => {
+      const normalizedRot = ((-rotationY % 360) + 360) % 360;
+      const currentIdx = Math.round(normalizedRot / angleStep) % N;
+      const targetIdx = (currentIdx - 1 + N) % N;
+      bringToFront(targetIdx, false);
+    }, [rotationY, angleStep, N, bringToFront]);
+
+    // Step Right (Next dish)
+    const handleNext = useCallback(() => {
+      const normalizedRot = ((-rotationY % 360) + 360) % 360;
+      const currentIdx = Math.round(normalizedRot / angleStep) % N;
+      const targetIdx = (currentIdx + 1) % N;
+      bringToFront(targetIdx, false);
+    }, [rotationY, angleStep, N, bringToFront]);
+
+    // Keyboard navigation (Left / Right keys)
+    useEffect(() => {
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "ArrowLeft") handlePrev();
+        if (e.key === "ArrowRight") handleNext();
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [handlePrev, handleNext]);
+
+    // Continuous smooth auto-spin loop
     useEffect(() => {
       let previousTimestamp = performance.now();
 
@@ -138,7 +163,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
       };
     }, [isAutoSpinning, defaultSpeed, hoveredIdx]);
 
-    // Apply smooth inertia gliding on release
+    // Inertia on release
     const applyMomentum = useCallback(() => {
       const decay = 0.93;
       const step = () => {
@@ -154,9 +179,10 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
       momentumFrameRef.current = requestAnimationFrame(step);
     }, []);
 
-    // Pointer events
+    // Pointer events for drag & flick
     const handlePointerDown = (e: React.PointerEvent) => {
       if (momentumFrameRef.current) cancelAnimationFrame(momentumFrameRef.current);
+      if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
 
       isDraggingRef.current = true;
       hasMovedRef.current = false;
@@ -191,7 +217,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
 
       const now = performance.now();
       const dt = Math.max(now - lastTimeRef.current, 8);
-      const instantaneousVelocity = ((e.clientX - lastXRef.current) / dt) * 7;
+      const instantaneousVelocity = ((e.clientX - lastXRef.current) / dt) * 7.5;
 
       velocityRef.current = velocityRef.current * 0.35 + instantaneousVelocity * 0.65;
       lastXRef.current = e.clientX;
@@ -213,13 +239,12 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
       }
     };
 
-    // Wheel listener for trackpads
     const handleWheel = (e: React.WheelEvent) => {
       const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
       setRotationY((prev) => prev + delta * 0.12);
     };
 
-    // Active dish index calculated from rotation for indicator dots & highlights
+    // Active dish index
     const normalizedRot = ((-rotationY % 360) + 360) % 360;
     const activeIndex = Math.round(normalizedRot / angleStep) % N;
     const activeItem = items[activeIndex];
@@ -235,20 +260,36 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
         ref={ref}
         onWheel={handleWheel}
         className={cn(
-          "w-full h-full min-h-[600px] sm:min-h-[670px] flex flex-col items-center justify-center relative select-none touch-none",
+          "w-full h-full min-h-[580px] sm:min-h-[660px] flex flex-col items-center justify-between relative select-none touch-none",
           className
         )}
         {...props}
       >
+        {/* Left Side Spin Control Arrow */}
+        <button
+          type="button"
+          aria-label="Previous Dish"
+          onClick={handlePrev}
+          className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-40 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-neutral-950/80 hover:bg-neutral-900 border border-orange-500/40 text-orange-400 hover:text-white flex items-center justify-center shadow-[0_0_25px_rgba(249,115,22,0.35)] backdrop-blur-md transition-all hover:scale-110 active:scale-90 cursor-pointer group"
+        >
+          <ChevronLeft className="w-6 h-6 sm:w-7 sm:h-7 group-hover:-translate-x-0.5 transition-transform" />
+        </button>
+
+        {/* Right Side Spin Control Arrow */}
+        <button
+          type="button"
+          aria-label="Next Dish"
+          onClick={handleNext}
+          className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-40 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-neutral-950/80 hover:bg-neutral-900 border border-orange-500/40 text-orange-400 hover:text-white flex items-center justify-center shadow-[0_0_25px_rgba(249,115,22,0.35)] backdrop-blur-md transition-all hover:scale-110 active:scale-90 cursor-pointer group"
+        >
+          <ChevronRight className="w-6 h-6 sm:w-7 sm:h-7 group-hover:translate-x-0.5 transition-transform" />
+        </button>
+
         {/* 3D Cylinder Stage */}
         <div
           className="w-full flex-1 grid place-items-center cursor-grab active:cursor-grabbing overflow-visible py-2 sm:py-6 touch-none"
           style={{
-            perspective: isMobile ? "40em" : "55em",
-            maskImage:
-              "linear-gradient(90deg, transparent 0%, #000 7% 93%, transparent 100%)",
-            WebkitMaskImage:
-              "linear-gradient(90deg, transparent 0%, #000 7% 93%, transparent 100%)",
+            perspective: isMobile ? "44em" : "60em",
           }}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
@@ -261,11 +302,10 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
               ...customStyle,
               transform: `rotateY(${rotationY}deg)`,
               WebkitBoxReflect:
-                "below 14px linear-gradient(to bottom, transparent 50%, rgba(249, 115, 22, 0.2) 100%)",
+                "below 14px linear-gradient(to bottom, transparent 55%, rgba(249, 115, 22, 0.22) 100%)",
             }}
           >
             {items.map((dish, i) => {
-              // Calculate angular distance to front (0 degrees)
               const cardAngle = ((i * angleStep + rotationY) % 360 + 360) % 360;
               const angleFromFront = Math.min(cardAngle, 360 - cardAngle);
               const isFacingFront = angleFromFront < angleStep * 0.75;
@@ -282,10 +322,8 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
                       return;
                     }
                     if (isFacingFront) {
-                      // Already in front, open detail modal
                       onSelectItem?.(dish);
                     } else {
-                      // Bring this card straight to the front!
                       bringToFront(i, false);
                     }
                   }}
@@ -300,8 +338,8 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
                     "group relative [grid-area:1/1] rounded-[24px] sm:rounded-[28px] overflow-hidden [backface-visibility:hidden] transition-all duration-300 transform-gpu cursor-pointer",
                     "border bg-neutral-950/95 backdrop-blur-xl",
                     isFacingFront
-                      ? "border-orange-400 shadow-[0_20px_50px_rgba(249,115,22,0.5)] ring-2 ring-orange-500/50 scale-105"
-                      : "border-orange-500/25 shadow-[0_10px_25px_rgba(0,0,0,0.5)] opacity-80 hover:opacity-100 hover:border-orange-400 hover:scale-102"
+                      ? "border-orange-400 shadow-[0_20px_50px_rgba(249,115,22,0.5)] ring-2 ring-orange-500/50 scale-105 z-30"
+                      : "border-orange-500/30 shadow-[0_10px_25px_rgba(0,0,0,0.6)] opacity-85 hover:opacity-100 hover:border-orange-400 hover:scale-102"
                   )}
                   style={{
                     width: "var(--w)",
@@ -343,7 +381,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
                     </div>
                   </div>
 
-                  {/* Centered Pick Button on Front Card or Hover */}
+                  {/* Tap Hint */}
                   <div
                     className={cn(
                       "absolute inset-0 flex items-center justify-center z-20 transition-all duration-300 pointer-events-none",
@@ -353,7 +391,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
                     )}
                   >
                     <span className="bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white font-serif tracking-widest uppercase px-3.5 py-1.5 rounded-full text-[11px] font-bold shadow-xl shadow-red-600/50 border border-orange-200/50 flex items-center gap-1.5">
-                      {isFacingFront ? <Eye className="w-3.5 h-3.5" /> : null}
+                      {isFacingFront ? <Eye className="w-3.5 h-3.5" /> : <Utensils className="w-3.5 h-3.5" />}
                       <span>{isFacingFront ? "TAP TO PICK" : "ROTATE TO FRONT"}</span>
                     </span>
                   </div>
@@ -386,48 +424,55 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
           </div>
         </div>
 
-        {/* Quick Pick Front Focal Bar: Always displays the current front card and allows 1-tap view */}
-        {activeItem && (
-          <div className="relative z-30 mb-2 flex items-center justify-center">
+        {/* Quick-Access Bottom Bar: Touch/Click any dish thumbnail to rotate directly to it */}
+        <div className="relative z-30 w-full max-w-2xl px-4 py-2 flex flex-col items-center gap-2">
+          {/* Active Dish Quick Focal Action Card */}
+          {activeItem && (
             <button
               type="button"
               onClick={() => onSelectItem?.(activeItem)}
-              className="flex items-center gap-3 px-4 py-2 rounded-full bg-neutral-950/90 border border-orange-500/40 text-left hover:border-orange-400 transition-all shadow-lg shadow-orange-500/20 group active:scale-95"
+              className="flex items-center gap-3 px-4 py-2 rounded-full bg-neutral-950/95 border border-orange-500/50 hover:border-orange-400 transition-all shadow-[0_0_20px_rgba(249,115,22,0.25)] text-left group active:scale-95"
             >
               <img
                 src={activeItem.image}
                 alt={activeItem.name}
-                className="w-7 h-7 rounded-full object-cover border border-orange-400/50"
+                className="w-8 h-8 rounded-full object-cover border border-orange-400/60"
               />
               <div className="flex flex-col">
                 <span className="text-xs font-serif font-bold text-white group-hover:text-orange-300 transition-colors">
                   {activeItem.name}
                 </span>
                 <span className="text-[10px] text-orange-400 font-serif font-bold">
-                  ${activeItem.price} • Tap to customize
+                  ${activeItem.price} • Tap to view & order
                 </span>
               </div>
               <ChevronRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform ml-1" />
             </button>
-          </div>
-        )}
+          )}
 
-        {/* Swipe Indicators / Quick Jump Dots */}
-        <div className="relative z-30 flex items-center gap-1.5 mt-1">
-          {items.map((item, idx) => (
-            <button
-              key={item.id}
-              type="button"
-              aria-label={`Jump to ${item.name}`}
-              onClick={() => bringToFront(idx, false)}
-              className={cn(
-                "h-1.5 rounded-full transition-all duration-300 cursor-pointer",
-                activeIndex === idx
-                  ? "w-6 bg-gradient-to-r from-red-500 to-orange-400 shadow-md shadow-orange-500/50"
-                  : "w-1.5 bg-orange-500/30 hover:bg-orange-500/60"
-              )}
-            />
-          ))}
+          {/* Horizontal Quick-Pick Thumbnail Strip */}
+          <div className="flex items-center gap-1.5 overflow-x-auto max-w-full px-2 py-1 scrollbar-none bg-neutral-950/70 backdrop-blur-md rounded-full border border-orange-500/20">
+            {items.map((item, idx) => (
+              <button
+                key={item.id}
+                type="button"
+                aria-label={`Jump to ${item.name}`}
+                onClick={() => bringToFront(idx, false)}
+                className={cn(
+                  "relative rounded-full transition-all duration-300 shrink-0 overflow-hidden cursor-pointer",
+                  activeIndex === idx
+                    ? "w-8 h-8 ring-2 ring-orange-400 scale-110 shadow-lg shadow-orange-500/50"
+                    : "w-6 h-6 opacity-50 hover:opacity-100 hover:scale-105"
+                )}
+              >
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-full h-full object-cover"
+                />
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     );
