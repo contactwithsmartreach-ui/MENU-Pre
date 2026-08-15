@@ -92,15 +92,15 @@ export default function RestaurantMenuPage() {
       {/* Top Hero Section with Floating Plate Video Experience */}
       <HeroPlateScrollExperience onScrollToMenu={handleScrollToMenu} />
 
-      {/* Interactive Circular Gastronomy Section */}
+      {/* Interactive 3D Cylinder Gastronomy Section */}
       <section
         ref={menuSectionRef}
         id="cylinder-menu"
-        className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-6 pb-4 px-2 sm:px-6"
+        className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-4 pb-4 px-2 sm:px-6"
       >
-        {/* Main Presentation Area: Vertical Spotlight Navbar + Circular Dish Wheel */}
-        <div className="relative z-10 w-full flex-1 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12 max-w-7xl mx-auto py-2">
-          {/* Vertical Frameless Spotlight Navbar */}
+        {/* Main Presentation Area: Vertical Spotlight Navbar + 3D Cylinder */}
+        <div className="relative z-10 w-full flex-1 flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8 max-w-7xl mx-auto py-2">
+          {/* Vertical Spotlight Navbar */}
           <div className="shrink-0 flex items-center justify-center">
             <VerticalSpotlightNavbar
               items={CATEGORY_ITEMS}
@@ -109,12 +109,14 @@ export default function RestaurantMenuPage() {
             />
           </div>
 
-          {/* Center Circular Dish Wheel & Quick Action Showcase */}
+          {/* Center 3D Cylinder Carousel */}
           <div className="flex-1 w-full flex items-center justify-center overflow-visible">
             <CylinderMenuCarousel
               key={selectedCategory}
               items={filteredItems}
               onSelectItem={handleOpenDish}
+              animationDuration={36}
+              cardWidth={260}
             />
           </div>
         </div>

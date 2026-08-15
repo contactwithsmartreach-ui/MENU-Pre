@@ -40,7 +40,8 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
           L&apos;AURA SAHARA
         </h1>
         <p className="text-xs sm:text-sm md:text-base text-neutral-300 font-light max-w-lg mx-auto leading-relaxed">
-          Where desert embers ignite culinary mastery. Spin through our circular gastronomy carousel to curate your dining feast.
+          Where desert embers ignite culinary mastery. Experience our rotating
+          3D cylinder gastronomy theater.
         </p>
       </div>
 
@@ -116,7 +117,7 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
       <div className="relative z-10 flex flex-col items-center gap-3">
         <SaharaButton
           onClick={onScrollToMenu}
-          primaryText="EXPLORE CIRCULAR MENU"
+          primaryText="ENTER CYLINDER MENU"
           hoverText="TASTE THE SAHARA"
           size="md"
         />
