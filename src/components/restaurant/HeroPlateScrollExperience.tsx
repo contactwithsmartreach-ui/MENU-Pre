@@ -10,36 +10,30 @@ interface HeroPlateScrollExperienceProps {
 
 export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExperienceProps) {
   const [scrollY, setScrollY] = useState(0);
-  const [windowHeight, setWindowHeight] = useState(800);
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-    const handleResize = () => {
-      setWindowHeight(window.innerHeight || 800);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrollY(window.scrollY);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
-    handleResize();
     window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleResize);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Calculate scroll progress between 0 (top hero) and 1 (cylinder menu)
-  const progress = Math.min(Math.max(scrollY / (windowHeight * 0.85), 0), 1);
-
-  // Dynamic transforms based on scroll progress
-  const translateY = progress * 140;
-  const scale = 1 - progress * 0.18;
-  const rotateDeg = progress * 75;
-  const tiltX = (1 - progress) * 12;
+  const progress = Math.min(Math.max(scrollY / 700, 0), 1);
+  const translateY = progress * 120;
+  const scale = 1 - progress * 0.15;
+  const rotateDeg = progress * 45;
 
   return (
-    <section className="relative w-full min-h-[92vh] sm:min-h-screen flex flex-col items-center justify-between px-4 pt-12 pb-8 sm:pb-12 text-center select-none overflow-hidden">
+    <section className="relative w-full min-h-[90vh] sm:min-h-screen flex flex-col items-center justify-between px-4 pt-10 pb-8 sm:pb-12 text-center select-none overflow-hidden">
       {/* Hero Headline & Story */}
       <div className="relative z-10 max-w-2xl space-y-3 mt-2">
         <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-[0.18em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300 drop-shadow-[0_10px_35px_rgba(249,115,22,0.35)]">
@@ -57,7 +51,6 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
         <div className="absolute -top-12 z-30 pointer-events-none opacity-60 flex gap-4">
           <div className="w-10 h-24 bg-gradient-to-t from-orange-200/30 to-transparent rounded-full blur-xl animate-pulse duration-1000 transform -rotate-12" />
           <div className="w-8 h-28 bg-gradient-to-t from-amber-100/40 to-transparent rounded-full blur-xl animate-pulse duration-700 delay-300" />
-          <div className="w-12 h-20 bg-gradient-to-t from-orange-300/30 to-transparent rounded-full blur-xl animate-pulse duration-1000 delay-500 transform rotate-12" />
         </div>
 
         {/* Outer Radiant Glow */}
@@ -66,8 +59,8 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
         {/* 3D Moving Plate Container */}
         <div
           style={{
-            transform: `translateY(${translateY}px) scale(${scale}) rotate(${rotateDeg}deg) rotateX(${tiltX}deg)`,
-            transition: "transform 0.1s ease-out",
+            transform: `translate3d(0, ${translateY}px, 0) scale(${scale}) rotate(${rotateDeg}deg)`,
+            willChange: "transform",
           }}
           className="relative w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 rounded-full p-3 sm:p-4 bg-gradient-to-b from-amber-500/20 via-neutral-900/90 to-black border-2 border-orange-500/40 shadow-[0_25px_60px_rgba(0,0,0,0.9),0_0_50px_rgba(249,115,22,0.3)] cursor-pointer group"
           onClick={onScrollToMenu}
@@ -84,7 +77,7 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
                 loop
                 muted
                 playsInline
-                className="w-full h-full object-cover rounded-full scale-105 group-hover:scale-110 transition-transform duration-700 ease-out"
+                className="w-full h-full object-cover rounded-full scale-105 group-hover:scale-110 transition-transform duration-500 ease-out"
                 poster="https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=800&auto=format&fit=crop"
               >
                 <source
@@ -113,10 +106,10 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
         {/* Dynamic Floor Shadow beneath Plate */}
         <div
           style={{
-            transform: `scale(${1 - progress * 0.4})`,
-            opacity: Math.max(0.2, 0.8 - progress),
+            transform: `scale(${1 - progress * 0.3})`,
+            opacity: Math.max(0.3, 0.8 - progress),
           }}
-          className="w-48 sm:w-64 h-6 bg-black/80 rounded-full blur-xl mt-3 transition-transform"
+          className="w-48 sm:w-64 h-6 bg-black/80 rounded-full blur-xl mt-3 transition-opacity"
         />
       </div>
 
