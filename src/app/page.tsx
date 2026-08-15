@@ -6,10 +6,9 @@ import { MenuItem } from "@/types/restaurant";
 import { CylinderMenuCarousel } from "@/components/restaurant/CylinderMenuCarousel";
 import { DishDetailModal } from "@/components/restaurant/DishDetailModal";
 import { HeroPlateScrollExperience } from "@/components/restaurant/HeroPlateScrollExperience";
+import { SpotlightCategoryDropdown } from "@/components/restaurant/SpotlightCategoryDropdown";
 import { toast } from "sonner";
 import { MadeWithDyad } from "@/components/made-with-dyad";
-
-const CATEGORIES = ["All", "Chef Specials", "Starters", "Mains", "Desserts", "Cocktails"] as const;
 
 export default function RestaurantMenuPage() {
   const [selectedDish, setSelectedDish] = useState<MenuItem | null>(null);
@@ -89,24 +88,12 @@ export default function RestaurantMenuPage() {
         id="cylinder-menu"
         className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-6 pb-4"
       >
-        {/* Category Pills Header */}
-        <header className="relative z-20 w-full px-4 flex flex-col items-center">
-          <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto max-w-full py-1 px-2 scrollbar-none">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setSelectedCategory(cat)}
-                className={`text-xs font-serif uppercase tracking-wider px-3.5 py-1.5 rounded-full transition-all whitespace-nowrap cursor-pointer ${
-                  selectedCategory === cat
-                    ? "bg-gradient-to-r from-red-500 to-orange-500 text-white font-bold shadow-md shadow-orange-500/30 border-0"
-                    : "bg-neutral-950/70 border border-orange-500/30 text-orange-200/80 hover:text-white hover:border-orange-400"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
+        {/* Vertical Dropdown Spotlight Navbar Header */}
+        <header className="relative z-30 w-full px-4 flex flex-col items-center">
+          <SpotlightCategoryDropdown
+            selectedCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+          />
         </header>
 
         {/* Center 3D Cylinder Carousel */}
