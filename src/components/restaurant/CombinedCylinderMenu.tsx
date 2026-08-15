@@ -508,13 +508,13 @@ export function CombinedCylinderMenu({
         </div>
       </div>
 
-      {/* 3. LOWER STAGE: Sideways Cards Runway with Centered Glowing Selection on Scroll */}
+      {/* 3. LOWER STAGE: Sideways Cards Runway with Molten Candle Melting Design */}
       <div className="w-full max-w-7xl px-2 sm:px-4 flex flex-col items-center">
         {/* Horizontal Scrolling Strip with Centering Margins */}
         <div
           ref={runwayRef}
           onScroll={handleRunwayScroll}
-          className="w-full flex items-center gap-4 sm:gap-6 overflow-x-auto scrollbar-none py-4 sm:py-6 snap-x snap-mandatory scroll-smooth px-[calc(50%-100px)] sm:px-[calc(50%-125px)]"
+          className="w-full flex items-center gap-5 sm:gap-7 overflow-x-auto scrollbar-none py-6 sm:py-8 snap-x snap-mandatory scroll-smooth px-[calc(50%-100px)] sm:px-[calc(50%-125px)]"
         >
           {items.map((dish, index) => {
             const isSelected = selectedDishIndex === index;
@@ -539,34 +539,72 @@ export function CombinedCylinderMenu({
                   }
                 }}
                 className={cn(
-                  "group relative shrink-0 rounded-3xl overflow-hidden cursor-pointer transition-all duration-300 ease-out snap-center p-3 flex flex-col justify-between select-none",
+                  "group relative shrink-0 overflow-hidden cursor-pointer transition-all duration-400 ease-out snap-center p-3.5 flex flex-col justify-between select-none",
+                  // Melting Candle organic silhouette and border curvatures
+                  "rounded-b-[28px] rounded-t-[32px]",
                   isSelected
                     ? [
-                        "w-[200px] sm:w-[250px] z-30 scale-110 sm:scale-115 -translate-y-1.5",
-                        "bg-gradient-to-b from-[#1c0c09] via-neutral-950 to-neutral-950",
-                        "border-2 border-orange-400 ring-4 ring-orange-500/30",
-                        "shadow-[0_0_40px_rgba(249,115,22,0.65),0_0_80px_rgba(239,68,68,0.35),0_20px_40px_rgba(0,0,0,0.9)]",
+                        "w-[210px] sm:w-[260px] z-30 scale-110 sm:scale-115 -translate-y-2",
+                        "bg-gradient-to-b from-[#2a0e05] via-[#160703] to-[#0d0402]",
+                        "border-2 border-amber-400/80 ring-2 ring-orange-500/40",
+                        "shadow-[0_0_35px_rgba(249,115,22,0.7),0_0_70px_rgba(239,68,68,0.4),0_25px_50px_rgba(0,0,0,0.95)]",
                         "opacity-100",
                       ]
                     : [
-                        "w-[145px] sm:w-[175px] z-10 scale-95",
-                        "bg-neutral-950/70 backdrop-blur-md",
-                        "border border-orange-500/15 hover:border-orange-400/50",
-                        "opacity-40 hover:opacity-85 hover:scale-100 grayscale-[0.25] hover:grayscale-0",
-                        "shadow-[0_8px_20px_rgba(0,0,0,0.6)]",
+                        "w-[150px] sm:w-[180px] z-10 scale-95",
+                        "bg-gradient-to-b from-[#180805]/90 via-neutral-950/90 to-neutral-950/95 backdrop-blur-md",
+                        "border border-orange-500/25 hover:border-amber-400/60",
+                        "opacity-45 hover:opacity-90 hover:scale-100 grayscale-[0.2] hover:grayscale-0",
+                        "shadow-[0_10px_25px_rgba(0,0,0,0.7)]",
                       ]
                 )}
               >
-                {/* Active Radiant Pulse Backdrop Effect */}
+                {/* Molten Wax Candle Flame Wick & Glow at the Top */}
+                <div className="absolute -top-1.5 inset-x-0 flex items-center justify-center pointer-events-none z-30">
+                  <div
+                    className={cn(
+                      "w-3 h-4.5 rounded-full bg-gradient-to-t from-orange-500 via-amber-300 to-white shadow-[0_0_12px_rgba(251,191,36,0.9),0_0_24px_rgba(249,115,22,0.8)] transition-all duration-300",
+                      isSelected ? "opacity-100 scale-100 animate-pulse" : "opacity-0 scale-75 group-hover:opacity-80 group-hover:scale-90"
+                    )}
+                  />
+                </div>
+
+                {/* SVG Molten Wax Dripping Edge across the Card Header */}
+                <div className="absolute top-0 inset-x-0 pointer-events-none z-20 overflow-hidden leading-none h-6">
+                  <svg
+                    viewBox="0 0 200 24"
+                    preserveAspectRatio="none"
+                    className={cn(
+                      "w-full h-full transition-colors duration-300",
+                      isSelected
+                        ? "fill-amber-400/30 drop-shadow-[0_2px_6px_rgba(249,115,22,0.8)]"
+                        : "fill-orange-500/15 group-hover:fill-orange-400/25"
+                    )}
+                  >
+                    {/* Melting wax drips silhouette */}
+                    <path d="M0,0 L200,0 L200,5 C185,5 180,18 165,18 C152,18 148,4 135,4 C120,4 116,22 98,22 C82,22 78,6 64,6 C50,6 46,15 32,15 C20,15 15,3 0,3 Z" />
+                  </svg>
+                  {/* Glossy hot wax highlight line */}
+                  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-amber-400/60 via-orange-300 to-amber-500/60 blur-[0.5px]" />
+                </div>
+
+                {/* Candlewax Hanging Drops on the Sides */}
+                <div className="absolute top-6 left-0 w-1.5 h-6 bg-gradient-to-b from-amber-400/50 to-transparent rounded-r-full pointer-events-none" />
+                <div className="absolute top-10 right-0 w-1.5 h-8 bg-gradient-to-b from-orange-400/50 to-transparent rounded-l-full pointer-events-none" />
+                <div className="absolute top-16 left-0 w-1 h-4 bg-gradient-to-b from-amber-300/40 to-transparent rounded-r-full pointer-events-none" />
+
+                {/* Active Molten Radiance Glow Backdrop */}
                 {isSelected && (
-                  <div className="absolute -inset-1 bg-gradient-to-r from-red-500/20 via-orange-500/30 to-amber-400/20 rounded-3xl blur-md pointer-events-none -z-10 animate-pulse" />
+                  <div className="absolute -inset-1 bg-gradient-to-b from-amber-400/30 via-orange-500/20 to-red-600/20 rounded-[34px] blur-md pointer-events-none -z-10 animate-pulse" />
                 )}
 
-                {/* Thumbnail Image */}
+                {/* Thumbnail Image framed inside a candle wax well */}
                 <div
                   className={cn(
-                    "relative w-full rounded-2xl overflow-hidden mb-2.5 transition-all duration-300",
-                    isSelected ? "h-32 sm:h-38 ring-1 ring-orange-400/40" : "h-22 sm:h-26"
+                    "relative w-full overflow-hidden mb-2.5 transition-all duration-300 mt-1",
+                    // Organic dripping curvature around image
+                    "rounded-t-[22px] rounded-b-[20px]",
+                    isSelected ? "h-32 sm:h-38 ring-1 ring-amber-400/50 shadow-inner" : "h-22 sm:h-26"
                   )}
                 >
                   <img
@@ -575,13 +613,14 @@ export function CombinedCylinderMenu({
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
                     loading="lazy"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/90 via-transparent to-transparent" />
+                  {/* Warm amber wax glow overlay on the dish */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#150704] via-transparent to-amber-500/10" />
 
                   {/* Badges on Thumbnail */}
                   {dish.isSignature ? (
                     <span
                       className={cn(
-                        "absolute top-1.5 left-1.5 rounded-full bg-gradient-to-r from-red-600 to-orange-600 text-white font-serif uppercase tracking-wider font-bold shadow-md shadow-red-500/40 flex items-center gap-1",
+                        "absolute top-1.5 left-1.5 rounded-full bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 text-white font-serif uppercase tracking-wider font-bold shadow-md shadow-red-500/40 flex items-center gap-1",
                         isSelected ? "px-2 py-0.5 text-[10px]" : "px-1.5 py-0.5 text-[9px]"
                       )}
                     >
@@ -590,79 +629,84 @@ export function CombinedCylinderMenu({
                     </span>
                   ) : (
                     isSelected && (
-                      <span className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-neutral-950/80 backdrop-blur-md border border-orange-400/40 text-orange-200 font-serif text-[9px] uppercase tracking-wider">
+                      <span className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-neutral-950/80 backdrop-blur-md border border-amber-400/40 text-amber-200 font-serif text-[9px] uppercase tracking-wider">
                         {dish.category}
                       </span>
                     )
                   )}
 
-                  <div className="absolute bottom-1.5 right-1.5 flex items-center gap-0.5 text-amber-300 text-[10px] font-bold bg-neutral-950/85 px-1.5 py-0.5 rounded-md backdrop-blur-md border border-white/10">
+                  {/* Rating Badge */}
+                  <div className="absolute bottom-1.5 right-1.5 flex items-center gap-0.5 text-amber-300 text-[10px] font-bold bg-neutral-950/85 px-1.5 py-0.5 rounded-md backdrop-blur-md border border-amber-500/20">
                     <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-400" />
                     <span>{dish.rating}</span>
                   </div>
                 </div>
 
                 {/* Info Text */}
-                <div className="flex-1 flex flex-col justify-between">
+                <div className="flex-1 flex flex-col justify-between relative z-10">
                   <div>
                     <h4
                       className={cn(
                         "font-serif font-bold tracking-tight transition-colors line-clamp-1",
                         isSelected
-                          ? "text-sm sm:text-base text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-amber-200 to-white drop-shadow-[0_0_12px_rgba(249,115,22,0.6)]"
-                          : "text-xs sm:text-sm text-neutral-300 group-hover:text-white"
+                          ? "text-sm sm:text-base text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-orange-300 to-amber-100 drop-shadow-[0_0_12px_rgba(251,191,36,0.6)]"
+                          : "text-xs sm:text-sm text-neutral-300 group-hover:text-amber-200"
                       )}
                     >
                       {dish.name}
                     </h4>
                     {isSelected ? (
-                      <p className="text-[11px] text-orange-200/80 line-clamp-1 mt-0.5 font-light">
+                      <p className="text-[11px] text-amber-100/75 line-clamp-1 mt-0.5 font-light">
                         {dish.description}
                       </p>
                     ) : (
-                      <p className="text-[10px] text-neutral-500 truncate mt-0.5">
+                      <p className="text-[10px] text-amber-400/60 truncate mt-0.5">
                         {dish.category}
                       </p>
                     )}
                   </div>
 
-                  {/* Price & Action */}
+                  {/* Price & Action styled like a wax seal stamp */}
                   <div
                     className={cn(
                       "mt-2 pt-2 flex items-center justify-between transition-colors",
-                      isSelected ? "border-t border-orange-500/35" : "border-t border-white/5"
+                      isSelected ? "border-t border-amber-500/30" : "border-t border-amber-500/10"
                     )}
                   >
                     <div className="flex items-baseline gap-0.5">
-                      <span className="text-xs font-serif text-orange-400 font-bold">$</span>
+                      <span className="text-xs font-serif text-amber-400 font-bold">$</span>
                       <span
                         className={cn(
                           "font-serif font-extrabold tracking-tight",
                           isSelected
-                            ? "text-lg sm:text-xl text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300"
-                            : "text-sm text-neutral-300"
+                            ? "text-lg sm:text-xl text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-orange-400 drop-shadow-[0_0_8px_rgba(249,115,22,0.5)]"
+                            : "text-sm text-amber-200/90"
                         )}
                       >
                         {dish.price}
                       </span>
                     </div>
 
+                    {/* Wax Drop / Flame Action Button */}
                     <div
                       className={cn(
                         "rounded-full flex items-center justify-center transition-all duration-300",
                         isSelected
-                          ? "w-7 h-7 bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-lg shadow-orange-500/50 scale-105"
-                          : "w-5 h-5 bg-neutral-900 border border-white/10 text-neutral-400 group-hover:bg-orange-500 group-hover:text-neutral-950"
+                          ? "w-7 h-7 bg-gradient-to-br from-amber-400 via-orange-500 to-red-600 text-neutral-950 shadow-[0_0_15px_rgba(251,191,36,0.8)] scale-105"
+                          : "w-5 h-5 bg-[#1f0b06] border border-amber-500/30 text-amber-300 group-hover:bg-gradient-to-r group-hover:from-amber-500 group-hover:to-orange-600 group-hover:text-neutral-950 group-hover:shadow-[0_0_10px_rgba(249,115,22,0.6)]"
                       )}
                     >
                       {isSelected ? (
-                        <Eye className="w-3.5 h-3.5" />
+                        <Eye className="w-3.5 h-3.5 stroke-[2.5]" />
                       ) : (
                         <Plus className="w-3 h-3 stroke-[2.5]" />
                       )}
                     </div>
                   </div>
                 </div>
+
+                {/* Bottom Melting Wax Base Glow Curve */}
+                <div className="absolute bottom-0 inset-x-4 h-0.5 bg-gradient-to-r from-transparent via-amber-400/40 to-transparent blur-[1px] pointer-events-none" />
               </div>
             );
           })}
