@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { MenuItem } from "@/types/restaurant";
 import { cn } from "@/lib/utils";
-import { Star, Flame, ChevronRight, Eye, Utensils } from "lucide-react";
+import { Star, Flame, ChevronRight, ChevronLeft, Eye, Utensils } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export interface CylinderMenuCarouselProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -73,7 +73,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
       const finalTarget = current + diff;
 
       const startTime = performance.now();
-      const duration = 400; // faster snap duration for maximum snappiness
+      const duration = 400;
       const startAngle = current;
 
       const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
@@ -92,7 +92,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
           onComplete?.();
           autoResumeTimeoutRef.current = setTimeout(() => {
             setIsAutoSpinning(true);
-          }, 3000);
+          }, 3500);
         }
       };
 
@@ -107,6 +107,40 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
         }
       });
     }, [angleStep, rotateToAngle, onSelectItem]);
+
+    // Step left / right relative to current position
+    const stepRotate = useCallback((direction: "prev" | "next") => {
+      if (momentumFrameRef.current) cancelAnimationFrame(momentumFrameRef.current);
+      if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
+
+      setIsAutoSpinning(false);
+      const delta = direction === "next" ? -angleStep : angleStep;
+      const target = rotationY + delta;
+
+      const startTime = performance.now();
+      const duration = 350;
+      const startAngle = rotationY;
+      const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+
+      const animateStep = (now: number) => {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = easeOutCubic(progress);
+
+        setRotationY(startAngle + delta * eased);
+
+        if (progress < 1) {
+          momentumFrameRef.current = requestAnimationFrame(animateStep);
+        } else {
+          setRotationY(target);
+          autoResumeTimeoutRef.current = setTimeout(() => {
+            setIsAutoSpinning(true);
+          }, 3500);
+        }
+      };
+
+      momentumFrameRef.current = requestAnimationFrame(animateStep);
+    }, [angleStep, rotationY]);
 
     // Continuous smooth auto-spin loop with requestAnimationFrame
     useEffect(() => {
@@ -150,7 +184,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
       momentumFrameRef.current = requestAnimationFrame(step);
     }, []);
 
-    // Pointer events for ultra responsive touch & drag
+    // Pointer events for touch & drag
     const handlePointerDown = (e: React.PointerEvent) => {
       if (momentumFrameRef.current) cancelAnimationFrame(momentumFrameRef.current);
       if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
@@ -232,142 +266,183 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
         )}
         {...props}
       >
-        {/* 3D Cylinder Stage */}
-        <div
-          className="w-full flex-1 grid place-items-center cursor-grab active:cursor-grabbing overflow-visible py-2 sm:py-6 touch-none"
-          style={{
-            perspective: isMobile ? "40em" : "55em",
-          }}
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerUp}
-        >
+        {/* Main 3D Cylinder Stage with Flanking Glowing Side Scrolling Buttons */}
+        <div className="relative w-full flex-1 flex items-center justify-center">
+          {/* Left Glowing Scroll Button */}
+          <div className="absolute left-2 sm:left-6 z-40 flex items-center justify-center">
+            <button
+              type="button"
+              aria-label="Rotate Cylinder Previous"
+              onClick={() => stepRotate("prev")}
+              className={cn(
+                "group relative w-11 h-11 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer",
+                "bg-neutral-950/80 backdrop-blur-xl border border-orange-500/40 text-orange-200",
+                "shadow-[0_0_20px_rgba(249,115,22,0.35),0_10px_25px_rgba(0,0,0,0.8)]",
+                "hover:scale-110 hover:border-orange-400 hover:text-white hover:shadow-[0_0_35px_rgba(249,115,22,0.8)] active:scale-95"
+              )}
+            >
+              {/* Radial Ember Pulse Halo */}
+              <span className="absolute inset-0 rounded-full bg-gradient-to-r from-red-500/30 via-orange-500/30 to-amber-500/20 blur-md opacity-70 group-hover:opacity-100 transition-opacity" />
+              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 relative z-10 transition-transform group-hover:-translate-x-0.5 group-hover:drop-shadow-[0_0_8px_rgba(251,191,36,1)]" />
+            </button>
+          </div>
+
+          {/* Right Glowing Scroll Button */}
+          <div className="absolute right-2 sm:right-6 z-40 flex items-center justify-center">
+            <button
+              type="button"
+              aria-label="Rotate Cylinder Next"
+              onClick={() => stepRotate("next")}
+              className={cn(
+                "group relative w-11 h-11 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer",
+                "bg-neutral-950/80 backdrop-blur-xl border border-orange-500/40 text-orange-200",
+                "shadow-[0_0_20px_rgba(249,115,22,0.35),0_10px_25px_rgba(0,0,0,0.8)]",
+                "hover:scale-110 hover:border-orange-400 hover:text-white hover:shadow-[0_0_35px_rgba(249,115,22,0.8)] active:scale-95"
+              )}
+            >
+              {/* Radial Ember Pulse Halo */}
+              <span className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-500/20 via-orange-500/30 to-red-500/30 blur-md opacity-70 group-hover:opacity-100 transition-opacity" />
+              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 relative z-10 transition-transform group-hover:translate-x-0.5 group-hover:drop-shadow-[0_0_8px_rgba(251,191,36,1)]" />
+            </button>
+          </div>
+
+          {/* 3D Cylinder Container */}
           <div
-            className="grid place-items-center [transform-style:preserve-3d] will-change-transform"
+            className="w-full flex-1 grid place-items-center cursor-grab active:cursor-grabbing overflow-visible py-2 sm:py-6 touch-none"
             style={{
-              ...customStyle,
-              transform: `rotateY(${rotationY}deg)`,
-              WebkitBoxReflect:
-                "below 12px linear-gradient(to bottom, transparent 60%, rgba(249, 115, 22, 0.2) 100%)",
+              perspective: isMobile ? "40em" : "55em",
             }}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
           >
-            {items.map((dish, i) => {
-              const cardAngle = ((i * angleStep + rotationY) % 360 + 360) % 360;
-              const angleFromFront = Math.min(cardAngle, 360 - cardAngle);
-              const isFacingFront = angleFromFront < angleStep * 0.75;
-              const isHovered = hoveredIdx === i;
+            <div
+              className="grid place-items-center [transform-style:preserve-3d] will-change-transform"
+              style={{
+                ...customStyle,
+                transform: `rotateY(${rotationY}deg)`,
+                WebkitBoxReflect:
+                  "below 12px linear-gradient(to bottom, transparent 60%, rgba(249, 115, 22, 0.2) 100%)",
+              }}
+            >
+              {items.map((dish, i) => {
+                const cardAngle = ((i * angleStep + rotationY) % 360 + 360) % 360;
+                const angleFromFront = Math.min(cardAngle, 360 - cardAngle);
+                const isFacingFront = angleFromFront < angleStep * 0.75;
+                const isHovered = hoveredIdx === i;
 
-              return (
-                <div
-                  key={dish.id}
-                  onMouseEnter={() => !isMobile && setHoveredIdx(i)}
-                  onMouseLeave={() => !isMobile && setHoveredIdx(null)}
-                  onClick={(e) => {
-                    if (hasMovedRef.current) {
-                      e.preventDefault();
-                      return;
-                    }
-                    if (isFacingFront) {
-                      onSelectItem?.(dish);
-                    } else {
-                      bringToFront(i, false);
-                    }
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      bringToFront(i, true, dish);
-                    }
-                  }}
-                  className={cn(
-                    "group relative [grid-area:1/1] rounded-[24px] sm:rounded-[28px] overflow-hidden [backface-visibility:hidden] transition-all duration-200 transform-gpu cursor-pointer",
-                    "border bg-neutral-950/95 backdrop-blur-xl",
-                    isFacingFront
-                      ? "border-orange-400 shadow-[0_20px_50px_rgba(249,115,22,0.5)] ring-2 ring-orange-500/50 scale-105 z-30"
-                      : "border-orange-500/30 shadow-[0_10px_25px_rgba(0,0,0,0.6)] opacity-85 hover:opacity-100 hover:border-orange-400 hover:scale-102"
-                  )}
-                  style={{
-                    width: "var(--w)",
-                    aspectRatio: "7/10",
-                    "--i": i,
-                    transform:
-                      "rotateY(calc(var(--i) * var(--ba))) translateZ(calc(-1 * (0.5 * var(--w) + 0.5em) / tan(0.5 * var(--ba))))",
-                  } as React.CSSProperties}
-                >
-                  {/* Dish image */}
-                  <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-                    <img
-                      src={dish.image}
-                      alt={dish.name}
-                      className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
-                      loading="lazy"
-                      draggable={false}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/50 to-transparent" />
-                    <div className="absolute inset-0 bg-gradient-to-tr from-red-600/30 via-orange-500/20 to-pink-500/10 mix-blend-color-dodge" />
-                  </div>
-
-                  {/* Top Bar */}
-                  <div className="relative z-10 p-3 sm:p-4 flex items-center justify-between w-full pointer-events-none">
-                    {dish.isSignature ? (
-                      <Badge className="bg-gradient-to-r from-red-500 to-orange-500 text-white font-serif tracking-wider uppercase px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-[11px] shadow-lg shadow-red-500/30 border-0">
-                        <Flame className="w-3.5 h-3.5 fill-current mr-1 text-amber-200 animate-pulse" />
-                        Sahara Pick
-                      </Badge>
-                    ) : (
-                      <span className="text-[10px] sm:text-[11px] font-serif uppercase tracking-widest text-orange-200 bg-neutral-950/80 px-2.5 py-0.5 sm:py-1 rounded-full backdrop-blur-md border border-orange-500/30">
-                        {dish.category}
-                      </span>
-                    )}
-
-                    <div className="flex items-center gap-1 bg-neutral-950/85 backdrop-blur-md px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full border border-orange-500/30 text-amber-300 text-[11px] sm:text-xs font-bold">
-                      <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                      <span>{dish.rating}</span>
-                    </div>
-                  </div>
-
-                  {/* Tap Hint */}
+                return (
                   <div
+                    key={dish.id}
+                    onMouseEnter={() => !isMobile && setHoveredIdx(i)}
+                    onMouseLeave={() => !isMobile && setHoveredIdx(null)}
+                    onClick={(e) => {
+                      if (hasMovedRef.current) {
+                        e.preventDefault();
+                        return;
+                      }
+                      if (isFacingFront) {
+                        onSelectItem?.(dish);
+                      } else {
+                        bringToFront(i, false);
+                      }
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        bringToFront(i, true, dish);
+                      }
+                    }}
                     className={cn(
-                      "absolute inset-0 flex items-center justify-center z-20 transition-all duration-200 pointer-events-none",
-                      isFacingFront || isHovered
-                        ? "opacity-100 scale-100"
-                        : "opacity-0 scale-90"
+                      "group relative [grid-area:1/1] rounded-[24px] sm:rounded-[28px] overflow-hidden [backface-visibility:hidden] transition-all duration-200 transform-gpu cursor-pointer",
+                      "border bg-neutral-950/95 backdrop-blur-xl",
+                      isFacingFront
+                        ? "border-orange-400 shadow-[0_20px_50px_rgba(249,115,22,0.5)] ring-2 ring-orange-500/50 scale-105 z-30"
+                        : "border-orange-500/30 shadow-[0_10px_25px_rgba(0,0,0,0.6)] opacity-85 hover:opacity-100 hover:border-orange-400 hover:scale-102"
                     )}
+                    style={{
+                      width: "var(--w)",
+                      aspectRatio: "7/10",
+                      "--i": i,
+                      transform:
+                        "rotateY(calc(var(--i) * var(--ba))) translateZ(calc(-1 * (0.5 * var(--w) + 0.5em) / tan(0.5 * var(--ba))))",
+                    } as React.CSSProperties}
                   >
-                    <span className="bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white font-serif tracking-widest uppercase px-3.5 py-1.5 rounded-full text-[11px] font-bold shadow-xl shadow-red-600/50 border border-orange-200/50 flex items-center gap-1.5">
-                      {isFacingFront ? <Eye className="w-3.5 h-3.5" /> : <Utensils className="w-3.5 h-3.5" />}
-                      <span>{isFacingFront ? "TAP TO PICK" : "ROTATE TO FRONT"}</span>
-                    </span>
-                  </div>
+                    {/* Dish image */}
+                    <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+                      <img
+                        src={dish.image}
+                        alt={dish.name}
+                        className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+                        loading="lazy"
+                        draggable={false}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/50 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-tr from-red-600/30 via-orange-500/20 to-pink-500/10 mix-blend-color-dodge" />
+                    </div>
 
-                  {/* Bottom Dish Information */}
-                  <div className="absolute bottom-0 inset-x-0 z-10 p-3.5 sm:p-5 pt-10 bg-gradient-to-t from-neutral-950 via-neutral-950/95 to-transparent flex flex-col justify-end pointer-events-none">
-                    <h3 className="text-sm sm:text-base font-serif font-bold text-white tracking-wide truncate group-hover:text-orange-300 transition-colors">
-                      {dish.name}
-                    </h3>
-                    <p className="text-[11px] sm:text-xs text-neutral-300/85 line-clamp-1 mt-0.5 font-light">
-                      {dish.description}
-                    </p>
+                    {/* Top Bar */}
+                    <div className="relative z-10 p-3 sm:p-4 flex items-center justify-between w-full pointer-events-none">
+                      {dish.isSignature ? (
+                        <Badge className="bg-gradient-to-r from-red-500 to-orange-500 text-white font-serif tracking-wider uppercase px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-[11px] shadow-lg shadow-red-500/30 border-0">
+                          <Flame className="w-3.5 h-3.5 fill-current mr-1 text-amber-200 animate-pulse" />
+                          Sahara Pick
+                        </Badge>
+                      ) : (
+                        <span className="text-[10px] sm:text-[11px] font-serif uppercase tracking-widest text-orange-200 bg-neutral-950/80 px-2.5 py-0.5 sm:py-1 rounded-full backdrop-blur-md border border-orange-500/30">
+                          {dish.category}
+                        </span>
+                      )}
 
-                    <div className="mt-2.5 sm:mt-3.5 pt-2 sm:pt-2.5 border-t border-orange-500/20 flex items-center justify-between">
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-[11px] sm:text-xs font-serif text-orange-400 font-bold">$</span>
-                        <span className="text-xl sm:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300 font-serif tracking-tight">
-                          {dish.price}
+                      <div className="flex items-center gap-1 bg-neutral-950/85 backdrop-blur-md px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full border border-orange-500/30 text-amber-300 text-[11px] sm:text-xs font-bold">
+                        <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                        <span>{dish.rating}</span>
+                      </div>
+                    </div>
+
+                    {/* Tap Hint */}
+                    <div
+                      className={cn(
+                        "absolute inset-0 flex items-center justify-center z-20 transition-all duration-200 pointer-events-none",
+                        isFacingFront || isHovered
+                          ? "opacity-100 scale-100"
+                          : "opacity-0 scale-90"
+                      )}
+                    >
+                      <span className="bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white font-serif tracking-widest uppercase px-3.5 py-1.5 rounded-full text-[11px] font-bold shadow-xl shadow-red-600/50 border border-orange-200/50 flex items-center gap-1.5">
+                        {isFacingFront ? <Eye className="w-3.5 h-3.5" /> : <Utensils className="w-3.5 h-3.5" />}
+                        <span>{isFacingFront ? "TAP TO PICK" : "ROTATE TO FRONT"}</span>
+                      </span>
+                    </div>
+
+                    {/* Bottom Dish Information */}
+                    <div className="absolute bottom-0 inset-x-0 z-10 p-3.5 sm:p-5 pt-10 bg-gradient-to-t from-neutral-950 via-neutral-950/95 to-transparent flex flex-col justify-end pointer-events-none">
+                      <h3 className="text-sm sm:text-base font-serif font-bold text-white tracking-wide truncate group-hover:text-orange-300 transition-colors">
+                        {dish.name}
+                      </h3>
+                      <p className="text-[11px] sm:text-xs text-neutral-300/85 line-clamp-1 mt-0.5 font-light">
+                        {dish.description}
+                      </p>
+
+                      <div className="mt-2.5 sm:mt-3.5 pt-2 sm:pt-2.5 border-t border-orange-500/20 flex items-center justify-between">
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-[11px] sm:text-xs font-serif text-orange-400 font-bold">$</span>
+                          <span className="text-xl sm:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300 font-serif tracking-tight">
+                            {dish.price}
+                          </span>
+                        </div>
+
+                        <span className="text-[10px] sm:text-xs text-orange-200/70 font-mono tracking-wider">
+                          {dish.prepTime}
                         </span>
                       </div>
-
-                      <span className="text-[10px] sm:text-xs text-orange-200/70 font-mono tracking-wider">
-                        {dish.prepTime}
-                      </span>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
 
