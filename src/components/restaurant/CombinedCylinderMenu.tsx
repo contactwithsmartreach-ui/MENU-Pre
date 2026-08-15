@@ -323,48 +323,12 @@ export function CombinedCylinderMenu({
     <div
       onWheel={handleWheel}
       className={cn(
-        "w-full flex flex-col items-center justify-between relative select-none gap-6",
+        "w-full flex flex-col items-center justify-between relative select-none gap-2 sm:gap-4",
         className
       )}
     >
       {/* 1. UPPER STAGE: 3D Cylinder Gastronomy Carousel */}
       <div className="relative w-full min-h-[480px] sm:min-h-[550px] flex items-center justify-center">
-        {/* Left Glowing Stepper Arrow */}
-        <div className="absolute left-2 sm:left-4 z-40 flex items-center justify-center">
-          <button
-            type="button"
-            aria-label="Rotate Previous"
-            onClick={() => stepRotate("prev")}
-            className={cn(
-              "group relative w-11 h-11 sm:w-13 sm:h-13 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer",
-              "bg-neutral-950/85 backdrop-blur-xl border border-orange-500/40 text-orange-200",
-              "shadow-[0_0_20px_rgba(249,115,22,0.35),0_10px_25px_rgba(0,0,0,0.8)]",
-              "hover:scale-110 hover:border-orange-400 hover:text-white hover:shadow-[0_0_35px_rgba(249,115,22,0.8)] active:scale-95"
-            )}
-          >
-            <span className="absolute inset-0 rounded-full bg-gradient-to-r from-red-500/30 via-orange-500/30 to-amber-500/20 blur-md opacity-70 group-hover:opacity-100 transition-opacity" />
-            <ChevronLeft className="w-5 h-5 relative z-10 transition-transform group-hover:-translate-x-0.5" />
-          </button>
-        </div>
-
-        {/* Right Glowing Stepper Arrow */}
-        <div className="absolute right-2 sm:right-4 z-40 flex items-center justify-center">
-          <button
-            type="button"
-            aria-label="Rotate Next"
-            onClick={() => stepRotate("next")}
-            className={cn(
-              "group relative w-11 h-11 sm:w-13 sm:h-13 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer",
-              "bg-neutral-950/85 backdrop-blur-xl border border-orange-500/40 text-orange-200",
-              "shadow-[0_0_20px_rgba(249,115,22,0.35),0_10px_25px_rgba(0,0,0,0.8)]",
-              "hover:scale-110 hover:border-orange-400 hover:text-white hover:shadow-[0_0_35px_rgba(249,115,22,0.8)] active:scale-95"
-            )}
-          >
-            <span className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-500/20 via-orange-500/30 to-red-500/30 blur-md opacity-70 group-hover:opacity-100 transition-opacity" />
-            <ChevronRight className="w-5 h-5 relative z-10 transition-transform group-hover:translate-x-0.5" />
-          </button>
-        </div>
-
         {/* 3D Cylinder Scene */}
         <div
           className="w-full flex-1 grid place-items-center cursor-grab active:cursor-grabbing overflow-visible py-2 touch-pan-y"
@@ -498,7 +462,52 @@ export function CombinedCylinderMenu({
         </div>
       </div>
 
-      {/* 2. LOWER STAGE: Sideways Cards Runway with Centered Glowing Selection on Scroll */}
+      {/* 2. MIDDLE CONTROLS: Glowing Orange Navigation Stepper between Cylinder and Runway */}
+      <div className="relative z-30 flex items-center justify-center gap-6 sm:gap-8 py-2">
+        {/* Left Glowing Stepper Arrow */}
+        <button
+          type="button"
+          aria-label="Rotate Previous"
+          onClick={() => stepRotate("prev")}
+          className={cn(
+            "group relative w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer",
+            "bg-neutral-950/90 backdrop-blur-2xl border-2 border-orange-500/60 text-orange-300",
+            "shadow-[0_0_30px_rgba(249,115,22,0.6),0_0_60px_rgba(234,88,12,0.35),0_10px_25px_rgba(0,0,0,0.9)]",
+            "hover:scale-110 hover:border-orange-400 hover:text-white hover:shadow-[0_0_45px_rgba(249,115,22,0.9),0_0_80px_rgba(251,146,60,0.5)] active:scale-95"
+          )}
+        >
+          <span className="absolute -inset-1 rounded-full bg-gradient-to-r from-red-500/40 via-orange-500/60 to-amber-400/50 blur-lg opacity-85 group-hover:opacity-100 transition-opacity animate-pulse" />
+          <span className="absolute inset-0 rounded-full bg-neutral-950/90" />
+          <ChevronLeft className="w-6 h-6 relative z-10 transition-transform group-hover:-translate-x-0.5 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]" />
+        </button>
+
+        {/* Center Indicator Text */}
+        <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-neutral-950/80 border border-orange-500/30 shadow-[0_0_20px_rgba(249,115,22,0.2)] backdrop-blur-md">
+          <span className="w-2 h-2 rounded-full bg-orange-400 animate-ping" />
+          <span className="text-xs font-serif uppercase tracking-widest text-orange-200/90">
+            {selectedDishIndex + 1} / {N}
+          </span>
+        </div>
+
+        {/* Right Glowing Stepper Arrow */}
+        <button
+          type="button"
+          aria-label="Rotate Next"
+          onClick={() => stepRotate("next")}
+          className={cn(
+            "group relative w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer",
+            "bg-neutral-950/90 backdrop-blur-2xl border-2 border-orange-500/60 text-orange-300",
+            "shadow-[0_0_30px_rgba(249,115,22,0.6),0_0_60px_rgba(234,88,12,0.35),0_10px_25px_rgba(0,0,0,0.9)]",
+            "hover:scale-110 hover:border-orange-400 hover:text-white hover:shadow-[0_0_45px_rgba(249,115,22,0.9),0_0_80px_rgba(251,146,60,0.5)] active:scale-95"
+          )}
+        >
+          <span className="absolute -inset-1 rounded-full bg-gradient-to-r from-amber-400/50 via-orange-500/60 to-red-500/40 blur-lg opacity-85 group-hover:opacity-100 transition-opacity animate-pulse" />
+          <span className="absolute inset-0 rounded-full bg-neutral-950/90" />
+          <ChevronRight className="w-6 h-6 relative z-10 transition-transform group-hover:translate-x-0.5 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]" />
+        </button>
+      </div>
+
+      {/* 3. LOWER STAGE: Sideways Cards Runway with Centered Glowing Selection on Scroll */}
       <div className="w-full max-w-7xl px-2 sm:px-4 flex flex-col items-center">
         {/* Horizontal Scrolling Strip with Centering Margins */}
         <div
