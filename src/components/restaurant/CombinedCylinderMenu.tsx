@@ -481,13 +481,6 @@ export function CombinedCylinderMenu({
           </button>
         </div>
 
-        {/* Center Ember Glowing Divider Line */}
-        <div className="flex items-center gap-2">
-          <div className="w-12 sm:w-24 h-0.5 bg-gradient-to-r from-transparent via-orange-500/50 to-orange-400 shadow-[0_0_8px_rgba(249,115,22,0.8)]" />
-          <div className="w-3 h-3 rounded-full bg-gradient-to-tr from-red-500 to-amber-300 shadow-[0_0_16px_rgba(249,115,22,1),0_0_24px_rgba(239,68,68,0.9)] animate-pulse" />
-          <div className="w-12 sm:w-24 h-0.5 bg-gradient-to-r from-orange-400 via-orange-500/50 to-transparent shadow-[0_0_8px_rgba(249,115,22,0.8)]" />
-        </div>
-
         {/* Right Full Orange Glowing Button */}
         <div className="relative group">
           <span className="absolute -inset-1 rounded-full bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 blur-lg opacity-80 group-hover:opacity-100 group-hover:blur-xl transition-all duration-300 animate-pulse" />
