@@ -3,12 +3,13 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { MenuItem } from "@/types/restaurant";
 import { cn } from "@/lib/utils";
-import { Star, Flame, ChevronLeft, ChevronRight, Eye, Utensils } from "lucide-react";
+import { Star, Flame, ChevronLeft, ChevronRight, Plus, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export interface CylinderMenuCarouselProps extends React.HTMLAttributes<HTMLDivElement> {
   items: MenuItem[];
   onSelectItem?: (item: MenuItem) => void;
+  onQuickAdd?: (item: MenuItem) => void;
   cardWidth?: number;
   autoSpinSpeed?: number;
   animationDuration?: number;
@@ -19,6 +20,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
     {
       items,
       onSelectItem,
+      onQuickAdd,
       className,
       cardWidth: customCardWidth,
       autoSpinSpeed,
@@ -46,7 +48,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
       return () => window.removeEventListener("resize", checkMobile);
     }, []);
 
-    const actualCardWidth = customCardWidth ?? (isMobile ? 200 : 260);
+    const actualCardWidth = customCardWidth ?? (isMobile ? 210 : 270);
 
     // Physics & Gesture refs
     const isDraggingRef = useRef(false);
@@ -74,7 +76,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
       const finalTarget = current + diff;
 
       const startTime = performance.now();
-      const duration = 500; // ms
+      const duration = 500;
       const startAngle = current;
 
       const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
@@ -91,10 +93,9 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
         } else {
           setRotationY(finalTarget);
           onComplete?.();
-          // Resume slow auto spin after 4 seconds of inactivity
           autoResumeTimeoutRef.current = setTimeout(() => {
             setIsAutoSpinning(true);
-          }, 4000);
+          }, 4500);
         }
       };
 
@@ -127,7 +128,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
       bringToFront(targetIdx, false);
     }, [rotationY, angleStep, N, bringToFront]);
 
-    // Keyboard navigation (Left / Right keys)
+    // Keyboard navigation
     useEffect(() => {
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === "ArrowLeft") handlePrev();
@@ -137,7 +138,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
       return () => window.removeEventListener("keydown", handleKeyDown);
     }, [handlePrev, handleNext]);
 
-    // Continuous smooth auto-spin loop
+    // Continuous auto-spin loop
     useEffect(() => {
       let previousTimestamp = performance.now();
 
@@ -179,7 +180,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
       momentumFrameRef.current = requestAnimationFrame(step);
     }, []);
 
-    // Pointer events for drag & flick
+    // Pointer drag
     const handlePointerDown = (e: React.PointerEvent) => {
       if (momentumFrameRef.current) cancelAnimationFrame(momentumFrameRef.current);
       if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
@@ -270,7 +271,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
           type="button"
           aria-label="Previous Dish"
           onClick={handlePrev}
-          className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-40 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-neutral-950/80 hover:bg-neutral-900 border border-orange-500/40 text-orange-400 hover:text-white flex items-center justify-center shadow-[0_0_25px_rgba(249,115,22,0.35)] backdrop-blur-md transition-all hover:scale-110 active:scale-90 cursor-pointer group"
+          className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-40 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-neutral-950/85 hover:bg-neutral-900 border border-orange-500/40 text-orange-400 hover:text-white flex items-center justify-center shadow-[0_0_25px_rgba(249,115,22,0.35)] backdrop-blur-md transition-all hover:scale-110 active:scale-90 cursor-pointer group"
         >
           <ChevronLeft className="w-6 h-6 sm:w-7 sm:h-7 group-hover:-translate-x-0.5 transition-transform" />
         </button>
@@ -280,7 +281,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
           type="button"
           aria-label="Next Dish"
           onClick={handleNext}
-          className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-40 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-neutral-950/80 hover:bg-neutral-900 border border-orange-500/40 text-orange-400 hover:text-white flex items-center justify-center shadow-[0_0_25px_rgba(249,115,22,0.35)] backdrop-blur-md transition-all hover:scale-110 active:scale-90 cursor-pointer group"
+          className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-40 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-neutral-950/85 hover:bg-neutral-900 border border-orange-500/40 text-orange-400 hover:text-white flex items-center justify-center shadow-[0_0_25px_rgba(249,115,22,0.35)] backdrop-blur-md transition-all hover:scale-110 active:scale-90 cursor-pointer group"
         >
           <ChevronRight className="w-6 h-6 sm:w-7 sm:h-7 group-hover:translate-x-0.5 transition-transform" />
         </button>
@@ -329,11 +330,6 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
                   }}
                   role="button"
                   tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      bringToFront(i, true, dish);
-                    }
-                  }}
                   className={cn(
                     "group relative [grid-area:1/1] rounded-[24px] sm:rounded-[28px] overflow-hidden [backface-visibility:hidden] transition-all duration-300 transform-gpu cursor-pointer",
                     "border bg-neutral-950/95 backdrop-blur-xl",
@@ -381,7 +377,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
                     </div>
                   </div>
 
-                  {/* Tap Hint */}
+                  {/* Center Pick Hover/Focus Action */}
                   <div
                     className={cn(
                       "absolute inset-0 flex items-center justify-center z-20 transition-all duration-300 pointer-events-none",
@@ -391,13 +387,13 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
                     )}
                   >
                     <span className="bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white font-serif tracking-widest uppercase px-3.5 py-1.5 rounded-full text-[11px] font-bold shadow-xl shadow-red-600/50 border border-orange-200/50 flex items-center gap-1.5">
-                      {isFacingFront ? <Eye className="w-3.5 h-3.5" /> : <Utensils className="w-3.5 h-3.5" />}
-                      <span>{isFacingFront ? "TAP TO PICK" : "ROTATE TO FRONT"}</span>
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>{isFacingFront ? "VIEW & CUSTOMIZE" : "BRING TO FRONT"}</span>
                     </span>
                   </div>
 
-                  {/* Bottom Dish Information */}
-                  <div className="absolute bottom-0 inset-x-0 z-10 p-3.5 sm:p-5 pt-10 bg-gradient-to-t from-neutral-950 via-neutral-950/95 to-transparent flex flex-col justify-end pointer-events-none">
+                  {/* Bottom Dish Info and Instant Add */}
+                  <div className="absolute bottom-0 inset-x-0 z-20 p-3.5 sm:p-5 pt-10 bg-gradient-to-t from-neutral-950 via-neutral-950/95 to-transparent flex flex-col justify-end">
                     <h3 className="text-sm sm:text-base font-serif font-bold text-white tracking-wide truncate group-hover:text-orange-300 transition-colors">
                       {dish.name}
                     </h3>
@@ -413,9 +409,18 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
                         </span>
                       </div>
 
-                      <span className="text-[10px] sm:text-xs text-orange-200/70 font-mono tracking-wider">
-                        {dish.prepTime}
-                      </span>
+                      {/* Quick 1-Click Pick Button */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onQuickAdd?.(dish);
+                        }}
+                        className="px-3 py-1.5 rounded-full bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-400 hover:to-orange-400 text-white font-serif text-[11px] font-bold flex items-center gap-1 shadow-md shadow-orange-500/40 hover:scale-105 active:scale-95 transition-all"
+                      >
+                        <Plus className="w-3 h-3" />
+                        <span>PICK</span>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -428,26 +433,38 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
         <div className="relative z-30 w-full max-w-2xl px-4 py-2 flex flex-col items-center gap-2">
           {/* Active Dish Quick Focal Action Card */}
           {activeItem && (
-            <button
-              type="button"
-              onClick={() => onSelectItem?.(activeItem)}
-              className="flex items-center gap-3 px-4 py-2 rounded-full bg-neutral-950/95 border border-orange-500/50 hover:border-orange-400 transition-all shadow-[0_0_20px_rgba(249,115,22,0.25)] text-left group active:scale-95"
-            >
-              <img
-                src={activeItem.image}
-                alt={activeItem.name}
-                className="w-8 h-8 rounded-full object-cover border border-orange-400/60"
-              />
-              <div className="flex flex-col">
-                <span className="text-xs font-serif font-bold text-white group-hover:text-orange-300 transition-colors">
-                  {activeItem.name}
-                </span>
-                <span className="text-[10px] text-orange-400 font-serif font-bold">
-                  ${activeItem.price} • Tap to view & order
-                </span>
-              </div>
-              <ChevronRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform ml-1" />
-            </button>
+            <div className="flex items-center gap-2 bg-neutral-950/95 border border-orange-500/50 rounded-full px-4 py-1.5 shadow-[0_0_20px_rgba(249,115,22,0.25)]">
+              <button
+                type="button"
+                onClick={() => onSelectItem?.(activeItem)}
+                className="flex items-center gap-2.5 text-left group"
+              >
+                <img
+                  src={activeItem.image}
+                  alt={activeItem.name}
+                  className="w-8 h-8 rounded-full object-cover border border-orange-400/60"
+                />
+                <div className="flex flex-col">
+                  <span className="text-xs font-serif font-bold text-white group-hover:text-orange-300 transition-colors">
+                    {activeItem.name}
+                  </span>
+                  <span className="text-[10px] text-orange-400 font-serif font-bold">
+                    ${activeItem.price} • View details
+                  </span>
+                </div>
+              </button>
+
+              <div className="h-5 w-[1px] bg-orange-500/30 mx-1" />
+
+              <button
+                type="button"
+                onClick={() => onQuickAdd?.(activeItem)}
+                className="px-3.5 py-1.5 rounded-full bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-400 hover:to-orange-400 text-white font-serif text-xs font-bold flex items-center gap-1 shadow-md shadow-red-500/30 hover:scale-105 active:scale-95 transition-all"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>PICK DISH</span>
+              </button>
+            </div>
           )}
 
           {/* Horizontal Quick-Pick Thumbnail Strip */}
