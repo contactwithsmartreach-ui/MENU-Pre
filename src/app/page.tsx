@@ -8,6 +8,7 @@ import { DishDetailModal } from "@/components/restaurant/DishDetailModal";
 import { HeroPlateScrollExperience } from "@/components/restaurant/HeroPlateScrollExperience";
 import { VerticalSpotlightNavbar } from "@/components/restaurant/VerticalSpotlightNavbar";
 import { MenuSectionDivider } from "@/components/restaurant/MenuSectionDivider";
+import { ScrollVideoBackground } from "@/components/restaurant/ScrollVideoBackground";
 import { toast } from "sonner";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 
@@ -63,13 +64,16 @@ export default function RestaurantMenuPage() {
 
   return (
     <div className="relative min-h-screen w-full bg-[#0a0a0a] text-neutral-100 flex flex-col items-center justify-between select-none overflow-x-hidden">
+      {/* Scroll-Scrubbed Cinematic CloudFront Video Background */}
+      <ScrollVideoBackground />
+
       {/* Part 1: Top Hero Section with Floating Plate Experience */}
       <div className="relative z-10 w-full">
         <HeroPlateScrollExperience onScrollToMenu={handleScrollToMenu} />
       </div>
 
-      {/* Critical Spacer to Allow Smooth Scrolling */}
-      <div aria-hidden="true" className="h-[40vh] sm:h-[60vh] w-full" />
+      {/* Critical Spacer to Allow Smooth Video Scrubbing */}
+      <div aria-hidden="true" className="h-[60vh] sm:h-[80vh] w-full" />
 
       {/* Transitional Section Separation Divider */}
       <MenuSectionDivider />
