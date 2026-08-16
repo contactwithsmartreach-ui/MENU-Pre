@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Eye,
+  Plus,
   Sparkles,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -26,7 +27,7 @@ export function CombinedCylinderMenu({
 }: CombinedCylinderMenuProps) {
   const N = items.length;
   const angleStep = 360 / Math.max(N, 1);
-  const defaultSpeed = 6; // degrees per sec
+  const defaultSpeed = 5; // degrees per sec
 
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -61,12 +62,17 @@ export function CombinedCylinderMenu({
     }
   }, []);
 
-  // Gesture & Physics tracking refs
-  const isDraggingRef = useRef(false);
-  const pointerDownPosRef = useRef({ x: 0, y: 0, time: 0 });
+  // Gesture tracking refs
+  const isDraggingStageRef = useRef(false);
+  const isCardInteractingRef = useRef(false);
+  const startXRef = useRef(0);
+  const startYRef = useRef(0);
+  const startRotRef = useRef(0);
   const lastXRef = useRef(0);
   const lastTimeRef = useRef(0);
   const velocityRef = useRef(0);
+  const dragDistRef = useRef(0);
+
   const animFrameRef = useRef<number | null>(null);
   const momentumFrameRef = useRef<number | null>(null);
   const autoResumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -103,7 +109,7 @@ export function CombinedCylinderMenu({
       const finalTarget = current + diff;
 
       const startTime = performance.now();
-      const duration = 280;
+      const duration = 300;
       const startAngle = current;
       const easeOutQuart = (t: number) => 1 - Math.pow(1 - t, 4);
 
@@ -146,7 +152,7 @@ export function CombinedCylinderMenu({
     [angleStep, rotateToAngle, scrollCardToCenter, onSelectItem]
   );
 
-  // Step left/right navigation button
+  // Step left/right navigation buttons
   const stepRotate = useCallback(
     (direction: "prev" | "next") => {
       const newActive = direction === "next"
@@ -158,7 +164,7 @@ export function CombinedCylinderMenu({
     [selectedDishIndex, N, bringToFront, items]
   );
 
-  // Auto-spin RAF loop
+  // Continuous auto-spin loop
   useEffect(() => {
     let prev = performance.now();
 
@@ -168,7 +174,7 @@ export function CombinedCylinderMenu({
 
       if (
         isAutoSpinningRef.current &&
-        !isDraggingRef.current &&
+        !isDraggingStageRef.current &&
         hoveredIdx === null &&
         Math.abs(velocityRef.current) < 0.05
       ) {
@@ -201,38 +207,42 @@ export function CombinedCylinderMenu({
     momentumFrameRef.current = requestAnimationFrame(step);
   }, [updateCylinderTransform]);
 
-  // Stage pointer handlers - clean drag vs tap differentiation
+  // Stage pointer handlers (background drag only)
   const handleStagePointerDown = (e: React.PointerEvent) => {
+    // If pointer down started on a card, let the card handle the click
+    if ((e.target as HTMLElement).closest("[data-cylinder-card]")) {
+      isCardInteractingRef.current = true;
+    } else {
+      isCardInteractingRef.current = false;
+    }
+
     if (momentumFrameRef.current) cancelAnimationFrame(momentumFrameRef.current);
     if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
 
-    isDraggingRef.current = true;
-    pointerDownPosRef.current = {
-      x: e.clientX,
-      y: e.clientY,
-      time: performance.now(),
-    };
+    isDraggingStageRef.current = true;
+    dragDistRef.current = 0;
+    startXRef.current = e.clientX;
+    startYRef.current = e.clientY;
     lastXRef.current = e.clientX;
     lastTimeRef.current = performance.now();
+    startRotRef.current = rotationYRef.current;
     velocityRef.current = 0;
   };
 
   const handleStagePointerMove = (e: React.PointerEvent) => {
-    if (!isDraggingRef.current) return;
-    const deltaX = e.clientX - lastXRef.current;
-    const totalDist = Math.hypot(
-      e.clientX - pointerDownPosRef.current.x,
-      e.clientY - pointerDownPosRef.current.y
-    );
+    if (!isDraggingStageRef.current) return;
+    const deltaX = e.clientX - startXRef.current;
+    const deltaY = e.clientY - startYRef.current;
+    dragDistRef.current = Math.hypot(deltaX, deltaY);
 
-    // Only rotate if user actually drags beyond tap tolerance
-    if (totalDist > 4) {
+    // Only rotate stage if user dragged more than 8 pixels
+    if (dragDistRef.current > 8) {
       const sensitivity = isMobile ? 0.44 : 0.36;
-      updateCylinderTransform(rotationYRef.current - deltaX * sensitivity);
+      updateCylinderTransform(startRotRef.current - deltaX * sensitivity);
 
       const now = performance.now();
       const dt = Math.max(now - lastTimeRef.current, 8);
-      const instV = (deltaX / dt) * 8;
+      const instV = ((e.clientX - lastXRef.current) / dt) * 8;
 
       velocityRef.current = velocityRef.current * 0.3 + instV * 0.7;
       lastXRef.current = e.clientX;
@@ -240,16 +250,11 @@ export function CombinedCylinderMenu({
     }
   };
 
-  const handleStagePointerUp = (e: React.PointerEvent) => {
-    if (!isDraggingRef.current) return;
-    isDraggingRef.current = false;
+  const handleStagePointerUp = () => {
+    if (!isDraggingStageRef.current) return;
+    isDraggingStageRef.current = false;
 
-    const totalDist = Math.hypot(
-      e.clientX - pointerDownPosRef.current.x,
-      e.clientY - pointerDownPosRef.current.y
-    );
-
-    if (totalDist > 8 && Math.abs(velocityRef.current) > 0.3) {
+    if (dragDistRef.current > 8 && Math.abs(velocityRef.current) > 0.3) {
       applyMomentum();
     }
   };
@@ -296,21 +301,15 @@ export function CombinedCylinderMenu({
     "--ba": `calc(1turn / var(--n))`,
   } as React.CSSProperties;
 
-  // Ultra-responsive Card Click handler that triggers on both mouse click and touch tap
-  const handleCardTrigger = (dish: MenuItem, index: number, e: React.SyntheticEvent) => {
-    e.stopPropagation();
-    const totalDist = Math.hypot(
-      (e as React.MouseEvent).clientX - pointerDownPosRef.current.x,
-      (e as React.MouseEvent).clientY - pointerDownPosRef.current.y
-    );
+  // Direct card select & modal open handler (100% reliable)
+  const handleSelectDish = (dish: MenuItem, index: number) => {
+    // If the user actually dragged the cylinder, ignore the click
+    if (dragDistRef.current > 8) return;
 
-    // If movement was negligible, treat as instant click
-    if (isNaN(totalDist) || totalDist < 10) {
-      setSelectedDishIndex(index);
-      scrollCardToCenter(index);
-      bringToFront(index, false);
-      onSelectItem(dish);
-    }
+    setSelectedDishIndex(index);
+    scrollCardToCenter(index);
+    bringToFront(index, false);
+    onSelectItem(dish);
   };
 
   return (
@@ -346,19 +345,26 @@ export function CombinedCylinderMenu({
               return (
                 <div
                   key={dish.id}
+                  data-cylinder-card
                   onMouseEnter={() => !isMobile && setHoveredIdx(i)}
                   onMouseLeave={() => !isMobile && setHoveredIdx(null)}
-                  onClick={(e) => handleCardTrigger(dish, i, e)}
+                  onClick={() => handleSelectDish(dish, i)}
+                  onPointerUp={(e) => {
+                    e.stopPropagation();
+                    if (dragDistRef.current <= 8) {
+                      handleSelectDish(dish, i);
+                    }
+                  }}
                   role="button"
                   tabIndex={0}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
-                      handleCardTrigger(dish, i, e);
+                      handleSelectDish(dish, i);
                     }
                   }}
                   className={cn(
                     "group relative [grid-area:1/1] rounded-[28px] sm:rounded-[34px] overflow-hidden [backface-visibility:hidden] transform-gpu cursor-pointer",
-                    "border border-orange-500/30 bg-[#0d0706] shadow-2xl hover:border-orange-400 hover:scale-[1.03] active:scale-95 transition-transform duration-150 pointer-events-auto"
+                    "border border-orange-500/30 bg-[#0d0706] shadow-2xl hover:border-orange-400 hover:scale-[1.03] active:scale-95 transition-transform duration-150"
                   )}
                   style={{
                     width: "var(--w)",
@@ -490,12 +496,12 @@ export function CombinedCylinderMenu({
               <div
                 key={dish.id}
                 data-dish-card
-                onClick={(e) => handleCardTrigger(dish, index, e)}
+                onClick={() => handleSelectDish(dish, index)}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
-                    handleCardTrigger(dish, index, e);
+                    handleSelectDish(dish, index);
                   }
                 }}
                 className={cn(
@@ -613,7 +619,11 @@ export function CombinedCylinderMenu({
                             : "w-5 h-5 bg-purple-950/80 border border-purple-400/20 text-purple-300 group-hover:bg-orange-500 group-hover:text-neutral-950"
                         )}
                       >
-                        <Eye className="w-3.5 h-3.5" />
+                        {isSelected ? (
+                          <Eye className="w-3.5 h-3.5" />
+                        ) : (
+                          <Plus className="w-3 h-3 stroke-[2.5]" />
+                        )}
                       </div>
                     </div>
                   </div>
