@@ -11,8 +11,6 @@ import {
   Eye,
   Plus,
   Sparkles,
-  RotateCw,
-  Compass,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -33,7 +31,6 @@ export function CombinedCylinderMenu({
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [selectedDishIndex, setSelectedDishIndex] = useState<number>(0);
-  const [isAutoSpinActive, setIsAutoSpinActive] = useState(true);
 
   // High-performance direct DOM transform tracking
   const cylinderRef = useRef<HTMLDivElement>(null);
@@ -42,6 +39,9 @@ export function CombinedCylinderMenu({
   const velocityRef = useRef(0);
   const isDraggingRef = useRef(false);
   const isAutoSpinningRef = useRef(true);
+  const isHorizontalDragRef = useRef(false);
+  const startXRef = useRef(0);
+  const startYRef = useRef(0);
   const lastPointerXRef = useRef(0);
   const lastPointerTimeRef = useRef(0);
   const dragDistanceRef = useRef(0);
@@ -78,8 +78,8 @@ export function CombinedCylinderMenu({
       const dt = Math.min((time - lastTime) / 1000, 0.1);
       lastTime = time;
 
-      if (isDraggingRef.current) {
-        // Direct tracking during drag
+      if (isDraggingRef.current && isHorizontalDragRef.current) {
+        // Direct tracking during horizontal drag
         setTransform(currentRotationRef.current);
       } else {
         // Friction & Inertia decay or Spring to Target or Auto-spin
@@ -118,7 +118,6 @@ export function CombinedCylinderMenu({
     (index: number, openModal = false, item?: MenuItem) => {
       if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
       isAutoSpinningRef.current = false;
-      setIsAutoSpinActive(false);
       velocityRef.current = 0;
 
       setSelectedDishIndex(index);
@@ -135,7 +134,6 @@ export function CombinedCylinderMenu({
 
       autoResumeTimeoutRef.current = setTimeout(() => {
         isAutoSpinningRef.current = true;
-        setIsAutoSpinActive(true);
       }, 5000);
     },
     [angleStep, onSelectItem]
@@ -152,12 +150,14 @@ export function CombinedCylinderMenu({
     [selectedDishIndex, N, rotateToIndex, items]
   );
 
-  // Pointer & Drag Handlers with fluid velocity tracking
+  // Pointer & Drag Handlers with directional intent detection
   const handlePointerDown = (e: React.PointerEvent) => {
     if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
     isDraggingRef.current = true;
-    isAutoSpinningRef.current = false;
+    isHorizontalDragRef.current = false;
     dragDistanceRef.current = 0;
+    startXRef.current = e.clientX;
+    startYRef.current = e.clientY;
     lastPointerXRef.current = e.clientX;
     lastPointerTimeRef.current = performance.now();
     velocityRef.current = 0;
@@ -166,46 +166,65 @@ export function CombinedCylinderMenu({
   const handlePointerMove = (e: React.PointerEvent) => {
     if (!isDraggingRef.current) return;
 
-    const deltaX = e.clientX - lastPointerXRef.current;
-    dragDistanceRef.current += Math.abs(deltaX);
+    const deltaX = e.clientX - startXRef.current;
+    const deltaY = e.clientY - startYRef.current;
 
-    const now = performance.now();
-    const dt = Math.max(now - lastPointerTimeRef.current, 8);
-    const speed = (deltaX / dt) * 14;
+    // Detect direction: if moving vertically more than horizontally, let page scroll naturally
+    if (!isHorizontalDragRef.current) {
+      if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 8) {
+        // Vertical swipe intent -> do not intercept
+        isDraggingRef.current = false;
+        return;
+      }
+      if (Math.abs(deltaX) > 8 && Math.abs(deltaX) > Math.abs(deltaY)) {
+        // Horizontal drag intent -> lock to cylinder rotation
+        isHorizontalDragRef.current = true;
+        isAutoSpinningRef.current = false;
+      }
+    }
 
-    const sensitivity = isMobile ? 0.38 : 0.28;
-    currentRotationRef.current -= deltaX * sensitivity;
-    targetRotationRef.current = currentRotationRef.current;
-    velocityRef.current = velocityRef.current * 0.4 - speed * 0.6 * sensitivity;
+    if (isHorizontalDragRef.current) {
+      const stepX = e.clientX - lastPointerXRef.current;
+      dragDistanceRef.current += Math.abs(stepX);
 
-    lastPointerXRef.current = e.clientX;
-    lastPointerTimeRef.current = now;
+      const now = performance.now();
+      const dt = Math.max(now - lastPointerTimeRef.current, 8);
+      const speed = (stepX / dt) * 14;
+
+      const sensitivity = isMobile ? 0.38 : 0.28;
+      currentRotationRef.current -= stepX * sensitivity;
+      targetRotationRef.current = currentRotationRef.current;
+      velocityRef.current = velocityRef.current * 0.4 - speed * 0.6 * sensitivity;
+
+      lastPointerXRef.current = e.clientX;
+      lastPointerTimeRef.current = now;
+    }
   };
 
   const handlePointerUp = () => {
-    if (!isDraggingRef.current) return;
+    if (!isDraggingRef.current && !isHorizontalDragRef.current) return;
     isDraggingRef.current = false;
+    isHorizontalDragRef.current = false;
 
     // Cap excessive flick velocities
     velocityRef.current = Math.max(Math.min(velocityRef.current, 6), -6);
 
     autoResumeTimeoutRef.current = setTimeout(() => {
       isAutoSpinningRef.current = true;
-      setIsAutoSpinActive(true);
     }, 4000);
   };
 
-  // Ultra-responsive wheel / trackpad scrolling
+  // Only intercept horizontal wheel / trackpad swipes; let vertical scroll pass through to the page
   const handleWheel = (e: React.WheelEvent) => {
-    if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
-    isAutoSpinningRef.current = false;
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 4) {
+      if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
+      isAutoSpinningRef.current = false;
+      velocityRef.current += (e.deltaX > 0 ? -1 : 1) * Math.min(Math.abs(e.deltaX) * 0.04, 1.2);
 
-    const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-    velocityRef.current += (delta > 0 ? -1 : 1) * Math.min(Math.abs(delta) * 0.04, 1.2);
-
-    autoResumeTimeoutRef.current = setTimeout(() => {
-      isAutoSpinningRef.current = true;
-    }, 3500);
+      autoResumeTimeoutRef.current = setTimeout(() => {
+        isAutoSpinningRef.current = true;
+      }, 3500);
+    }
   };
 
   // Keyboard navigation
@@ -242,9 +261,9 @@ export function CombinedCylinderMenu({
         className
       )}
     >
-      {/* 1. FLUID 3D CYLINDER STAGE */}
+      {/* 1. FLUID 3D CYLINDER STAGE (touch-pan-y ensures vertical page scrolling is never blocked) */}
       <div
-        className="relative w-full min-h-[580px] sm:min-h-[660px] lg:min-h-[720px] flex items-center justify-center overflow-visible touch-none cursor-grab active:cursor-grabbing"
+        className="relative w-full min-h-[580px] sm:min-h-[660px] lg:min-h-[720px] flex items-center justify-center overflow-visible touch-pan-y cursor-grab active:cursor-grabbing"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
@@ -260,7 +279,7 @@ export function CombinedCylinderMenu({
             perspective: isMobile ? "950px" : "1350px",
           }}
         >
-          {/* Rotating Cylinder Core (Driven directly by RAF loop) */}
+          {/* Rotating Cylinder Core */}
           <div
             ref={cylinderRef}
             className="relative w-0 h-0 [transform-style:preserve-3d] will-change-transform transform-gpu"
