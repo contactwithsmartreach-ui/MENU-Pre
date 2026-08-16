@@ -63,7 +63,7 @@ export default function RestaurantMenuPage() {
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-transparent text-neutral-100 flex flex-col items-center justify-between select-none overflow-x-hidden">
+    <div className="relative min-h-screen w-full bg-[#0a0a0a] text-neutral-100 flex flex-col items-center justify-between select-none overflow-x-hidden">
       {/* Scroll-scrubbed cinematic video background */}
       <ScrollVideoBackground />
 
@@ -84,7 +84,7 @@ export default function RestaurantMenuPage() {
       <section
         ref={menuSectionRef}
         id="cylinder-menu"
-        className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-4 pb-12 px-2 sm:px-6 bg-transparent"
+        className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-4 pb-12 px-2 sm:px-6"
       >
         <div className="relative z-10 w-full flex-1 flex flex-col lg:flex-row items-center lg:items-center justify-center gap-4 lg:gap-2 max-w-7xl mx-auto py-2">
           {/* Vertical Spotlight Navbar */}
