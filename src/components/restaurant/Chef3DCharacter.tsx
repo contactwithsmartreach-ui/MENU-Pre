@@ -13,6 +13,7 @@ export function Chef3DCharacter({ className, onClick }: Chef3DCharacterProps) {
   const [isProcessed, setIsProcessed] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
+  // Intelligent background removal via corner flood-fill preserving white chef clothes
   useEffect(() => {
     const img = new Image();
     img.crossOrigin = "anonymous";
@@ -25,143 +26,62 @@ export function Chef3DCharacter({ className, onClick }: Chef3DCharacterProps) {
       const ctx = canvas.getContext("2d", { willReadFrequently: true });
       if (!ctx) return;
 
-      const w = img.naturalWidth;
-      const h = img.naturalHeight;
-      canvas.width = w;
-      canvas.height = h;
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
 
       ctx.drawImage(img, 0, 0);
 
-      const imgData = ctx.getImageData(0, 0, w, h);
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const data = imgData.data;
+      const w = canvas.width;
+      const h = canvas.height;
 
-      // 1. Sample outer border corners to dynamically establish background color profile
-      const cornerSamples: [number, number, number][] = [];
-      const samplePoints = [
-        [4, 4],
-        [w - 5, 4],
-        [4, h - 5],
-        [w - 5, h - 5],
-        [Math.floor(w / 2), 4],
-        [4, Math.floor(h / 2)],
-        [w - 5, Math.floor(h / 2)],
-      ];
-
-      for (const [sx, sy] of samplePoints) {
-        const idx = (sy * w + sx) * 4;
-        cornerSamples.push([data[idx], data[idx + 1], data[idx + 2]]);
-      }
-
-      // Calculate mean background color
-      const bgR = cornerSamples.reduce((s, c) => s + c[0], 0) / cornerSamples.length;
-      const bgG = cornerSamples.reduce((s, c) => s + c[1], 0) / cornerSamples.length;
-      const bgB = cornerSamples.reduce((s, c) => s + c[2], 0) / cornerSamples.length;
-
-      // 2. Strict Flood Fill from perimeter only
+      // Visited mask for flood fill from edges
       const visited = new Uint8Array(w * h);
-      const queue = new Int32Array(w * h);
-      let head = 0;
-      let tail = 0;
+      const queue: number[] = [];
 
-      // Color distance helper
-      const colorDist = (r: number, g: number, b: number) => {
-        const dr = r - bgR;
-        const dg = g - bgG;
-        const db = b - bgB;
-        return Math.sqrt(dr * dr + dg * dg + db * db);
-      };
-
-      // Determine if a pixel belongs to outer background
-      // Safe threshold: background has low chroma and is close to sampled studio background
-      const isBackground = (pIdx: number) => {
-        const idx = pIdx * 4;
+      // Helper to check if pixel is background grayish/white vignette
+      const isBgPixel = (idx: number) => {
         const r = data[idx];
         const g = data[idx + 1];
         const b = data[idx + 2];
-
-        const dist = colorDist(r, g, b);
-
-        // Check if neutral background tone (low saturation & matching background brightness)
-        const maxVal = Math.max(r, g, b);
-        const minVal = Math.min(r, g, b);
-        const saturation = maxVal === 0 ? 0 : (maxVal - minVal) / maxVal;
-
-        // If high saturation (skin, hair, gold, colored ingredients/utensils), it's definitely the character!
-        if (saturation > 0.18) return false;
-
-        // If distance from background color is small and saturation is low, it's the backdrop
-        return dist < 38;
+        const maxDiff = Math.max(Math.abs(r - g), Math.abs(r - b), Math.abs(g - b));
+        const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+        // Background is neutral gray (low saturation, medium-high luminance)
+        return maxDiff < 28 && luminance > 115;
       };
 
-      // Seed all 4 outer edges of image
+      // Seed all 4 outer borders into the flood fill queue
       for (let x = 0; x < w; x++) {
-        queue[tail++] = x; // Top row
-        queue[tail++] = (h - 1) * w + x; // Bottom row
+        queue.push(x, 0);
+        queue.push(x, h - 1);
       }
-      for (let y = 1; y < h - 1; y++) {
-        queue[tail++] = y * w; // Left col
-        queue[tail++] = y * w + (w - 1); // Right col
-      }
-
-      // BFS flood fill starting strictly from boundary
-      while (head < tail) {
-        const p = queue[head++];
-        if (visited[p]) continue;
-        visited[p] = 1;
-
-        if (isBackground(p)) {
-          // Transparent
-          data[p * 4 + 3] = 0;
-
-          const cx = p % w;
-          const cy = Math.floor(p / w);
-
-          if (cx > 0 && !visited[p - 1]) queue[tail++] = p - 1;
-          if (cx < w - 1 && !visited[p + 1]) queue[tail++] = p + 1;
-          if (cy > 0 && !visited[p - w]) queue[tail++] = p - w;
-          if (cy < h - 1 && !visited[p + w]) queue[tail++] = p + w;
-        }
-      }
-
-      // 3. Remove any rectangular bounding frame borders / border artifacts along the edges
-      const edgeMargin = Math.max(4, Math.floor(Math.min(w, h) * 0.015));
       for (let y = 0; y < h; y++) {
-        for (let x = 0; x < w; x++) {
-          if (x < edgeMargin || x >= w - edgeMargin || y < edgeMargin || y >= h - edgeMargin) {
-            const p = y * w + x;
-            const idx = p * 4;
-            const r = data[idx];
-            const g = data[idx + 1];
-            const b = data[idx + 2];
-            // Clear thin border frame lines if close to frame colors or low saturation
-            if (colorDist(r, g, b) < 65 || (Math.max(r, g, b) - Math.min(r, g, b) < 25)) {
-              data[idx + 3] = 0;
-            }
-          }
-        }
+        queue.push(0, y);
+        queue.push(w - 1, y);
       }
 
-      // 4. Smooth Alpha Feathering along extracted character edges
-      for (let y = 1; y < h - 1; y++) {
-        for (let x = 1; x < w - 1; x++) {
-          const p = y * w + x;
-          const idx = p * 4;
-          if (data[idx + 3] > 0) {
-            // Check neighbor transparency count
-            const topA = data[(p - w) * 4 + 3];
-            const btmA = data[(p + w) * 4 + 3];
-            const lftA = data[(p - 1) * 4 + 3];
-            const rgtA = data[(p + 1) * 4 + 3];
+      // Flood fill to strip outside background without eroding inner white hat/jacket
+      let head = 0;
+      while (head < queue.length) {
+        const cx = queue[head++];
+        const cy = queue[head++];
+        const pIdx = cy * w + cx;
 
-            if (topA === 0 || btmA === 0 || lftA === 0 || rgtA === 0) {
-              const r = data[idx];
-              const g = data[idx + 1];
-              const b = data[idx + 2];
-              if (colorDist(r, g, b) < 45) {
-                data[idx + 3] = Math.floor(data[idx + 3] * 0.65);
-              }
-            }
-          }
+        if (visited[pIdx]) continue;
+        visited[pIdx] = 1;
+
+        const dataIdx = pIdx * 4;
+
+        if (isBgPixel(dataIdx)) {
+          // Calculate distance from character edge for smooth feathering
+          data[dataIdx + 3] = 0; // Transparent
+
+          // 4-directional expansion
+          if (cx > 0 && !visited[pIdx - 1]) queue.push(cx - 1, cy);
+          if (cx < w - 1 && !visited[pIdx + 1]) queue.push(cx + 1, cy);
+          if (cy > 0 && !visited[pIdx - w]) queue.push(cx, cy - 1);
+          if (cy < h - 1 && !visited[pIdx + w]) queue.push(cx, cy + 1);
         }
       }
 
@@ -170,11 +90,11 @@ export function Chef3DCharacter({ className, onClick }: Chef3DCharacterProps) {
     };
   }, []);
 
-  // 3D Parallax tracking on cursor movement
+  // Subtle interactive 3D parallax tracking
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 18;
-    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 12;
+    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 16;
+    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 10;
     setMousePos({ x, y });
   };
 
@@ -192,43 +112,43 @@ export function Chef3DCharacter({ className, onClick }: Chef3DCharacterProps) {
         className
       )}
     >
-      {/* 3D Character Parallax Wrapper */}
+      {/* Dynamic 3D Character Stage */}
       <div
         className="relative z-20 flex items-center justify-center transition-transform duration-300 ease-out will-change-transform transform-gpu"
         style={{
-          transform: `perspective(1100px) rotateY(${mousePos.x}deg) rotateX(${-mousePos.y}deg) translateY(${mousePos.y * 0.4}px)`,
+          transform: `perspective(1000px) rotateY(${mousePos.x}deg) rotateX(${-mousePos.y}deg) translateY(${mousePos.y * 0.5}px)`,
         }}
       >
-        {/* Sahara Fire & Ember Rim Backlight Glow */}
-        <div className="absolute -inset-8 bg-gradient-to-t from-red-600/35 via-orange-500/30 to-amber-400/25 blur-3xl rounded-full opacity-80 group-hover:opacity-100 transition-opacity pointer-events-none" />
+        {/* Ambient character backlight & rim glow */}
+        <div className="absolute -inset-4 bg-gradient-to-t from-red-600/30 via-orange-500/25 to-amber-400/20 blur-3xl rounded-full opacity-70 group-hover:opacity-100 transition-opacity pointer-events-none" />
 
-        {/* Clean Processed 3D Character Canvas */}
+        {/* Dynamic Processed Transparent 3D Character Canvas */}
         <canvas
           ref={canvasRef}
           className={cn(
-            "w-80 sm:w-[440px] md:w-[500px] lg:w-[540px] max-w-[92vw] h-auto object-contain transition-all duration-500 ease-out drop-shadow-[0_25px_50px_rgba(0,0,0,0.9)] group-hover:scale-[1.03]",
+            "w-72 sm:w-96 md:w-[420px] lg:w-[480px] h-auto object-contain transition-all duration-700 ease-out drop-shadow-[0_20px_40px_rgba(0,0,0,0.85)] group-hover:scale-105",
             !isProcessed && "opacity-0",
             isProcessed && "opacity-100 animate-in fade-in zoom-in-95 duration-500"
           )}
         />
 
-        {/* Fallback image */}
+        {/* Fallback image while canvas processes */}
         {!isProcessed && (
           <img
             src="/images/chef-character.png"
-            alt="3D Master Chef Character"
-            className="w-80 sm:w-[440px] md:w-[500px] lg:w-[540px] max-w-[92vw] h-auto object-contain opacity-30 blur-sm"
+            alt="3D Master Chef"
+            className="w-72 sm:w-96 md:w-[420px] lg:w-[480px] h-auto object-contain opacity-40 blur-sm"
           />
         )}
       </div>
 
-      {/* Realistic Ground Contact Shadows */}
-      <div className="relative -mt-8 sm:-mt-10 z-10 flex flex-col items-center pointer-events-none">
-        {/* Foot contact shadow */}
-        <div className="w-44 sm:w-60 h-5 sm:h-6 bg-black/95 rounded-full blur-md" />
-        {/* Soft radial ground shadow casting onto the button */}
+      {/* Realistic Ground Contact Shadows directly above the button */}
+      <div className="relative -mt-6 sm:-mt-8 z-10 flex flex-col items-center pointer-events-none">
+        {/* Footprint Contact Ambient Occlusion */}
+        <div className="w-36 sm:w-52 h-4 sm:h-5 bg-black/90 rounded-full blur-md" />
+        {/* Soft Radial Ground Shadow casting onto the pedestal button */}
         <div
-          className="w-64 sm:w-84 h-8 sm:h-10 bg-black/75 rounded-full blur-xl -mt-3 transition-transform duration-300"
+          className="w-48 sm:w-72 h-6 sm:h-8 bg-black/70 rounded-full blur-xl -mt-2.5 transition-transform duration-300"
           style={{
             transform: `scale(${1 + Math.abs(mousePos.x) * 0.02})`,
           }}
