@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { SaharaButton } from "./SaharaButton";
 import { ChevronDown, UtensilsCrossed } from "lucide-react";
-import { ChefMascotScroller } from "./ChefMascotScroller";
 
 interface HeroPlateScrollExperienceProps {
   onScrollToMenu: () => void;
@@ -57,7 +56,7 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
         {/* Outer Radiant Glow */}
         <div className="absolute inset-0 bg-gradient-to-tr from-red-600/30 via-orange-500/25 to-amber-400/20 rounded-full blur-2xl transform scale-110 pointer-events-none animate-pulse" />
 
-        {/* 3D Moving Plate Container */}
+        {/* 3D Moving Plate Container (Bottom hides under button) */}
         <div
           style={{
             transform: `translate3d(0, ${translateY}px, 0) scale(${scale}) rotate(${rotateDeg}deg)`,
@@ -114,12 +113,9 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
         />
       </div>
 
-      {/* CTA Button & Cartoon Character Sitting Stage */}
+      {/* CTA Button & Scroll Indicator - Elevated on top to hide bottom of plate */}
       <div className="relative z-30 flex flex-col items-center gap-3 pt-2">
         <div className="relative drop-shadow-[0_15px_30px_rgba(0,0,0,0.9)]">
-          {/* Animated Cartoon Chef Character sitting atop button & jumping on scroll */}
-          <ChefMascotScroller onJumpToMenu={onScrollToMenu} />
-
           <SaharaButton
             onClick={onScrollToMenu}
             primaryText="ENTER CYLINDER MENU"
