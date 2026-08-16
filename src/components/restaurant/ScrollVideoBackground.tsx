@@ -96,8 +96,8 @@ export function ScrollVideoBackground() {
           isVideoReady ? "opacity-90" : "opacity-0"
         }`}
       />
-      {/* Cinematic gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/70 via-transparent to-[#0a0a0a]/90" />
+      {/* Subtle cinematic gradient overlay */}
+      <div className="absolute inset-0 bg-black/25" />
     </div>
   );
 }
