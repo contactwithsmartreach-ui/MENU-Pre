@@ -264,7 +264,7 @@ export function CombinedCylinderMenu({
     <div
       onWheel={handleWheel}
       className={cn(
-        "w-full flex flex-col items-center justify-between relative select-none gap-8 sm:gap-12 pb-8 overflow-hidden",
+        "w-full flex flex-col items-center justify-between relative select-none gap-8 sm:gap-14 pb-12 overflow-hidden",
         className
       )}
     >
@@ -410,54 +410,59 @@ export function CombinedCylinderMenu({
         </div>
       </div>
 
-      {/* 2. GLOWING NAVIGATION CONTROLS & FLUID QUICK BAR */}
-      <div className="relative z-40 w-full max-w-2xl px-4 flex flex-col items-center gap-4">
-        {/* Previous & Next Glowing Stepper Controls */}
-        <div className="flex items-center justify-between w-full max-w-md">
+      {/* 2. GLOWING NAVIGATION CONTROLS & CURVED DOCK */}
+      <div className="relative z-40 w-full max-w-2xl px-4 flex flex-col items-center gap-5 mt-4 sm:mt-8">
+        {/* Curved Glass Control Dock */}
+        <div className="relative flex items-center justify-between w-full max-w-lg p-2 sm:p-2.5 rounded-[9999px] bg-gradient-to-b from-neutral-900/90 via-black/95 to-neutral-950/95 border border-orange-500/40 shadow-[0_15px_35px_rgba(0,0,0,0.8),0_0_30px_rgba(249,115,22,0.2)] backdrop-blur-2xl">
+          {/* Subtle curved inner top highlight */}
+          <div className="absolute top-0 inset-x-8 h-[1px] bg-gradient-to-r from-transparent via-amber-400/60 to-transparent pointer-events-none" />
+
+          {/* Previous Stepper Button */}
           <button
             type="button"
             aria-label="Rotate Previous Dish"
             onClick={() => stepRotate("prev")}
             className={cn(
-              "group relative w-13 h-13 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer",
+              "group relative w-12 h-12 sm:w-14 sm:h-14 rounded-full shrink-0 flex items-center justify-center transition-all duration-300 cursor-pointer",
               "bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 text-neutral-950 font-black",
-              "border-2 border-amber-300/80 shadow-[0_0_25px_rgba(249,115,22,0.6)] active:scale-95 hover:scale-110"
+              "border border-amber-300/80 shadow-[0_0_20px_rgba(249,115,22,0.5)] active:scale-90 hover:scale-105"
             )}
           >
             <ChevronLeft className="w-6 h-6 text-neutral-950 stroke-[3] group-hover:-translate-x-0.5 transition-transform" />
           </button>
 
-          {/* Center Quick Tap Focused Dish Pill */}
+          {/* Curved Center Focused Dish Card */}
           {currentFrontDish && (
             <button
               type="button"
               onClick={() => onSelectItem(currentFrontDish)}
-              className="flex items-center gap-3 px-5 py-2.5 rounded-full bg-neutral-950/95 border border-orange-500/50 hover:border-orange-400 hover:scale-105 transition-all shadow-[0_0_20px_rgba(249,115,22,0.3)] text-left cursor-pointer group"
+              className="flex items-center gap-2.5 sm:gap-3.5 px-3 sm:px-5 py-2 rounded-full bg-neutral-950/80 hover:bg-neutral-900/90 border border-orange-500/30 hover:border-orange-400/80 transition-all text-left cursor-pointer group mx-1 sm:mx-2 flex-1 justify-center max-w-[280px] sm:max-w-none shadow-inner"
             >
               <img
                 src={currentFrontDish.image}
                 alt={currentFrontDish.name}
-                className="w-8 h-8 rounded-full object-cover border border-orange-400/80 shadow-sm"
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-cover border border-orange-400/80 shadow-md shrink-0"
               />
-              <div className="flex flex-col">
-                <span className="text-xs sm:text-sm font-serif font-bold text-white group-hover:text-orange-300 transition-colors truncate max-w-[150px] sm:max-w-[220px]">
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs sm:text-sm font-serif font-bold text-white group-hover:text-orange-300 transition-colors truncate">
                   {currentFrontDish.name}
                 </span>
-                <span className="text-[11px] text-amber-400 font-serif font-bold">
-                  ${currentFrontDish.price} &bull; Tap to View & Order
+                <span className="text-[10px] sm:text-[11px] text-amber-400 font-serif font-semibold truncate">
+                  ${currentFrontDish.price} &bull; Tap to Order
                 </span>
               </div>
             </button>
           )}
 
+          {/* Next Stepper Button */}
           <button
             type="button"
             aria-label="Rotate Next Dish"
             onClick={() => stepRotate("next")}
             className={cn(
-              "group relative w-13 h-13 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer",
+              "group relative w-12 h-12 sm:w-14 sm:h-14 rounded-full shrink-0 flex items-center justify-center transition-all duration-300 cursor-pointer",
               "bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 text-neutral-950 font-black",
-              "border-2 border-amber-300/80 shadow-[0_0_25px_rgba(249,115,22,0.6)] active:scale-95 hover:scale-110"
+              "border border-amber-300/80 shadow-[0_0_20px_rgba(249,115,22,0.5)] active:scale-90 hover:scale-105"
             )}
           >
             <ChevronRight className="w-6 h-6 text-neutral-950 stroke-[3] group-hover:translate-x-0.5 transition-transform" />
