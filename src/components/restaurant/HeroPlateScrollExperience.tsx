@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { SaharaButton } from "./SaharaButton";
-import { ChevronDown, ChefHat, Sparkles } from "lucide-react";
+import { ChevronDown, ChefHat } from "lucide-react";
 
 interface HeroPlateScrollExperienceProps {
   onScrollToMenu: () => void;
@@ -19,36 +19,19 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Scroll tracking calculations for parallax and cinematic depth
+  // Parallax and smooth scale/rotate effect based on scroll position
   const translateY = scrollY * 0.35;
-  const textTranslateY = scrollY * 0.2;
   const scale = Math.max(0.75, 1 - scrollY * 0.001);
   const opacity = Math.max(0, 1 - scrollY * 0.003);
-  const textOpacity = Math.max(0, 1 - scrollY * 0.0025);
   const rotate = scrollY * 0.15;
 
   return (
     <section className="relative w-full min-h-[75vh] sm:min-h-[85vh] flex flex-col items-center justify-between px-4 pt-10 pb-6 sm:pb-10 text-center select-none overflow-hidden [contain:layout_style]">
-      {/* Hero Headline & Scroll-Tracking Presentation Text */}
-      <div className="relative z-10 max-w-3xl space-y-3 mt-2">
+      {/* Hero Headline */}
+      <div className="relative z-10 max-w-2xl space-y-2.5 mt-2">
         <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-[0.18em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300 drop-shadow-[0_10px_25px_rgba(249,115,22,0.3)]">
           L&apos;AURA SAHARA
         </h1>
-
-        <div
-          className="will-change-transform transition-transform duration-75 ease-out"
-          style={{
-            transform: `translateY(${textTranslateY}px)`,
-            opacity: textOpacity,
-          }}
-        >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-neutral-900/80 border border-orange-500/30 backdrop-blur-md shadow-[0_0_20px_rgba(249,115,22,0.2)]">
-            <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
-            <span className="text-xs sm:text-sm font-serif uppercase tracking-[0.25em] text-orange-200">
-              Interactive 3D Cylinder Gastronomy Experience
-            </span>
-          </div>
-        </div>
       </div>
 
       {/* Empty Stage Slot */}
