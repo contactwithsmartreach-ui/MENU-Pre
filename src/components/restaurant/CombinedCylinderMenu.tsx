@@ -64,7 +64,7 @@ export function CombinedCylinderMenu({
 
   // Gesture tracking refs
   const isDraggingStageRef = useRef(false);
-  const isCardInteractingRef = useRef(false);
+  const cardTapStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
   const startXRef = useRef(0);
   const startYRef = useRef(0);
   const startRotRef = useRef(0);
@@ -207,15 +207,8 @@ export function CombinedCylinderMenu({
     momentumFrameRef.current = requestAnimationFrame(step);
   }, [updateCylinderTransform]);
 
-  // Stage pointer handlers (background drag only)
+  // Stage pointer handlers
   const handleStagePointerDown = (e: React.PointerEvent) => {
-    // If pointer down started on a card, let the card handle the click
-    if ((e.target as HTMLElement).closest("[data-cylinder-card]")) {
-      isCardInteractingRef.current = true;
-    } else {
-      isCardInteractingRef.current = false;
-    }
-
     if (momentumFrameRef.current) cancelAnimationFrame(momentumFrameRef.current);
     if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
 
@@ -235,8 +228,7 @@ export function CombinedCylinderMenu({
     const deltaY = e.clientY - startYRef.current;
     dragDistRef.current = Math.hypot(deltaX, deltaY);
 
-    // Only rotate stage if user dragged more than 8 pixels
-    if (dragDistRef.current > 8) {
+    if (dragDistRef.current > 10) {
       const sensitivity = isMobile ? 0.44 : 0.36;
       updateCylinderTransform(startRotRef.current - deltaX * sensitivity);
 
@@ -254,7 +246,7 @@ export function CombinedCylinderMenu({
     if (!isDraggingStageRef.current) return;
     isDraggingStageRef.current = false;
 
-    if (dragDistRef.current > 8 && Math.abs(velocityRef.current) > 0.3) {
+    if (dragDistRef.current > 10 && Math.abs(velocityRef.current) > 0.3) {
       applyMomentum();
     }
   };
@@ -301,11 +293,8 @@ export function CombinedCylinderMenu({
     "--ba": `calc(1turn / var(--n))`,
   } as React.CSSProperties;
 
-  // Direct card select & modal open handler (100% reliable)
+  // Direct card select & modal open handler anywhere on card
   const handleSelectDish = (dish: MenuItem, index: number) => {
-    // If the user actually dragged the cylinder, ignore the click
-    if (dragDistRef.current > 8) return;
-
     setSelectedDishIndex(index);
     scrollCardToCenter(index);
     bringToFront(index, false);
@@ -348,12 +337,28 @@ export function CombinedCylinderMenu({
                   data-cylinder-card
                   onMouseEnter={() => !isMobile && setHoveredIdx(i)}
                   onMouseLeave={() => !isMobile && setHoveredIdx(null)}
-                  onClick={() => handleSelectDish(dish, i)}
+                  onPointerDown={(e) => {
+                    cardTapStartRef.current = {
+                      x: e.clientX,
+                      y: e.clientY,
+                      time: performance.now(),
+                    };
+                  }}
                   onPointerUp={(e) => {
-                    e.stopPropagation();
-                    if (dragDistRef.current <= 8) {
-                      handleSelectDish(dish, i);
+                    if (cardTapStartRef.current) {
+                      const dist = Math.hypot(
+                        e.clientX - cardTapStartRef.current.x,
+                        e.clientY - cardTapStartRef.current.y
+                      );
+                      if (dist < 15) {
+                        e.stopPropagation();
+                        handleSelectDish(dish, i);
+                      }
                     }
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSelectDish(dish, i);
                   }}
                   role="button"
                   tabIndex={0}
@@ -364,7 +369,7 @@ export function CombinedCylinderMenu({
                   }}
                   className={cn(
                     "group relative [grid-area:1/1] rounded-[28px] sm:rounded-[34px] overflow-hidden [backface-visibility:hidden] transform-gpu cursor-pointer",
-                    "border border-orange-500/30 bg-[#0d0706] shadow-2xl hover:border-orange-400 hover:scale-[1.03] active:scale-95 transition-transform duration-150"
+                    "border border-orange-500/30 bg-[#0d0706] shadow-2xl hover:border-orange-400 hover:scale-[1.03] active:scale-95 transition-transform duration-150 pointer-events-auto"
                   )}
                   style={{
                     width: "var(--w)",
@@ -374,6 +379,17 @@ export function CombinedCylinderMenu({
                       "rotateY(calc(var(--i) * var(--ba))) translateZ(calc(-1 * (0.5 * var(--w) + 0.5em) / tan(0.5 * var(--ba))))",
                   } as React.CSSProperties}
                 >
+                  {/* Invisible Full Surface Hitbox Button */}
+                  <button
+                    type="button"
+                    aria-label={`Open ${dish.name}`}
+                    className="absolute inset-0 w-full h-full z-30 cursor-pointer bg-transparent border-0 focus:outline-none"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSelectDish(dish, i);
+                    }}
+                  />
+
                   {/* Dish Image */}
                   <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
                     <img
