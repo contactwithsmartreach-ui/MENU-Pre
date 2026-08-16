@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { SaharaButton } from "./SaharaButton";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChefHat } from "lucide-react";
 
 interface HeroPlateScrollExperienceProps {
   onScrollToMenu: () => void;
@@ -19,10 +19,15 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const translateY = scrollY * 0.35;
+  const scale = Math.max(0.75, 1 - scrollY * 0.001);
+  const opacity = Math.max(0, 1 - scrollY * 0.003);
+  const rotate = scrollY * 0.15;
+
   return (
     <section className="relative w-full min-h-[75vh] sm:min-h-[85vh] flex flex-col items-center justify-between px-4 pt-10 pb-6 sm:pb-10 text-center select-none overflow-hidden [contain:layout_style]">
       {/* Hero Headline */}
-      <div className="relative z-10 max-w-2xl space-y-2.5 mt-16 sm:mt-24">
+      <div className="relative z-10 max-w-2xl space-y-2.5 mt-12 sm:mt-16">
         <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-[0.18em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300 drop-shadow-[0_10px_25px_rgba(249,115,22,0.3)]">
           L&apos;AURA SAHARA
         </h1>
@@ -34,13 +39,29 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
       {/* Empty Stage Slot */}
       <div
         id="character-stage-container"
-        className="relative z-10 my-4 flex flex-col items-center justify-center min-h-[40px] sm:min-h-[80px] w-full max-w-lg"
+        className="relative z-10 my-4 flex flex-col items-center justify-center min-h-[120px] sm:min-h-[180px] w-full max-w-lg"
       >
         <div className="absolute inset-0 bg-gradient-to-tr from-red-600/15 via-orange-500/15 to-amber-400/10 rounded-full blur-3xl transform scale-105 pointer-events-none" />
       </div>
 
-      {/* CTA Button with Floor Reflection */}
+      {/* CTA Button & Scroll-Following Chef Hat with Floor Reflection */}
       <div className="relative z-30 flex flex-col items-center gap-6 pt-2 pb-2">
+        {/* Animated Scrolling Chef Hat */}
+        <div
+          className="relative flex flex-col items-center group cursor-pointer will-change-transform transition-transform duration-75 ease-out"
+          style={{
+            transform: `translateY(${translateY}px) scale(${scale}) rotate(${rotate}deg)`,
+            opacity,
+          }}
+          onClick={onScrollToMenu}
+        >
+          <div className="absolute -inset-4 bg-orange-500/20 rounded-full blur-xl group-hover:bg-orange-500/35 transition-all duration-300 pointer-events-none animate-pulse" />
+          <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-b from-neutral-100 via-neutral-200 to-neutral-300 border-2 border-orange-400/50 shadow-[0_15px_35px_rgba(0,0,0,0.6),0_0_25px_rgba(249,115,22,0.5)] flex items-center justify-center text-neutral-900 transform group-hover:scale-110 transition-transform duration-300">
+            <ChefHat className="w-12 h-12 sm:w-14 sm:h-14 text-neutral-900 stroke-[1.5]" />
+          </div>
+          <div className="w-12 h-3 bg-black/60 rounded-full blur-md mt-1.5" />
+        </div>
+
         <div
           className="relative drop-shadow-[0_12px_28px_rgba(0,0,0,0.85)]"
           style={{
