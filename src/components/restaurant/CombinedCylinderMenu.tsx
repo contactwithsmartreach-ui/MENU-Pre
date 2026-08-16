@@ -264,7 +264,7 @@ export function CombinedCylinderMenu({
     <div
       onWheel={handleWheel}
       className={cn(
-        "w-full flex flex-col items-center justify-between relative select-none gap-8 sm:gap-14 pb-12 overflow-hidden",
+        "w-full flex flex-col items-center justify-between relative select-none gap-6 sm:gap-10 pb-16 overflow-hidden",
         className
       )}
     >
@@ -277,7 +277,7 @@ export function CombinedCylinderMenu({
         onPointerCancel={handlePointerUp}
       >
         {/* Sahara Radiant Floor Glow */}
-        <div className="pointer-events-none absolute bottom-12 left-1/2 -translate-x-1/2 w-[600px] sm:w-[880px] h-36 bg-gradient-to-r from-red-600/35 via-orange-500/40 to-amber-400/35 blur-3xl rounded-full opacity-80" />
+        <div className="pointer-events-none absolute bottom-10 left-1/2 -translate-x-1/2 w-[600px] sm:w-[880px] h-36 bg-gradient-to-r from-red-600/35 via-orange-500/40 to-amber-400/35 blur-3xl rounded-full opacity-80" />
 
         {/* 3D Perspective Stage Container */}
         <div
@@ -410,59 +410,78 @@ export function CombinedCylinderMenu({
         </div>
       </div>
 
-      {/* 2. GLOWING NAVIGATION CONTROLS & CURVED DOCK */}
-      <div className="relative z-40 w-full max-w-2xl px-4 flex flex-col items-center gap-5 mt-4 sm:mt-8">
-        {/* Curved Glass Control Dock */}
-        <div className="relative flex items-center justify-between w-full max-w-lg p-2 sm:p-2.5 rounded-[9999px] bg-gradient-to-b from-neutral-900/90 via-black/95 to-neutral-950/95 border border-orange-500/40 shadow-[0_15px_35px_rgba(0,0,0,0.8),0_0_30px_rgba(249,115,22,0.2)] backdrop-blur-2xl">
-          {/* Subtle curved inner top highlight */}
-          <div className="absolute top-0 inset-x-8 h-[1px] bg-gradient-to-r from-transparent via-amber-400/60 to-transparent pointer-events-none" />
+      {/* 2. GLOWING NAVIGATION CONTROLS & CYLINDER-CURVED ARCDOCK */}
+      <div className="relative z-40 w-full max-w-3xl px-4 flex flex-col items-center gap-6 mt-10 sm:mt-16">
+        {/* Curved Radial Arc Control Dock */}
+        <div
+          className="relative w-full max-w-xl flex items-center justify-between px-3 sm:px-6 py-3.5 sm:py-4 rounded-[42px] sm:rounded-[56px] bg-gradient-to-b from-[#180e0c]/90 via-[#0e0706]/95 to-black/95 border border-orange-500/40 shadow-[0_20px_50px_rgba(0,0,0,0.85),0_0_35px_rgba(249,115,22,0.25)] backdrop-blur-2xl transition-all [perspective:900px]"
+          style={{
+            transform: "rotateX(12deg)",
+            boxShadow:
+              "0 25px 50px -12px rgba(0, 0, 0, 0.9), 0 0 40px rgba(249, 115, 22, 0.22)",
+          }}
+        >
+          {/* Subtle upper radiant curve flare */}
+          <div className="absolute -top-[1px] inset-x-12 h-[2px] bg-gradient-to-r from-transparent via-amber-400/80 to-transparent pointer-events-none rounded-full" />
+          <div className="absolute -bottom-[1px] inset-x-20 h-[1px] bg-gradient-to-r from-transparent via-orange-500/40 to-transparent pointer-events-none rounded-full" />
 
-          {/* Previous Stepper Button */}
+          {/* Previous Stepper Button - Tilted outward on arc */}
           <button
             type="button"
             aria-label="Rotate Previous Dish"
             onClick={() => stepRotate("prev")}
+            style={{
+              transform: "translateY(-4px) rotate(-6deg)",
+            }}
             className={cn(
               "group relative w-12 h-12 sm:w-14 sm:h-14 rounded-full shrink-0 flex items-center justify-center transition-all duration-300 cursor-pointer",
               "bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 text-neutral-950 font-black",
-              "border border-amber-300/80 shadow-[0_0_20px_rgba(249,115,22,0.5)] active:scale-90 hover:scale-105"
+              "border-2 border-amber-300/80 shadow-[0_0_22px_rgba(249,115,22,0.6)] active:scale-90 hover:scale-110"
             )}
           >
             <ChevronLeft className="w-6 h-6 text-neutral-950 stroke-[3] group-hover:-translate-x-0.5 transition-transform" />
           </button>
 
-          {/* Curved Center Focused Dish Card */}
+          {/* Curved Center Focused Dish Card - Dipped slightly down along arc center */}
           {currentFrontDish && (
             <button
               type="button"
               onClick={() => onSelectItem(currentFrontDish)}
-              className="flex items-center gap-2.5 sm:gap-3.5 px-3 sm:px-5 py-2 rounded-full bg-neutral-950/80 hover:bg-neutral-900/90 border border-orange-500/30 hover:border-orange-400/80 transition-all text-left cursor-pointer group mx-1 sm:mx-2 flex-1 justify-center max-w-[280px] sm:max-w-none shadow-inner"
+              style={{
+                transform: "translateY(4px)",
+              }}
+              className="flex items-center gap-2.5 sm:gap-4 px-3 sm:px-6 py-2.5 rounded-full bg-neutral-950/85 hover:bg-neutral-900/90 border border-orange-500/35 hover:border-orange-400/90 transition-all text-left cursor-pointer group mx-1 sm:mx-2 flex-1 justify-center max-w-[280px] sm:max-w-none shadow-[inset_0_2px_8px_rgba(0,0,0,0.7)]"
             >
               <img
                 src={currentFrontDish.image}
                 alt={currentFrontDish.name}
-                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-cover border border-orange-400/80 shadow-md shrink-0"
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover border border-orange-400/90 shadow-md shrink-0"
               />
               <div className="flex flex-col min-w-0">
                 <span className="text-xs sm:text-sm font-serif font-bold text-white group-hover:text-orange-300 transition-colors truncate">
                   {currentFrontDish.name}
                 </span>
-                <span className="text-[10px] sm:text-[11px] text-amber-400 font-serif font-semibold truncate">
-                  ${currentFrontDish.price} &bull; Tap to Order
+                <span className="text-[10px] sm:text-[12px] text-amber-400 font-serif font-semibold truncate flex items-center gap-1.5">
+                  <span>${currentFrontDish.price}</span>
+                  <span className="text-neutral-500">&bull;</span>
+                  <span className="text-orange-300/90">Tap to Order</span>
                 </span>
               </div>
             </button>
           )}
 
-          {/* Next Stepper Button */}
+          {/* Next Stepper Button - Tilted outward on arc */}
           <button
             type="button"
             aria-label="Rotate Next Dish"
             onClick={() => stepRotate("next")}
+            style={{
+              transform: "translateY(-4px) rotate(6deg)",
+            }}
             className={cn(
               "group relative w-12 h-12 sm:w-14 sm:h-14 rounded-full shrink-0 flex items-center justify-center transition-all duration-300 cursor-pointer",
               "bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 text-neutral-950 font-black",
-              "border border-amber-300/80 shadow-[0_0_20px_rgba(249,115,22,0.5)] active:scale-90 hover:scale-105"
+              "border-2 border-amber-300/80 shadow-[0_0_22px_rgba(249,115,22,0.6)] active:scale-90 hover:scale-110"
             )}
           >
             <ChevronRight className="w-6 h-6 text-neutral-950 stroke-[3] group-hover:translate-x-0.5 transition-transform" />
