@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { SaharaButton } from "./SaharaButton";
+import { MeltingCandleText } from "./MeltingCandleText";
 import { ChevronDown, UtensilsCrossed } from "lucide-react";
 
 interface HeroPlateScrollExperienceProps {
@@ -34,12 +35,11 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
 
   return (
     <section className="relative w-full min-h-[80vh] sm:min-h-screen flex flex-col items-center justify-between px-4 pt-8 pb-6 sm:pb-10 text-center select-none overflow-hidden [contain:layout_style]">
-      {/* Hero Headline & Story */}
-      <div className="relative z-10 max-w-2xl space-y-2.5 mt-2">
-        <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-[0.18em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300 drop-shadow-[0_10px_25px_rgba(249,115,22,0.3)]">
-          L&apos;AURA SAHARA
-        </h1>
-        <p className="text-xs sm:text-sm md:text-base text-neutral-300 font-light max-w-lg mx-auto leading-relaxed">
+      {/* Hero Headline & Melting Candle Wax Story */}
+      <div className="relative z-10 max-w-2xl space-y-4 mt-2">
+        <MeltingCandleText text="L'AURA SAHARA" />
+        
+        <p className="text-xs sm:text-sm md:text-base text-neutral-300 font-light max-w-lg mx-auto leading-relaxed pt-2">
           Where desert embers ignite culinary mastery. Experience our rotating
           3D cylinder gastronomy theater.
         </p>
