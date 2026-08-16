@@ -14,17 +14,17 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
     <section className="relative w-full min-h-screen flex flex-col items-center justify-between px-4 pt-6 sm:pt-10 pb-8 text-center select-none overflow-hidden [contain:layout_style]">
       {/* Hero Headline */}
       <div className="relative z-10 max-w-3xl space-y-2 mt-2">
-        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-black tracking-[0.16em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300 drop-shadow-[0_10px_25px_rgba(249,115,22,0.3)]">
+        <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-serif font-black tracking-[0.16em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300 drop-shadow-[0_10px_25px_rgba(249,115,22,0.3)]">
           L&apos;AURA SAHARA
         </h1>
       </div>
 
       {/* Hero Centerpiece: Very Large 3D Chef Character standing on the button */}
       <div className="relative z-20 flex flex-col items-center justify-center my-0 sm:-my-2">
-        {/* 3D Character with automatic transparent background & 3D parallax */}
+        {/* 3D Character with precise edge preservation and border removal */}
         <Chef3DCharacter
           onClick={onScrollToMenu}
-          className="-mb-3 sm:-mb-5"
+          className="-mb-3 sm:-mb-6"
         />
 
         {/* CTA Button as the Pedestal with Realistic Ground Reflection */}
