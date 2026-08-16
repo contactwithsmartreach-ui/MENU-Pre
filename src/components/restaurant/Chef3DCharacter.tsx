@@ -14,89 +14,103 @@ export function Chef3DCharacter({
 }: Chef3DCharacterProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [isReady, setIsReady] = useState(false);
+  const [isCutoutReady, setIsCutoutReady] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   // 3D Parallax Tilt state
   const [rotateX, setRotateX] = useState(0);
   const [rotateY, setRotateY] = useState(0);
   const [floatingY, setFloatingY] = useState(0);
 
-  // Automated intelligent background isolation on canvas
+  // Automated background isolation with safe fallback
   useEffect(() => {
+    let isCancelled = false;
     const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.src = imageSrc;
 
     img.onload = () => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const ctx = canvas.getContext("2d", { willReadFrequently: true });
-      if (!ctx) return;
+      if (isCancelled) return;
+      try {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
+        if (!ctx) return;
 
-      const w = img.naturalWidth || 800;
-      const h = img.naturalHeight || 800;
-      canvas.width = w;
-      canvas.height = h;
+        const w = img.naturalWidth || 600;
+        const h = img.naturalHeight || 600;
+        canvas.width = w;
+        canvas.height = h;
 
-      ctx.drawImage(img, 0, 0, w, h);
-      const imgData = ctx.getImageData(0, 0, w, h);
-      const data = imgData.data;
+        ctx.drawImage(img, 0, 0, w, h);
+        const imgData = ctx.getImageData(0, 0, w, h);
+        const data = imgData.data;
 
-      // Sample background color from corners
-      const samplePoints = [
-        [4, 4],
-        [w - 5, 4],
-        [4, h - 5],
-        [w - 5, h - 5],
-        [w / 2, 4],
-      ];
+        // Sample background color from outer border samples
+        const samplePoints = [
+          [2, 2],
+          [w - 3, 2],
+          [2, h - 3],
+          [w - 3, h - 3],
+          [Math.floor(w / 2), 2],
+        ];
 
-      let bgR = 0,
-        bgG = 0,
-        bgB = 0;
-      samplePoints.forEach(([x, y]) => {
-        const idx = (Math.floor(y) * w + Math.floor(x)) * 4;
-        bgR += data[idx];
-        bgG += data[idx + 1];
-        bgB += data[idx + 2];
-      });
-      bgR /= samplePoints.length;
-      bgG /= samplePoints.length;
-      bgB /= samplePoints.length;
+        let bgR = 0,
+          bgG = 0,
+          bgB = 0;
+        samplePoints.forEach(([x, y]) => {
+          const idx = (y * w + x) * 4;
+          bgR += data[idx];
+          bgG += data[idx + 1];
+          bgB += data[idx + 2];
+        });
+        bgR /= samplePoints.length;
+        bgG /= samplePoints.length;
+        bgB /= samplePoints.length;
 
-      // Clean background removal with soft edge thresholding
-      for (let i = 0; i < data.length; i += 4) {
-        const r = data[i];
-        const g = data[i + 1];
-        const b = data[i + 2];
+        // Threshold background removal with feathering
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
 
-        // Euclidean color distance from background
-        const dist = Math.sqrt(
-          (r - bgR) ** 2 + (g - bgG) ** 2 + (b - bgB) ** 2
-        );
+          const dist = Math.sqrt(
+            (r - bgR) ** 2 + (g - bgG) ** 2 + (b - bgB) ** 2
+          );
 
-        if (dist < 42) {
-          data[i + 3] = 0; // Transparent
-        } else if (dist < 75) {
-          // Soft antialiased feathered transition
-          const alphaFactor = (dist - 42) / (75 - 42);
-          data[i + 3] = Math.floor(data[i + 3] * alphaFactor);
+          if (dist < 40) {
+            data[i + 3] = 0;
+          } else if (dist < 72) {
+            const factor = (dist - 40) / 32;
+            data[i + 3] = Math.floor(data[i + 3] * factor);
+          }
         }
-      }
 
-      ctx.putImageData(imgData, 0, 0);
-      setIsReady(true);
+        ctx.putImageData(imgData, 0, 0);
+        setIsCutoutReady(true);
+      } catch {
+        // If canvas manipulation is blocked due to origin, gracefully fallback to clean image
+        setHasError(true);
+      }
+    };
+
+    img.onerror = () => {
+      if (!isCancelled) setHasError(true);
+    };
+
+    img.src = imageSrc;
+
+    return () => {
+      isCancelled = true;
     };
   }, [imageSrc]);
 
-  // Smooth floating animation
+  // Smooth floating hover physics
   useEffect(() => {
     let animId: number;
     let start = performance.now();
 
     const loop = (now: number) => {
       const elapsed = (now - start) / 1000;
-      setFloatingY(Math.sin(elapsed * 2) * 8);
+      setFloatingY(Math.sin(elapsed * 2) * 7);
       animId = requestAnimationFrame(loop);
     };
 
@@ -104,15 +118,15 @@ export function Chef3DCharacter({
     return () => cancelAnimationFrame(animId);
   }, []);
 
-  // 3D Mouse Parallax interaction
+  // 3D Parallax tilt on mouse move
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left - rect.width / 2;
     const y = e.clientY - rect.top - rect.height / 2;
 
-    setRotateX((-y / (rect.height / 2)) * 14);
-    setRotateY((x / (rect.width / 2)) * 18);
+    setRotateX((-y / (rect.height / 2)) * 12);
+    setRotateY((x / (rect.width / 2)) * 16);
   };
 
   const handleMouseLeave = () => {
@@ -138,18 +152,30 @@ export function Chef3DCharacter({
           transformStyle: "preserve-3d",
         }}
       >
-        {/* Soft Desert Ember Backlight directly contouring the chef */}
-        <div className="absolute -inset-4 rounded-full bg-gradient-to-tr from-red-600/30 via-orange-500/40 to-amber-400/30 blur-2xl pointer-events-none -z-10 animate-pulse" />
+        {/* Desert Ember Backlight Aura */}
+        <div className="absolute -inset-6 rounded-full bg-gradient-to-tr from-red-600/35 via-orange-500/40 to-amber-400/30 blur-2xl pointer-events-none -z-10 animate-pulse" />
 
-        {/* Processed Cutout Canvas for the Chef & Pizza */}
+        {/* Processed Cutout Canvas for the Chef */}
         <canvas
           ref={canvasRef}
           className={cn(
-            "w-[290px] sm:w-[380px] md:w-[440px] h-auto object-contain transition-all duration-700",
-            "drop-shadow-[0_20px_35px_rgba(0,0,0,0.85)] drop-shadow-[0_0_25px_rgba(249,115,22,0.35)]",
-            isReady ? "opacity-100 scale-100" : "opacity-0 scale-95"
+            "w-[280px] sm:w-[360px] md:w-[420px] h-auto object-contain transition-opacity duration-500",
+            "drop-shadow-[0_20px_35px_rgba(0,0,0,0.85)] drop-shadow-[0_0_30px_rgba(249,115,22,0.4)]",
+            isCutoutReady && !hasError ? "block opacity-100" : "hidden"
           )}
         />
+
+        {/* Fallback Direct Render with CSS mask if canvas pixel reading isn't supported */}
+        {(!isCutoutReady || hasError) && (
+          <div className="relative w-[280px] sm:w-[360px] md:w-[420px] aspect-square rounded-full overflow-hidden flex items-center justify-center">
+            <img
+              src={imageSrc}
+              alt="3D Chef Character"
+              className="w-full h-full object-contain rounded-full mix-blend-lighten drop-shadow-[0_20px_35px_rgba(0,0,0,0.85)]"
+              loading="eager"
+            />
+          </div>
+        )}
       </div>
 
       {/* Floating 3D Pedestal Shadow directly below the character */}
