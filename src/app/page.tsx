@@ -27,6 +27,7 @@ export default function RestaurantMenuPage() {
 
   const selectedCategory = CATEGORY_ITEMS[activeCategoryIdx].id;
   const menuSectionRef = useRef<HTMLDivElement>(null);
+  const cylinderContainerRef = useRef<HTMLDivElement>(null);
 
   const filteredItems =
     selectedCategory === "All"
@@ -44,6 +45,17 @@ export default function RestaurantMenuPage() {
         notes ? `"${notes}"` : `Ready in ~${dish.prepTime}`
       }`,
     });
+  };
+
+  const handleCategorySelect = (index: number) => {
+    setActiveCategoryIdx(index);
+    // Smoothly focus directly onto the cards cylinder
+    if (cylinderContainerRef.current) {
+      cylinderContainerRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
   };
 
   const handleScrollToMenu = () => {
@@ -100,21 +112,24 @@ export default function RestaurantMenuPage() {
       <section
         ref={menuSectionRef}
         id="cylinder-menu"
-        className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-6 pb-12 px-2 sm:px-6"
+        className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-4 pb-12 px-2 sm:px-6"
       >
-        {/* Main Presentation Area: Vertical Spotlight Navbar + 3D Cylinder with Reflections */}
-        <div className="relative z-10 w-full flex-1 flex flex-col lg:flex-row items-center lg:items-start justify-center gap-6 lg:gap-12 max-w-7xl mx-auto py-4">
-          {/* Vertical Spotlight Navbar */}
-          <div className="shrink-0 flex items-center justify-center lg:sticky lg:top-28">
+        {/* Main Presentation Area: Vertical Spotlight Navbar Tightly Coupled with 3D Cylinder */}
+        <div className="relative z-10 w-full flex-1 flex flex-col lg:flex-row items-center lg:items-center justify-center gap-4 lg:gap-2 max-w-7xl mx-auto py-2">
+          {/* Vertical Spotlight Navbar (Larger, prominent and positioned right beside the cylinder) */}
+          <div className="shrink-0 flex items-center justify-center lg:pr-2 z-30">
             <VerticalSpotlightNavbar
               items={CATEGORY_ITEMS}
               activeIndex={activeCategoryIdx}
-              onItemClick={(_, idx) => setActiveCategoryIdx(idx)}
+              onItemClick={(_, idx) => handleCategorySelect(idx)}
             />
           </div>
 
           {/* Dedicated 3D Cylinder Menu */}
-          <div className="flex-1 w-full flex items-center justify-center overflow-visible">
+          <div
+            ref={cylinderContainerRef}
+            className="flex-1 w-full flex items-center justify-center overflow-visible scroll-mt-20"
+          >
             <CombinedCylinderMenu
               key={selectedCategory}
               items={filteredItems}

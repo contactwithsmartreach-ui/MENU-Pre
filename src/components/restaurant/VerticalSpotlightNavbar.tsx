@@ -58,48 +58,48 @@ export function VerticalSpotlightNavbar({
     <div
       onWheel={handleWheel}
       className={cn(
-        "relative flex flex-col items-center lg:items-start select-none py-4 px-2",
+        "relative flex flex-col items-center lg:items-start select-none py-2 px-1 sm:px-3 z-30",
         className
       )}
     >
-      {/* Background Soft Glow centered behind the active element */}
+      {/* Background Radiant Glow centered behind the active element */}
       <div
-        className="pointer-events-none absolute left-0 w-44 h-44 -translate-x-8 bg-gradient-to-r from-red-600/30 via-orange-500/35 to-amber-400/25 rounded-full blur-3xl transition-all duration-500 ease-out"
+        className="pointer-events-none absolute left-0 w-60 h-60 -translate-x-10 bg-gradient-to-r from-red-600/35 via-orange-500/40 to-amber-400/30 rounded-full blur-3xl transition-all duration-500 ease-out"
         style={{
-          transform: `translateY(${activeIndex * 48 - 20}px)`,
+          transform: `translateY(${activeIndex * 60 - 30}px)`,
         }}
       />
 
-      {/* Pure Floating Typography List */}
+      {/* Pure Floating Typography List - Larger & Closer to the Cylinder */}
       <ul
         ref={listRef}
-        className="relative flex flex-col items-center lg:items-start gap-2.5 sm:gap-3.5 z-10 [perspective:1000px]"
+        className="relative flex flex-col items-center lg:items-start gap-3 sm:gap-5 z-10 [perspective:1200px]"
       >
         {items.map((item, idx) => {
           const distance = Math.abs(activeIndex - idx);
           const isActive = activeIndex === idx;
 
-          // Clear, legible depth scaling with elevated visibility
+          // Clear, bold depth scaling with elevated visibility
           let scale = 1;
           let opacity = 1;
           let translateZ = 0;
 
           if (isActive) {
-            scale = 1.18;
+            scale = 1.22;
             opacity = 1;
-            translateZ = 20;
+            translateZ = 25;
           } else if (distance === 1) {
-            scale = 0.96;
-            opacity = 0.75;
-            translateZ = -15;
+            scale = 0.98;
+            opacity = 0.8;
+            translateZ = -10;
           } else if (distance === 2) {
-            scale = 0.88;
-            opacity = 0.55;
-            translateZ = -35;
+            scale = 0.9;
+            opacity = 0.6;
+            translateZ = -30;
           } else {
-            scale = 0.82;
-            opacity = 0.42;
-            translateZ = -55;
+            scale = 0.84;
+            opacity = 0.45;
+            translateZ = -45;
           }
 
           return (
@@ -117,24 +117,24 @@ export function VerticalSpotlightNavbar({
                   opacity,
                 }}
                 className={cn(
-                  "group relative py-1 px-3 text-left transition-all duration-300 cursor-pointer focus:outline-none flex items-center gap-3",
-                  "hover:!opacity-100 hover:scale-105"
+                  "group relative py-1.5 px-3 sm:px-4 text-left transition-all duration-300 cursor-pointer focus:outline-none flex items-center gap-3 sm:gap-4",
+                  "hover:!opacity-100 hover:scale-105 active:scale-95"
                 )}
               >
-                {/* Leading Ember Indicator */}
+                {/* Leading Radiant Ember Beacon */}
                 {isActive ? (
-                  <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-red-500 to-amber-300 shadow-[0_0_14px_rgba(249,115,22,1),0_0_24px_rgba(239,68,68,0.9)] shrink-0 animate-pulse" />
+                  <span className="w-3.5 h-3.5 rounded-full bg-gradient-to-r from-red-500 to-amber-300 shadow-[0_0_18px_rgba(249,115,22,1),0_0_30px_rgba(239,68,68,0.9)] shrink-0 animate-pulse" />
                 ) : (
-                  <span className="w-1.5 h-1.5 rounded-full bg-orange-400/50 shadow-[0_0_8px_rgba(249,115,22,0.4)] group-hover:bg-amber-300 group-hover:shadow-[0_0_12px_rgba(251,191,36,0.9)] transition-all shrink-0" />
+                  <span className="w-2 h-2 rounded-full bg-orange-400/50 shadow-[0_0_10px_rgba(249,115,22,0.4)] group-hover:bg-amber-300 group-hover:shadow-[0_0_16px_rgba(251,191,36,0.9)] transition-all shrink-0" />
                 )}
 
-                {/* Course Label with Enhanced Luminance */}
+                {/* Bold Large Course Label */}
                 <span
                   className={cn(
-                    "font-serif tracking-widest uppercase transition-all duration-300 truncate",
+                    "font-serif tracking-widest uppercase transition-all duration-300 whitespace-nowrap",
                     isActive
-                      ? "text-base sm:text-lg md:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-orange-300 to-amber-200 drop-shadow-[0_0_22px_rgba(249,115,22,0.85)]"
-                      : "text-xs sm:text-sm font-semibold text-orange-200/80 drop-shadow-[0_0_10px_rgba(249,115,22,0.25)] group-hover:text-amber-200 group-hover:drop-shadow-[0_0_16px_rgba(249,115,22,0.7)]"
+                      ? "text-xl sm:text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-orange-300 to-amber-200 drop-shadow-[0_0_25px_rgba(249,115,22,0.85)]"
+                      : "text-base sm:text-lg md:text-xl font-bold text-orange-200/85 drop-shadow-[0_0_10px_rgba(249,115,22,0.2)] group-hover:text-amber-200 group-hover:drop-shadow-[0_0_20px_rgba(249,115,22,0.7)]"
                   )}
                 >
                   {item.label}
