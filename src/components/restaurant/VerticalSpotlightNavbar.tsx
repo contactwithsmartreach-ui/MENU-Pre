@@ -22,10 +22,12 @@ export function VerticalSpotlightNavbar({
   items = [
     { label: "All Items", id: "All" },
     { label: "Chef Specials", id: "Chef Specials" },
-    { label: "Starters", id: "Starters" },
-    { label: "Mains", id: "Mains" },
-    { label: "Desserts", id: "Desserts" },
-    { label: "Cocktails", id: "Cocktails" },
+    { label: "Starters & Mezze", id: "Starters" },
+    { label: "Royal Mains", id: "Mains" },
+    { label: "Woodfire Grills", id: "Grills" },
+    { label: "Artisanal Desserts", id: "Desserts" },
+    { label: "Sahara Cocktails", id: "Cocktails" },
+    { label: "Reserve Cellar", id: "Cellar" },
   ],
   className,
   onItemClick,
@@ -58,22 +60,22 @@ export function VerticalSpotlightNavbar({
     <div
       onWheel={handleWheel}
       className={cn(
-        "relative flex flex-col items-center lg:items-start select-none py-2 px-1 sm:px-3 z-30",
+        "relative flex flex-col items-center lg:items-start select-none py-4 px-2 sm:px-4 z-30",
         className
       )}
     >
       {/* Background Radiant Glow centered behind the active element */}
       <div
-        className="pointer-events-none absolute left-0 w-60 h-60 -translate-x-10 bg-gradient-to-r from-red-600/35 via-orange-500/40 to-amber-400/30 rounded-full blur-3xl transition-all duration-500 ease-out"
+        className="pointer-events-none absolute left-0 w-64 h-64 -translate-x-12 bg-gradient-to-r from-red-600/35 via-orange-500/40 to-amber-400/30 rounded-full blur-3xl transition-all duration-500 ease-out"
         style={{
-          transform: `translateY(${activeIndex * 60 - 30}px)`,
+          transform: `translateY(${activeIndex * 56 - 20}px)`,
         }}
       />
 
       {/* Pure Floating Typography List - Larger & Closer to the Cylinder */}
       <ul
         ref={listRef}
-        className="relative flex flex-col items-center lg:items-start gap-3 sm:gap-5 z-10 [perspective:1200px]"
+        className="relative flex flex-col items-center lg:items-start gap-2.5 sm:gap-4 z-10 [perspective:1200px] max-h-[70vh] overflow-y-auto no-scrollbar py-2"
       >
         {items.map((item, idx) => {
           const distance = Math.abs(activeIndex - idx);
@@ -133,8 +135,8 @@ export function VerticalSpotlightNavbar({
                   className={cn(
                     "font-serif tracking-widest uppercase transition-all duration-300 whitespace-nowrap",
                     isActive
-                      ? "text-xl sm:text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-orange-300 to-amber-200 drop-shadow-[0_0_25px_rgba(249,115,22,0.85)]"
-                      : "text-base sm:text-lg md:text-xl font-bold text-orange-200/85 drop-shadow-[0_0_10px_rgba(249,115,22,0.2)] group-hover:text-amber-200 group-hover:drop-shadow-[0_0_20px_rgba(249,115,22,0.7)]"
+                      ? "text-lg sm:text-xl md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-orange-300 to-amber-200 drop-shadow-[0_0_25px_rgba(249,115,22,0.85)]"
+                      : "text-sm sm:text-base md:text-lg font-bold text-orange-200/85 drop-shadow-[0_0_10px_rgba(249,115,22,0.2)] group-hover:text-amber-200 group-hover:drop-shadow-[0_0_20px_rgba(249,115,22,0.7)]"
                   )}
                 >
                   {item.label}
