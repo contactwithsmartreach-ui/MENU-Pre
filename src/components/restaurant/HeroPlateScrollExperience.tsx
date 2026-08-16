@@ -2,6 +2,7 @@
 
 import React from "react";
 import { SaharaButton } from "./SaharaButton";
+import { ChefHatToque } from "./ChefHatToque";
 import { ChevronDown } from "lucide-react";
 
 interface HeroPlateScrollExperienceProps {
@@ -21,7 +22,7 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
       {/* 3D Character Container Stage Slot */}
       <div
         id="character-stage-container"
-        className="relative z-10 my-4 flex flex-col items-center justify-center min-h-[260px] sm:min-h-[340px] w-full max-w-lg"
+        className="relative z-10 my-4 flex flex-col items-center justify-center min-h-[220px] sm:min-h-[280px] w-full max-w-lg"
       >
         {/* Ambient Pedestal Glow */}
         <div className="absolute inset-0 bg-gradient-to-tr from-red-600/20 via-orange-500/20 to-amber-400/15 rounded-full blur-3xl transform scale-105 pointer-events-none" />
@@ -30,27 +31,36 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
         <div className="absolute bottom-4 w-52 sm:w-72 h-6 bg-black/80 rounded-full blur-xl pointer-events-none" />
       </div>
 
-      {/* CTA Button & Scroll Indicator with Floor Reflection */}
+      {/* CTA Button with Big Realistic Chef Hat & Scroll Indicator */}
       <div className="relative z-30 flex flex-col items-center gap-5 pt-2 pb-2">
-        <div
-          className="relative drop-shadow-[0_12px_28px_rgba(0,0,0,0.85)]"
-          style={{
-            WebkitBoxReflect:
-              "below 8px linear-gradient(to bottom, transparent 40%, rgba(249, 115, 22, 0.45) 100%)",
-          }}
-        >
-          <SaharaButton
-            onClick={onScrollToMenu}
-            primaryText="EXPLORE MENU"
-            hoverText="TASTE THE SAHARA"
-            size="lg"
-          />
+        {/* Button Wrapper with Sitting Chef Hat */}
+        <div className="relative flex flex-col items-center">
+          {/* Big Realistic Chef Hat Toque sitting directly on top */}
+          <div className="absolute -top-24 sm:-top-28 z-40 w-44 sm:w-56 md:w-60 pointer-events-none transition-transform duration-300 hover:scale-105 -rotate-2">
+            <ChefHatToque className="w-full h-auto" />
+          </div>
+
+          {/* Glowing button container with floor reflection */}
+          <div
+            className="relative drop-shadow-[0_12px_28px_rgba(0,0,0,0.85)] pt-6"
+            style={{
+              WebkitBoxReflect:
+                "below 8px linear-gradient(to bottom, transparent 40%, rgba(249, 115, 22, 0.45) 100%)",
+            }}
+          >
+            <SaharaButton
+              onClick={onScrollToMenu}
+              primaryText="EXPLORE MENU"
+              hoverText="TASTE THE SAHARA"
+              size="lg"
+            />
+          </div>
         </div>
 
         <button
           type="button"
           onClick={onScrollToMenu}
-          className="flex items-center gap-1 text-[11px] sm:text-xs font-serif uppercase tracking-widest text-orange-300/75 hover:text-orange-200 transition-colors mt-2 animate-bounce cursor-pointer"
+          className="flex items-center gap-1 text-[11px] sm:text-xs font-serif uppercase tracking-widest text-orange-300/75 hover:text-orange-200 transition-colors mt-4 animate-bounce cursor-pointer"
         >
           <span>Scroll down to interact</span>
           <ChevronDown className="w-4 h-4" />
