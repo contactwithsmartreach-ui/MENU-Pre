@@ -19,7 +19,6 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Parallax and smooth scale/rotate effect based on scroll position
   const translateY = scrollY * 0.35;
   const scale = Math.max(0.75, 1 - scrollY * 0.001);
   const opacity = Math.max(0, 1 - scrollY * 0.003);
@@ -28,16 +27,19 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
   return (
     <section className="relative w-full min-h-[75vh] sm:min-h-[85vh] flex flex-col items-center justify-between px-4 pt-10 pb-6 sm:pb-10 text-center select-none overflow-hidden [contain:layout_style]">
       {/* Hero Headline */}
-      <div className="relative z-10 max-w-2xl space-y-2.5 mt-2">
+      <div className="relative z-10 max-w-2xl space-y-2.5 mt-12 sm:mt-16">
         <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-[0.18em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300 drop-shadow-[0_10px_25px_rgba(249,115,22,0.3)]">
           L&apos;AURA SAHARA
         </h1>
+        <p className="text-sm sm:text-base text-white/85 font-sans tracking-wide drop-shadow-md">
+          Where AI intelligence aligns with culinary masterpieces.
+        </p>
       </div>
 
       {/* Empty Stage Slot */}
       <div
         id="character-stage-container"
-        className="relative z-10 my-4 flex flex-col items-center justify-center min-h-[160px] sm:min-h-[220px] w-full max-w-lg"
+        className="relative z-10 my-4 flex flex-col items-center justify-center min-h-[120px] sm:min-h-[180px] w-full max-w-lg"
       >
         <div className="absolute inset-0 bg-gradient-to-tr from-red-600/15 via-orange-500/15 to-amber-400/10 rounded-full blur-3xl transform scale-105 pointer-events-none" />
       </div>
