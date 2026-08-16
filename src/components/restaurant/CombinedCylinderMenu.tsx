@@ -460,30 +460,6 @@ export function CombinedCylinderMenu({
             <ChevronRight className="w-6 h-6 text-neutral-950 stroke-[3] group-hover:translate-x-0.5 transition-transform" />
           </button>
         </div>
-
-        {/* Quick-Jump Miniature Navigation Rail */}
-        <div className="flex items-center gap-2 overflow-x-auto max-w-full px-4 py-2 scrollbar-none bg-neutral-950/85 backdrop-blur-xl rounded-full border border-orange-500/35 shadow-xl">
-          {items.map((item, idx) => (
-            <button
-              key={item.id}
-              type="button"
-              aria-label={`Jump directly to ${item.name}`}
-              onClick={() => rotateToIndex(idx, false)}
-              className={cn(
-                "relative rounded-full transition-all duration-300 shrink-0 overflow-hidden cursor-pointer",
-                frontIndex === idx
-                  ? "w-9 h-9 ring-2 ring-orange-400 scale-110 shadow-[0_0_15px_rgba(249,115,22,0.6)]"
-                  : "w-6 h-6 opacity-50 hover:opacity-100 hover:scale-110 hover:ring-1 hover:ring-amber-300"
-              )}
-            >
-              <img
-                src={item.image}
-                alt={item.name}
-                className="w-full h-full object-cover"
-              />
-            </button>
-          ))}
-        </div>
       </div>
     </div>
   );
