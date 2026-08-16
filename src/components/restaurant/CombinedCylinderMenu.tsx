@@ -32,10 +32,11 @@ export function CombinedCylinderMenu({
   const [isMobile, setIsMobile] = useState(false);
   const [selectedDishIndex, setSelectedDishIndex] = useState<number>(0);
 
-  // High-performance direct DOM transform tracking
+  // High-performance DOM transform & smooth physics tracking
   const cylinderRef = useRef<HTMLDivElement>(null);
   const currentRotationRef = useRef(0);
   const targetRotationRef = useRef(0);
+  const isTransitioningToTargetRef = useRef(false);
   const velocityRef = useRef(0);
   const isDraggingRef = useRef(false);
   const isAutoSpinningRef = useRef(true);
@@ -48,7 +49,7 @@ export function CombinedCylinderMenu({
   const autoResumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const animFrameRef = useRef<number | null>(null);
 
-  // Responsive geometry setup
+  // Responsive geometry
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 640);
@@ -60,47 +61,57 @@ export function CombinedCylinderMenu({
 
   const cardWidth = isMobile ? 220 : 310;
   // Natural perspective radius
-  const radius = Math.round((cardWidth / 2) / Math.tan(Math.PI / Math.max(N, 1))) + (isMobile ? 35 : 75);
+  const radius =
+    Math.round(cardWidth / 2 / Math.tan(Math.PI / Math.max(N, 1))) +
+    (isMobile ? 35 : 75);
 
-  // Apply smooth transform to DOM without React re-render lag
-  const setTransform = useCallback((deg: number) => {
-    currentRotationRef.current = deg;
-    if (cylinderRef.current) {
-      cylinderRef.current.style.transform = `translateZ(-${radius}px) rotateY(${deg}deg)`;
-    }
-  }, [radius]);
+  // Apply smooth transform directly to the DOM for 60fps+ fluid rendering
+  const setTransform = useCallback(
+    (deg: number) => {
+      currentRotationRef.current = deg;
+      if (cylinderRef.current) {
+        cylinderRef.current.style.transform = `translateZ(-${radius}px) rotateY(${deg}deg)`;
+      }
+    },
+    [radius]
+  );
 
-  // Physics animation loop: Springs towards targetRotation with critically damped friction
+  // Silky Smooth Physics Animation Loop
   useEffect(() => {
     let lastTime = performance.now();
 
     const renderLoop = (time: number) => {
-      const dt = Math.min((time - lastTime) / 1000, 0.1);
+      const dt = Math.min((time - lastTime) / 1000, 0.05);
       lastTime = time;
 
       if (isDraggingRef.current && isHorizontalDragRef.current) {
-        // Direct tracking during horizontal drag
+        // Direct tracking during deliberate horizontal drag
         setTransform(currentRotationRef.current);
-      } else {
-        // Friction & Inertia decay or Spring to Target or Auto-spin
-        if (Math.abs(velocityRef.current) > 0.02) {
-          currentRotationRef.current += velocityRef.current;
-          targetRotationRef.current = currentRotationRef.current;
-          velocityRef.current *= 0.94; // Silky fluid decay
-          setTransform(currentRotationRef.current);
-        } else if (isAutoSpinningRef.current && hoveredIdx === null) {
-          // Slow ambient floating auto-rotation
-          const autoSpeed = 4.5; // deg/sec
-          currentRotationRef.current = (currentRotationRef.current + autoSpeed * dt);
-          targetRotationRef.current = currentRotationRef.current;
+      } else if (isTransitioningToTargetRef.current) {
+        // Smooth cinematic glide to target card with soft spring damping
+        const diff = targetRotationRef.current - currentRotationRef.current;
+        if (Math.abs(diff) > 0.05) {
+          // Slow, graceful easing factor
+          currentRotationRef.current += diff * Math.min(5.5 * dt, 0.18);
           setTransform(currentRotationRef.current);
         } else {
-          // Spring interpolator to smoothly snap to target
-          const diff = targetRotationRef.current - currentRotationRef.current;
-          if (Math.abs(diff) > 0.01) {
-            currentRotationRef.current += diff * Math.min(10 * dt, 0.35);
-            setTransform(currentRotationRef.current);
-          }
+          currentRotationRef.current = targetRotationRef.current;
+          setTransform(currentRotationRef.current);
+          isTransitioningToTargetRef.current = false;
+        }
+      } else {
+        // Momentum & gentle decay or calm ambient drift
+        if (Math.abs(velocityRef.current) > 0.01) {
+          currentRotationRef.current += velocityRef.current;
+          targetRotationRef.current = currentRotationRef.current;
+          velocityRef.current *= 0.965; // Extended, silky glide decay
+          setTransform(currentRotationRef.current);
+        } else if (isAutoSpinningRef.current && hoveredIdx === null) {
+          // Slow, serene ambient cylinder drift (~2.6 degrees per second)
+          const ambientSpeed = 2.6;
+          currentRotationRef.current += ambientSpeed * dt;
+          targetRotationRef.current = currentRotationRef.current;
+          setTransform(currentRotationRef.current);
         }
       }
 
@@ -113,18 +124,19 @@ export function CombinedCylinderMenu({
     };
   }, [hoveredIdx, setTransform]);
 
-  // Smoothly rotate to specific index or angle
+  // Smooth cinematic glide to specific dish index
   const rotateToIndex = useCallback(
     (index: number, openModal = false, item?: MenuItem) => {
       if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
       isAutoSpinningRef.current = false;
       velocityRef.current = 0;
+      isTransitioningToTargetRef.current = true;
 
       setSelectedDishIndex(index);
 
       const targetAngle = -index * angleStep;
       const current = currentRotationRef.current;
-      // Calculate shortest path on circle
+      // Calculate shortest rotational arc
       const diff = (((targetAngle - current + 180) % 360) + 360) % 360 - 180;
       targetRotationRef.current = current + diff;
 
@@ -132,29 +144,32 @@ export function CombinedCylinderMenu({
         onSelectItem(item);
       }
 
+      // Resume serene auto-drift after user stops interacting
       autoResumeTimeoutRef.current = setTimeout(() => {
         isAutoSpinningRef.current = true;
-      }, 5000);
+      }, 5500);
     },
     [angleStep, onSelectItem]
   );
 
   const stepRotate = useCallback(
     (direction: "prev" | "next") => {
-      const newActive = direction === "next"
-        ? (selectedDishIndex + 1) % N
-        : (selectedDishIndex - 1 + N) % N;
+      const newActive =
+        direction === "next"
+          ? (selectedDishIndex + 1) % N
+          : (selectedDishIndex - 1 + N) % N;
 
       rotateToIndex(newActive, false, items[newActive]);
     },
     [selectedDishIndex, N, rotateToIndex, items]
   );
 
-  // Pointer & Drag Handlers with directional intent detection
+  // Pointer & Drag Handlers with relaxed thresholding and soft velocity capping
   const handlePointerDown = (e: React.PointerEvent) => {
     if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
     isDraggingRef.current = true;
     isHorizontalDragRef.current = false;
+    isTransitioningToTargetRef.current = false;
     dragDistanceRef.current = 0;
     startXRef.current = e.clientX;
     startYRef.current = e.clientY;
@@ -169,15 +184,15 @@ export function CombinedCylinderMenu({
     const deltaX = e.clientX - startXRef.current;
     const deltaY = e.clientY - startYRef.current;
 
-    // Detect direction: if moving vertically more than horizontally, let page scroll naturally
+    // Detect user intent: let vertical scrolls flow naturally
     if (!isHorizontalDragRef.current) {
       if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 8) {
-        // Vertical swipe intent -> do not intercept
+        // Vertical swipe intent -> pass through to page scroll
         isDraggingRef.current = false;
         return;
       }
       if (Math.abs(deltaX) > 8 && Math.abs(deltaX) > Math.abs(deltaY)) {
-        // Horizontal drag intent -> lock to cylinder rotation
+        // Horizontal swipe intent -> gently rotate cylinder
         isHorizontalDragRef.current = true;
         isAutoSpinningRef.current = false;
       }
@@ -188,13 +203,17 @@ export function CombinedCylinderMenu({
       dragDistanceRef.current += Math.abs(stepX);
 
       const now = performance.now();
-      const dt = Math.max(now - lastPointerTimeRef.current, 8);
-      const speed = (stepX / dt) * 14;
+      const dt = Math.max(now - lastPointerTimeRef.current, 10);
+      const instantVelocity = (stepX / dt) * 10;
 
-      const sensitivity = isMobile ? 0.38 : 0.28;
+      // Soft, controlled drag sensitivity
+      const sensitivity = isMobile ? 0.28 : 0.22;
       currentRotationRef.current -= stepX * sensitivity;
       targetRotationRef.current = currentRotationRef.current;
-      velocityRef.current = velocityRef.current * 0.4 - speed * 0.6 * sensitivity;
+
+      // Smooth low-pass velocity filter for gentle momentum
+      velocityRef.current =
+        velocityRef.current * 0.5 - instantVelocity * 0.5 * sensitivity;
 
       lastPointerXRef.current = e.clientX;
       lastPointerTimeRef.current = now;
@@ -206,24 +225,28 @@ export function CombinedCylinderMenu({
     isDraggingRef.current = false;
     isHorizontalDragRef.current = false;
 
-    // Cap excessive flick velocities
-    velocityRef.current = Math.max(Math.min(velocityRef.current, 6), -6);
+    // Gentle maximum velocity cap to maintain controlled elegance
+    velocityRef.current = Math.max(Math.min(velocityRef.current, 2.8), -2.8);
 
     autoResumeTimeoutRef.current = setTimeout(() => {
       isAutoSpinningRef.current = true;
-    }, 4000);
+    }, 4500);
   };
 
-  // Only intercept horizontal wheel / trackpad swipes; let vertical scroll pass through to the page
+  // Horizontal wheel / trackpad slow and smooth gliding
   const handleWheel = (e: React.WheelEvent) => {
     if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 4) {
       if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
       isAutoSpinningRef.current = false;
-      velocityRef.current += (e.deltaX > 0 ? -1 : 1) * Math.min(Math.abs(e.deltaX) * 0.04, 1.2);
+      isTransitioningToTargetRef.current = false;
+
+      // Silky, low-acceleration scroll impulse
+      const impulse = (e.deltaX > 0 ? -1 : 1) * Math.min(Math.abs(e.deltaX) * 0.018, 0.6);
+      velocityRef.current += impulse;
 
       autoResumeTimeoutRef.current = setTimeout(() => {
         isAutoSpinningRef.current = true;
-      }, 3500);
+      }, 4000);
     }
   };
 
@@ -261,7 +284,7 @@ export function CombinedCylinderMenu({
         className
       )}
     >
-      {/* 1. FLUID 3D CYLINDER STAGE (touch-pan-y ensures vertical page scrolling is never blocked) */}
+      {/* 1. FLUID 3D CYLINDER STAGE (touch-pan-y allows smooth vertical page scrolling) */}
       <div
         className="relative w-full min-h-[580px] sm:min-h-[660px] lg:min-h-[720px] flex items-center justify-center overflow-visible touch-pan-y cursor-grab active:cursor-grabbing"
         onPointerDown={handlePointerDown}
@@ -310,7 +333,7 @@ export function CombinedCylinderMenu({
                   className={cn(
                     "group absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[32px] sm:rounded-[38px] overflow-hidden cursor-pointer",
                     "border border-orange-500/35 bg-[#0d0706] shadow-2xl transition-all duration-300 transform-gpu",
-                    "hover:scale-[1.06] hover:border-orange-400 hover:shadow-[0_25px_60px_rgba(249,115,22,0.45)] hover:ring-2 hover:ring-orange-400/80 active:scale-95",
+                    "hover:scale-[1.05] hover:border-orange-400 hover:shadow-[0_25px_60px_rgba(249,115,22,0.45)] hover:ring-2 hover:ring-orange-400/80 active:scale-95",
                     isHovered && "z-30"
                   )}
                   style={{
@@ -412,7 +435,7 @@ export function CombinedCylinderMenu({
             aria-label="Rotate Previous Dish"
             onClick={() => stepRotate("prev")}
             className={cn(
-              "group relative w-13 h-13 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer",
+              "group relative w-13 h-13 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer",
               "bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 text-neutral-950 font-black",
               "border-2 border-amber-300/80 shadow-[0_0_25px_rgba(249,115,22,0.6)] active:scale-95 hover:scale-110"
             )}
@@ -448,7 +471,7 @@ export function CombinedCylinderMenu({
             aria-label="Rotate Next Dish"
             onClick={() => stepRotate("next")}
             className={cn(
-              "group relative w-13 h-13 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer",
+              "group relative w-13 h-13 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer",
               "bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 text-neutral-950 font-black",
               "border-2 border-amber-300/80 shadow-[0_0_25px_rgba(249,115,22,0.6)] active:scale-95 hover:scale-110"
             )}
