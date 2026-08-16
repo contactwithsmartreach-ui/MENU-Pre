@@ -53,7 +53,8 @@ export function CombinedCylinderMenu({
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const cardWidth = isMobile ? 180 : 250;
+  // Increased card dimensions for a larger, more impactful cylinder presentation
+  const cardWidth = isMobile ? 220 : 310;
 
   // Direct DOM transform updater
   const updateCylinderTransform = useCallback((angle: number) => {
@@ -164,7 +165,7 @@ export function CombinedCylinderMenu({
     [selectedDishIndex, N, bringToFront, items]
   );
 
-  // Ultra-optimized Auto-spin RAF loop (direct DOM write, 0 React re-renders)
+  // Ultra-optimized Auto-spin RAF loop
   useEffect(() => {
     let prev = performance.now();
 
@@ -334,17 +335,17 @@ export function CombinedCylinderMenu({
     <div
       onWheel={handleWheel}
       className={cn(
-        "w-full flex flex-col items-center justify-between relative select-none gap-2 sm:gap-3 [contain:layout_style]",
+        "w-full flex flex-col items-center justify-between relative select-none gap-3 sm:gap-5 [contain:layout_style]",
         className
       )}
     >
-      {/* 1. UPPER STAGE: 3D Cylinder Gastronomy Carousel */}
-      <div className="relative w-full min-h-[440px] sm:min-h-[500px] flex items-center justify-center overflow-hidden">
+      {/* 1. UPPER STAGE: Enlarged 3D Cylinder Gastronomy Carousel */}
+      <div className="relative w-full min-h-[520px] sm:min-h-[620px] lg:min-h-[680px] flex items-center justify-center overflow-hidden">
         {/* 3D Cylinder Scene */}
         <div
-          className="w-full flex-1 grid place-items-center cursor-grab active:cursor-grabbing overflow-visible py-2 touch-pan-y"
+          className="w-full flex-1 grid place-items-center cursor-grab active:cursor-grabbing overflow-visible py-4 touch-pan-y"
           style={{
-            perspective: isMobile ? "44em" : "60em",
+            perspective: isMobile ? "50em" : "75em",
           }}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
@@ -374,8 +375,8 @@ export function CombinedCylinderMenu({
                     }
                   }}
                   className={cn(
-                    "group relative [grid-area:1/1] rounded-[24px] sm:rounded-[28px] overflow-hidden [backface-visibility:hidden] transform-gpu cursor-pointer",
-                    "border border-orange-500/30 bg-[#0d0706] shadow-xl hover:border-orange-400"
+                    "group relative [grid-area:1/1] rounded-[28px] sm:rounded-[34px] overflow-hidden [backface-visibility:hidden] transform-gpu cursor-pointer",
+                    "border border-orange-500/30 bg-[#0d0706] shadow-2xl hover:border-orange-400"
                   )}
                   style={{
                     width: "var(--w)",
@@ -398,20 +399,20 @@ export function CombinedCylinderMenu({
                   </div>
 
                   {/* Top Bar */}
-                  <div className="relative z-10 p-3 sm:p-4 flex items-center justify-between w-full pointer-events-none">
+                  <div className="relative z-10 p-3.5 sm:p-5 flex items-center justify-between w-full pointer-events-none">
                     {dish.isSignature ? (
-                      <Badge className="bg-gradient-to-r from-red-500 to-orange-500 text-white font-serif tracking-wider uppercase px-2.5 py-0.5 rounded-full text-[10px] shadow border-0">
-                        <Flame className="w-3 h-3 fill-current mr-1 text-amber-200" />
+                      <Badge className="bg-gradient-to-r from-red-500 to-orange-500 text-white font-serif tracking-wider uppercase px-3 py-0.5 sm:px-3.5 sm:py-1 rounded-full text-[11px] sm:text-xs shadow-md border-0">
+                        <Flame className="w-3.5 h-3.5 fill-current mr-1 text-amber-200" />
                         Signature
                       </Badge>
                     ) : (
-                      <span className="text-[10px] font-serif uppercase tracking-widest text-orange-200 bg-neutral-950/80 px-2 py-0.5 rounded-full border border-orange-500/30">
+                      <span className="text-[11px] sm:text-xs font-serif uppercase tracking-widest text-orange-200 bg-neutral-950/80 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-orange-500/30">
                         {dish.category}
                       </span>
                     )}
 
-                    <div className="flex items-center gap-1 bg-neutral-950/90 px-2 py-0.5 rounded-full border border-orange-500/30 text-amber-300 text-[11px] font-bold">
-                      <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                    <div className="flex items-center gap-1 bg-neutral-950/90 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-orange-500/30 text-amber-300 text-xs sm:text-sm font-bold">
+                      <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
                       <span>{dish.rating}</span>
                     </div>
                   </div>
@@ -422,30 +423,30 @@ export function CombinedCylinderMenu({
                       "absolute inset-0 flex items-center justify-center z-20 transition-opacity duration-200 pointer-events-none opacity-0 group-hover:opacity-100"
                     )}
                   >
-                    <span className="bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white font-serif tracking-widest uppercase px-3 py-1.5 rounded-full text-[11px] font-bold shadow-lg border border-orange-200/50 flex items-center gap-1.5">
-                      <Eye className="w-3.5 h-3.5" />
+                    <span className="bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white font-serif tracking-widest uppercase px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold shadow-xl border border-orange-200/50 flex items-center gap-2">
+                      <Eye className="w-4 h-4" />
                       <span>VIEW DETAILS</span>
                     </span>
                   </div>
 
                   {/* Bottom Details */}
-                  <div className="absolute bottom-0 inset-x-0 z-10 p-3.5 sm:p-5 pt-8 bg-gradient-to-t from-neutral-950 via-neutral-950/95 to-transparent flex flex-col justify-end pointer-events-none">
-                    <h3 className="text-sm sm:text-base font-serif font-bold text-white tracking-wide truncate group-hover:text-orange-300 transition-colors">
+                  <div className="absolute bottom-0 inset-x-0 z-10 p-4 sm:p-6 pt-10 bg-gradient-to-t from-neutral-950 via-neutral-950/95 to-transparent flex flex-col justify-end pointer-events-none">
+                    <h3 className="text-base sm:text-lg lg:text-xl font-serif font-bold text-white tracking-wide truncate group-hover:text-orange-300 transition-colors">
                       {dish.name}
                     </h3>
-                    <p className="text-[11px] sm:text-xs text-neutral-300 line-clamp-1 mt-0.5 font-light">
+                    <p className="text-xs sm:text-sm text-neutral-300 line-clamp-2 mt-1 font-light leading-snug">
                       {dish.description}
                     </p>
 
-                    <div className="mt-2 pt-2 border-t border-orange-500/20 flex items-center justify-between">
-                      <div className="flex items-baseline gap-0.5">
-                        <span className="text-xs font-serif text-orange-400 font-bold">$</span>
-                        <span className="text-xl font-extrabold text-amber-300 font-serif">
+                    <div className="mt-3 pt-2.5 border-t border-orange-500/20 flex items-center justify-between">
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-xs sm:text-sm font-serif text-orange-400 font-bold">$</span>
+                        <span className="text-2xl sm:text-3xl font-extrabold text-amber-300 font-serif">
                           {dish.price}
                         </span>
                       </div>
 
-                      <span className="text-[10px] text-orange-200/70 font-mono">
+                      <span className="text-xs sm:text-sm text-orange-200/70 font-mono">
                         {dish.prepTime}
                       </span>
                     </div>
