@@ -5,7 +5,6 @@ import { MenuItem } from "@/types/restaurant";
 import { cn } from "@/lib/utils";
 import {
   Star,
-  Flame,
   ChevronLeft,
   ChevronRight,
   Eye,
@@ -31,6 +30,7 @@ export function CombinedCylinderMenu({
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [selectedDishIndex, setSelectedDishIndex] = useState<number>(0);
+  const [isUserScrollingPage, setIsUserScrollingPage] = useState(false);
 
   // High-performance DOM transform & smooth physics tracking
   const cylinderRef = useRef<HTMLDivElement>(null);
@@ -47,7 +47,34 @@ export function CombinedCylinderMenu({
   const lastPointerTimeRef = useRef(0);
   const dragDistanceRef = useRef(0);
   const autoResumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const scrollDebounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const animFrameRef = useRef<number | null>(null);
+  const isScrollingRef = useRef(false);
+
+  // Detect active page scrolling to slow down the cylinder
+  useEffect(() => {
+    const handleWindowScroll = () => {
+      isScrollingRef.current = true;
+      setIsUserScrollingPage(true);
+
+      if (scrollDebounceTimeoutRef.current) {
+        clearTimeout(scrollDebounceTimeoutRef.current);
+      }
+
+      scrollDebounceTimeoutRef.current = setTimeout(() => {
+        isScrollingRef.current = false;
+        setIsUserScrollingPage(false);
+      }, 700);
+    };
+
+    window.addEventListener("scroll", handleWindowScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleWindowScroll);
+      if (scrollDebounceTimeoutRef.current) {
+        clearTimeout(scrollDebounceTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Responsive geometry
   useEffect(() => {
@@ -76,7 +103,7 @@ export function CombinedCylinderMenu({
     [radius]
   );
 
-  // Silky Smooth Physics Animation Loop
+  // Silky Smooth Physics Animation Loop: Fast by default, slow when user is scrolling
   useEffect(() => {
     let lastTime = performance.now();
 
@@ -88,11 +115,11 @@ export function CombinedCylinderMenu({
         // Direct tracking during deliberate horizontal drag
         setTransform(currentRotationRef.current);
       } else if (isTransitioningToTargetRef.current) {
-        // Smooth cinematic glide to target card with soft spring damping
+        // Crisp, fast yet smooth transition to target card
         const diff = targetRotationRef.current - currentRotationRef.current;
         if (Math.abs(diff) > 0.05) {
-          // Slow, graceful easing factor
-          currentRotationRef.current += diff * Math.min(5.5 * dt, 0.18);
+          const snapSpeed = isScrollingRef.current ? 4.5 : 8.5;
+          currentRotationRef.current += diff * Math.min(snapSpeed * dt, 0.32);
           setTransform(currentRotationRef.current);
         } else {
           currentRotationRef.current = targetRotationRef.current;
@@ -100,15 +127,14 @@ export function CombinedCylinderMenu({
           isTransitioningToTargetRef.current = false;
         }
       } else {
-        // Momentum & gentle decay or calm ambient drift
+        // Momentum & decay or fast/slow ambient drift
         if (Math.abs(velocityRef.current) > 0.01) {
           currentRotationRef.current += velocityRef.current;
           targetRotationRef.current = currentRotationRef.current;
-          velocityRef.current *= 0.965; // Extended, silky glide decay
+          velocityRef.current *= 0.94;
           setTransform(currentRotationRef.current);
         } else if (isAutoSpinningRef.current && hoveredIdx === null) {
-          // Slow, serene ambient cylinder drift (~2.6 degrees per second)
-          const ambientSpeed = 2.6;
+          const ambientSpeed = isScrollingRef.current ? 2.2 : 12.0;
           currentRotationRef.current += ambientSpeed * dt;
           targetRotationRef.current = currentRotationRef.current;
           setTransform(currentRotationRef.current);
@@ -124,7 +150,7 @@ export function CombinedCylinderMenu({
     };
   }, [hoveredIdx, setTransform]);
 
-  // Smooth cinematic glide to specific dish index
+  // Fast and smooth rotation to specific dish index
   const rotateToIndex = useCallback(
     (index: number, openModal = false, item?: MenuItem) => {
       if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
@@ -136,7 +162,6 @@ export function CombinedCylinderMenu({
 
       const targetAngle = -index * angleStep;
       const current = currentRotationRef.current;
-      // Calculate shortest rotational arc
       const diff = (((targetAngle - current + 180) % 360) + 360) % 360 - 180;
       targetRotationRef.current = current + diff;
 
@@ -144,10 +169,9 @@ export function CombinedCylinderMenu({
         onSelectItem(item);
       }
 
-      // Resume serene auto-drift after user stops interacting
       autoResumeTimeoutRef.current = setTimeout(() => {
         isAutoSpinningRef.current = true;
-      }, 5500);
+      }, 4000);
     },
     [angleStep, onSelectItem]
   );
@@ -164,7 +188,7 @@ export function CombinedCylinderMenu({
     [selectedDishIndex, N, rotateToIndex, items]
   );
 
-  // Pointer & Drag Handlers with relaxed thresholding and soft velocity capping
+  // Pointer & Drag Handlers
   const handlePointerDown = (e: React.PointerEvent) => {
     if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
     isDraggingRef.current = true;
@@ -184,15 +208,13 @@ export function CombinedCylinderMenu({
     const deltaX = e.clientX - startXRef.current;
     const deltaY = e.clientY - startYRef.current;
 
-    // Detect user intent: let vertical scrolls flow naturally
+    // Detect user intent: let vertical page scrolling happen freely
     if (!isHorizontalDragRef.current) {
       if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 8) {
-        // Vertical swipe intent -> pass through to page scroll
         isDraggingRef.current = false;
         return;
       }
       if (Math.abs(deltaX) > 8 && Math.abs(deltaX) > Math.abs(deltaY)) {
-        // Horizontal swipe intent -> gently rotate cylinder
         isHorizontalDragRef.current = true;
         isAutoSpinningRef.current = false;
       }
@@ -204,16 +226,14 @@ export function CombinedCylinderMenu({
 
       const now = performance.now();
       const dt = Math.max(now - lastPointerTimeRef.current, 10);
-      const instantVelocity = (stepX / dt) * 10;
+      const instantVelocity = (stepX / dt) * 12;
 
-      // Soft, controlled drag sensitivity
-      const sensitivity = isMobile ? 0.28 : 0.22;
+      const sensitivity = isMobile ? 0.38 : 0.32;
       currentRotationRef.current -= stepX * sensitivity;
       targetRotationRef.current = currentRotationRef.current;
 
-      // Smooth low-pass velocity filter for gentle momentum
       velocityRef.current =
-        velocityRef.current * 0.5 - instantVelocity * 0.5 * sensitivity;
+        velocityRef.current * 0.4 - instantVelocity * 0.6 * sensitivity;
 
       lastPointerXRef.current = e.clientX;
       lastPointerTimeRef.current = now;
@@ -225,28 +245,34 @@ export function CombinedCylinderMenu({
     isDraggingRef.current = false;
     isHorizontalDragRef.current = false;
 
-    // Gentle maximum velocity cap to maintain controlled elegance
-    velocityRef.current = Math.max(Math.min(velocityRef.current, 2.8), -2.8);
+    velocityRef.current = Math.max(Math.min(velocityRef.current, 4.5), -4.5);
 
     autoResumeTimeoutRef.current = setTimeout(() => {
       isAutoSpinningRef.current = true;
-    }, 4500);
+    }, 3500);
   };
 
-  // Horizontal wheel / trackpad slow and smooth gliding
+  // Horizontal wheel / trackpad slow-down on scroll
   const handleWheel = (e: React.WheelEvent) => {
+    isScrollingRef.current = true;
+    setIsUserScrollingPage(true);
+    if (scrollDebounceTimeoutRef.current) clearTimeout(scrollDebounceTimeoutRef.current);
+    scrollDebounceTimeoutRef.current = setTimeout(() => {
+      isScrollingRef.current = false;
+      setIsUserScrollingPage(false);
+    }, 600);
+
     if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 4) {
       if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
       isAutoSpinningRef.current = false;
       isTransitioningToTargetRef.current = false;
 
-      // Silky, low-acceleration scroll impulse
-      const impulse = (e.deltaX > 0 ? -1 : 1) * Math.min(Math.abs(e.deltaX) * 0.018, 0.6);
+      const impulse = (e.deltaX > 0 ? -1 : 1) * Math.min(Math.abs(e.deltaX) * 0.03, 0.9);
       velocityRef.current += impulse;
 
       autoResumeTimeoutRef.current = setTimeout(() => {
         isAutoSpinningRef.current = true;
-      }, 4000);
+      }, 3500);
     }
   };
 
@@ -284,7 +310,7 @@ export function CombinedCylinderMenu({
         className
       )}
     >
-      {/* 1. FLUID 3D CYLINDER STAGE (touch-pan-y allows smooth vertical page scrolling) */}
+      {/* 1. FLUID 3D CYLINDER STAGE */}
       <div
         className="relative w-full min-h-[580px] sm:min-h-[660px] lg:min-h-[720px] flex items-center justify-center overflow-visible touch-pan-y cursor-grab active:cursor-grabbing"
         onPointerDown={handlePointerDown}
@@ -342,7 +368,6 @@ export function CombinedCylinderMenu({
                     transform: `rotateY(${itemAngle}deg) translateZ(${radius}px)`,
                     backfaceVisibility: "hidden",
                     WebkitBackfaceVisibility: "hidden",
-                    // Liquid Glass Floor Reflection
                     WebkitBoxReflect:
                       "below 16px linear-gradient(to bottom, transparent 60%, rgba(249, 115, 22, 0.35) 100%)",
                   }}
@@ -435,7 +460,7 @@ export function CombinedCylinderMenu({
             aria-label="Rotate Previous Dish"
             onClick={() => stepRotate("prev")}
             className={cn(
-              "group relative w-13 h-13 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer",
+              "group relative w-13 h-13 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer",
               "bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 text-neutral-950 font-black",
               "border-2 border-amber-300/80 shadow-[0_0_25px_rgba(249,115,22,0.6)] active:scale-95 hover:scale-110"
             )}
@@ -456,9 +481,16 @@ export function CombinedCylinderMenu({
                 className="w-8 h-8 rounded-full object-cover border border-orange-400/80 shadow-sm"
               />
               <div className="flex flex-col">
-                <span className="text-xs sm:text-sm font-serif font-bold text-white group-hover:text-orange-300 transition-colors truncate max-w-[150px] sm:max-w-[220px]">
-                  {currentFrontDish.name}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs sm:text-sm font-serif font-bold text-white group-hover:text-orange-300 transition-colors truncate max-w-[150px] sm:max-w-[220px]">
+                    {currentFrontDish.name}
+                  </span>
+                  {isUserScrollingPage && (
+                    <span className="text-[9px] uppercase tracking-wider font-mono text-orange-400/80 bg-orange-500/10 px-1.5 py-0.5 rounded border border-orange-500/20">
+                      Slowed
+                    </span>
+                  )}
+                </div>
                 <span className="text-[11px] text-amber-400 font-serif font-bold">
                   ${currentFrontDish.price} &bull; Tap to View & Order
                 </span>
@@ -471,7 +503,7 @@ export function CombinedCylinderMenu({
             aria-label="Rotate Next Dish"
             onClick={() => stepRotate("next")}
             className={cn(
-              "group relative w-13 h-13 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer",
+              "group relative w-13 h-13 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer",
               "bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 text-neutral-950 font-black",
               "border-2 border-amber-300/80 shadow-[0_0_25px_rgba(249,115,22,0.6)] active:scale-95 hover:scale-110"
             )}
