@@ -39,10 +39,6 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
         <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-[0.18em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300 drop-shadow-[0_10px_25px_rgba(249,115,22,0.3)]">
           L&apos;AURA SAHARA
         </h1>
-        <p className="text-xs sm:text-sm md:text-base text-neutral-300 font-light max-w-lg mx-auto leading-relaxed">
-          Where desert embers ignite culinary mastery. Experience our rotating
-          3D cylinder gastronomy theater.
-        </p>
       </div>
 
       {/* Floating Realistic Culinary Plate Stage */}
