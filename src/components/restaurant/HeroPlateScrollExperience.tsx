@@ -19,27 +19,18 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
         </h1>
       </div>
 
-      {/* Unified Character & Button Pedestal Stage */}
-      <div className="relative z-20 flex flex-col items-center justify-center w-full max-w-md my-auto">
-        {/* 3D Chef Character */}
-        <div className="relative z-10 -mb-7 sm:-mb-9">
-          <Chef3DCharacter />
-        </div>
+      {/* 3D Chef Character Interactive Slot */}
+      <div className="relative z-10 my-0 flex flex-col items-center justify-center w-full max-w-lg -mb-10 sm:-mb-14">
+        <Chef3DCharacter />
+      </div>
 
-        {/* Character's Direct Physical Contact & Ambient Shadow Cast Onto the Button */}
-        <div className="relative z-20 w-full flex flex-col items-center pointer-events-none -mb-3">
-          {/* Ultra-crisp Core Contact Occlusion right where feet touch the button */}
-          <div className="w-28 sm:w-36 h-2 bg-neutral-950/95 rounded-full blur-[2px] shadow-[0_2px_8px_rgba(0,0,0,0.95)]" />
-          {/* Soft Diffuse Shadow draped over the button surface */}
-          <div className="w-44 sm:w-56 h-3 bg-neutral-950/80 rounded-full blur-md -mt-1" />
-        </div>
-
-        {/* Explore Menu Button (Acting as physical stage) with ground mirror reflection */}
+      {/* Explore Menu CTA Button & Scroll Indicator with Floor Reflection */}
+      <div className="relative z-30 flex flex-col items-center gap-5 pt-0 pb-2">
         <div
-          className="relative z-30 drop-shadow-[0_15px_30px_rgba(0,0,0,0.9)]"
+          className="relative drop-shadow-[0_12px_28px_rgba(0,0,0,0.85)]"
           style={{
             WebkitBoxReflect:
-              "below 10px linear-gradient(to bottom, transparent 35%, rgba(249, 115, 22, 0.4) 100%)",
+              "below 8px linear-gradient(to bottom, transparent 40%, rgba(249, 115, 22, 0.45) 100%)",
           }}
         >
           <SaharaButton
@@ -49,14 +40,11 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
             size="lg"
           />
         </div>
-      </div>
 
-      {/* Scroll indicator */}
-      <div className="relative z-30 flex flex-col items-center pb-2">
         <button
           type="button"
           onClick={onScrollToMenu}
-          className="flex items-center gap-1 text-[11px] sm:text-xs font-serif uppercase tracking-widest text-orange-300/75 hover:text-orange-200 transition-colors animate-bounce cursor-pointer"
+          className="flex items-center gap-1 text-[11px] sm:text-xs font-serif uppercase tracking-widest text-orange-300/75 hover:text-orange-200 transition-colors mt-1 animate-bounce cursor-pointer"
         >
           <span>Scroll down to interact</span>
           <ChevronDown className="w-4 h-4" />
