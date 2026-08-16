@@ -48,57 +48,6 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
       {/* Floating Realistic Culinary Plate Stage */}
       <div className="relative z-10 my-2 sm:my-4 flex flex-col items-center justify-center -mb-8 sm:-mb-12">
         {/* Outer Radiant Glow */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-red-600/20 via-<dyad-write path="src/components/restaurant/HeroPlateScrollExperience.tsx" description="Add bottom glass reflection and warm ambient glow under the SaharaButton">
-"use client";
-
-import React, { useEffect, useState } from "react";
-import { SaharaButton } from "./SaharaButton";
-import { ChevronDown, UtensilsCrossed } from "lucide-react";
-
-interface HeroPlateScrollExperienceProps {
-  onScrollToMenu: () => void;
-}
-
-export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExperienceProps) {
-  const [scrollY, setScrollY] = useState(0);
-
-  useEffect(() => {
-    let ticking = false;
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          setScrollY(window.scrollY);
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const progress = Math.min(Math.max(scrollY / 600, 0), 1);
-  const translateY = progress * 80;
-  const scale = 1 - progress * 0.1;
-  const rotateDeg = progress * 35;
-
-  return (
-    <section className="relative w-full min-h-[80vh] sm:min-h-screen flex flex-col items-center justify-between px-4 pt-8 pb-6 sm:pb-10 text-center select-none overflow-hidden [contain:layout_style]">
-      {/* Hero Headline & Story */}
-      <div className="relative z-10 max-w-2xl space-y-2.5 mt-2">
-        <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-[0.18em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300 drop-shadow-[0_10px_25px_rgba(249,115,22,0.3)]">
-          L&apos;AURA SAHARA
-        </h1>
-        <p className="text-xs sm:text-sm md:text-base text-neutral-300 font-light max-w-lg mx-auto leading-relaxed">
-          Where desert embers ignite culinary mastery. Experience our rotating
-          3D cylinder gastronomy theater.
-        </p>
-      </div>
-
-      {/* Floating Realistic Culinary Plate Stage */}
-      <div className="relative z-10 my-2 sm:my-4 flex flex-col items-center justify-center -mb-8 sm:-mb-12">
-        {/* Outer Radiant Glow */}
         <div className="absolute inset-0 bg-gradient-to-tr from-red-600/20 via-orange-500/20 to-amber-400/15 rounded-full blur-2xl transform scale-105 pointer-events-none" />
 
         {/* 3D Moving Plate Container */}
@@ -145,19 +94,9 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
         />
       </div>
 
-      {/* CTA Button with Bottom Mirror Reflection & Scroll Indicator */}
-      <div className="relative z-30 flex flex-col items-center gap-3 pt-2 pb-6">
-        {/* Button Wrapper with Mirror Reflection and Floor Ambient Glow */}
-        <div
-          className="relative drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]"
-          style={{
-            WebkitBoxReflect:
-              "below 6px linear-gradient(to bottom, transparent 35%, rgba(249, 115, 22, 0.35) 100%)",
-          }}
-        >
-          {/* Subtle Ambient Underglow */}
-          <div className="pointer-events-none absolute -bottom-2 left-1/2 -translate-x-1/2 w-48 h-6 bg-orange-500/30 blur-md rounded-full" />
-
+      {/* CTA Button & Scroll Indicator */}
+      <div className="relative z-30 flex flex-col items-center gap-3 pt-2">
+        <div className="relative drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
           <SaharaButton
             onClick={onScrollToMenu}
             primaryText="ENTER CYLINDER MENU"
@@ -169,7 +108,7 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
         <button
           type="button"
           onClick={onScrollToMenu}
-          className="flex items-center gap-1 text-[11px] font-serif uppercase tracking-widest text-orange-300/70 hover:text-orange-200 transition-colors mt-3 animate-bounce"
+          className="flex items-center gap-1 text-[11px] font-serif uppercase tracking-widest text-orange-300/70 hover:text-orange-200 transition-colors mt-1 animate-bounce"
         >
           <span>Scroll down to interact</span>
           <ChevronDown className="w-4 h-4" />
