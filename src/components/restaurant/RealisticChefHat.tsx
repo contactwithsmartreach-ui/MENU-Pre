@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { Sparkles } from "lucide-react";
 
 export function RealisticChefHat() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -8,24 +9,8 @@ export function RealisticChefHat() {
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       const { innerWidth, innerHeight } = window;
-      const x = (e.clientX / innerWidth - 0.5) * 12;
-      const y = (e.clientY / innerHeight - 0.5) * 10;
-      setMousePos({ x, y });
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);<dyad-write path="src/components/restaurant/RealisticChefHat.tsx" description="Remove floating stars and adjust dimensions so the chef hat sits naturally atop the button">
-"use client";
-
-import React, { useState, useEffect } from "react";
-
-export function RealisticChefHat() {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const { innerWidth, innerHeight } = window;
-      const x = (e.clientX / innerWidth - 0.5) * 12;
-      const y = (e.clientY / innerHeight - 0.5) * 10;
+      const x = (e.clientX / innerWidth - 0.5) * 16;
+      const y = (e.clientY / innerHeight - 0.5) * 14;
       setMousePos({ x, y });
     };
 
@@ -34,22 +19,30 @@ export function RealisticChefHat() {
   }, []);
 
   return (
-    <div className="relative w-full flex flex-col items-center justify-center select-none group pointer-events-none">
+    <div className="relative w-full flex flex-col items-center justify-center select-none py-2 group">
       {/* Radiant Amber & Ember Core Glow behind the Hat */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-orange-600/30 via-amber-500/20 to-red-500/10 rounded-full blur-2xl scale-105" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-orange-600/35 via-amber-500/25 to-red-500/15 rounded-full blur-3xl scale-110 animate-pulse" />
 
-      {/* 3D Hat Container reacting with gentle perspective */}
+      {/* Floating 3D Hat Container */}
       <div
-        className="relative z-20 flex flex-col items-center transition-transform duration-300 ease-out will-change-transform"
+        className="relative z-20 flex flex-col items-center transition-transform duration-300 ease-out will-change-transform animate-[float_4s_ease-in-out_infinite]"
         style={{
-          transform: `perspective(900px) rotateY(${mousePos.x}deg) rotateX(${-mousePos.y}deg)`,
+          transform: `perspective(1000px) rotateY(${mousePos.x}deg) rotateX(${-mousePos.y}deg) translateY(-4px)`,
         }}
       >
-        {/* Realistic Chef Hat SVG Graphic without stars */}
-        <div className="relative w-48 h-48 sm:w-60 sm:h-60 md:w-64 md:h-64 flex items-center justify-center">
+        {/* Sparkle Beacons */}
+        <div className="absolute top-2 -right-4 z-30 pointer-events-none animate-bounce delay-150">
+          <Sparkles className="w-5 h-5 text-amber-300 fill-amber-300 drop-shadow-[0_0_12px_rgba(251,191,36,0.9)]" />
+        </div>
+        <div className="absolute top-1/2 -left-6 z-30 pointer-events-none animate-pulse">
+          <Sparkles className="w-4 h-4 text-orange-400 fill-orange-400 drop-shadow-[0_0_10px_rgba(249,115,22,0.9)]" />
+        </div>
+
+        {/* High-Resolution Realistic Chef Hat SVG Graphic */}
+        <div className="relative w-56 h-56 sm:w-72 sm:h-72 md:w-80 md:h-80 flex items-center justify-center">
           <svg
             viewBox="0 0 500 500"
-            className="w-full h-full drop-shadow-[0_20px_30px_rgba(0,0,0,0.85)] filter"
+            className="w-full h-full drop-shadow-[0_25px_35px_rgba(0,0,0,0.9)] filter"
             xmlns="http://www.w3.org/2000/svg"
           >
             <defs>
@@ -154,6 +147,9 @@ export function RealisticChefHat() {
             <polygon points="250,324 253,332 250,336 247,332" fill="#fbbf24" />
           </svg>
         </div>
+
+        {/* Floating Pedestal Shadow */}
+        <div className="w-40 sm:w-56 h-4 bg-black/80 rounded-full blur-md -mt-4 transition-all duration-300" />
       </div>
     </div>
   );
