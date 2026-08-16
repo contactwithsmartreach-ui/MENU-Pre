@@ -1,117 +1,149 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
 import { cn } from "@/lib/utils";
-import {
-  Sparkles,
-  Pizza,
-  Sandwich,
-  Flame,
-  Utensils,
-  ChefHat,
-  Cake,
-  Wine,
-} from "lucide-react";
 
 export interface NavItem {
   label: string;
   href?: string;
-  id: string;
+  id?: string;
   icon?: React.ReactNode;
 }
 
 export interface VerticalSpotlightNavbarProps {
-  items: NavItem[];
+  items?: NavItem[];
   className?: string;
   onItemClick?: (item: NavItem, index: number) => void;
-  activeIndex: number;
+  defaultActiveIndex?: number;
+  activeIndex?: number;
 }
 
 export function VerticalSpotlightNavbar({
-  items,
+  items = [
+    { label: "All Items", id: "All" },
+    { label: "Chef Specials", id: "Chef Specials" },
+    { label: "Starters", id: "Starters" },
+    { label: "Mains", id: "Mains" },
+    { label: "Desserts", id: "Desserts" },
+    { label: "Cocktails", id: "Cocktails" },
+  ],
   className,
   onItemClick,
-  activeIndex,
+  defaultActiveIndex = 0,
+  activeIndex: controlledActiveIndex,
 }: VerticalSpotlightNavbarProps) {
-  const totalRadio = items.length;
+  const [internalActiveIndex, setInternalActiveIndex] = React.useState(defaultActiveIndex);
+  const activeIndex = controlledActiveIndex !== undefined ? controlledActiveIndex : internalActiveIndex;
+  const listRef = useRef<HTMLUListElement>(null);
 
-  const getIcon = (id: string) => {
-    switch (id) {
-      case "All":
-        return <Sparkles className="w-4 h-4 text-amber-300" />;
-      case "Pizzas":
-        return <Pizza className="w-4 h-4 text-orange-400" />;
-      case "Burgers":
-        return <Sandwich className="w-4 h-4 text-amber-400" />;
-      case "Chef Specials":
-        return <Flame className="w-4 h-4 text-red-400" />;
-      case "Starters":
-        return <Utensils className="w-4 h-4 text-orange-300" />;
-      case "Mains":
-        return <ChefHat className="w-4 h-4 text-amber-200" />;
-      case "Desserts":
-        return <Cake className="w-4 h-4 text-pink-300" />;
-      case "Cocktails":
-        return <Wine className="w-4 h-4 text-amber-300" />;
-      default:
-        return <Sparkles className="w-4 h-4 text-orange-300" />;
+  const handleItemClick = (item: NavItem, index: number) => {
+    if (controlledActiveIndex === undefined) {
+      setInternalActiveIndex(index);
+    }
+    onItemClick?.(item, index);
+  };
+
+  // Allow mouse wheel scrolling across categories for fast transitions
+  const handleWheel = (e: React.WheelEvent) => {
+    if (Math.abs(e.deltaY) > 20) {
+      if (e.deltaY > 0 && activeIndex < items.length - 1) {
+        handleItemClick(items[activeIndex + 1], activeIndex + 1);
+      } else if (e.deltaY < 0 && activeIndex > 0) {
+        handleItemClick(items[activeIndex - 1], activeIndex - 1);
+      }
     }
   };
 
   return (
-    <div className={cn("relative flex flex-col items-start select-none py-2", className)}>
+    <div
+      onWheel={handleWheel}
+      className={cn(
+        "relative flex flex-col items-center lg:items-start select-none py-4 px-2",
+        className
+      )}
+    >
+      {/* Background Soft Glow centered behind the active element */}
       <div
-        className="radio-container"
-        style={
-          {
-            "--main-color": "#f7e479",
-            "--main-color-opacity": "rgba(247, 228, 121, 0.14)",
-            "--total-radio": totalRadio,
-          } as React.CSSProperties
-        }
+        className="pointer-events-none absolute left-0 w-44 h-44 -translate-x-8 bg-gradient-to-r from-red-600/30 via-orange-500/35 to-amber-400/25 rounded-full blur-3xl transition-all duration-500 ease-out"
+        style={{
+          transform: `translateY(${activeIndex * 48 - 20}px)`,
+        }}
+      />
+
+      {/* Pure Floating Typography List */}
+      <ul
+        ref={listRef}
+        className="relative flex flex-col items-center lg:items-start gap-2.5 sm:gap-3.5 z-10 [perspective:1000px]"
       >
-        {items.map((item, index) => {
-          const inputId = `menu-cat-${index}`;
-          const isChecked = activeIndex === index;
+        {items.map((item, idx) => {
+          const distance = Math.abs(activeIndex - idx);
+          const isActive = activeIndex === idx;
+
+          // Clear, legible depth scaling with elevated visibility
+          let scale = 1;
+          let opacity = 1;
+          let translateZ = 0;
+
+          if (isActive) {
+            scale = 1.18;
+            opacity = 1;
+            translateZ = 20;
+          } else if (distance === 1) {
+            scale = 0.96;
+            opacity = 0.75;
+            translateZ = -15;
+          } else if (distance === 2) {
+            scale = 0.88;
+            opacity = 0.55;
+            translateZ = -35;
+          } else {
+            scale = 0.82;
+            opacity = 0.42;
+            translateZ = -55;
+          }
 
           return (
-            <React.Fragment key={item.id}>
-              <input
-                type="radio"
-                id={inputId}
-                name="menu-category-radio"
-                checked={isChecked}
-                onChange={() => onItemClick?.(item, index)}
-                className="hidden"
-              />
-              <label
-                htmlFor={inputId}
+            <li
+              key={idx}
+              className="relative flex items-center transition-transform duration-300 ease-out will-change-transform"
+              style={{
+                transform: `scale(${scale}) translateZ(${translateZ}px)`,
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => handleItemClick(item, idx)}
+                style={{
+                  opacity,
+                }}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-300 text-sm sm:text-base font-serif uppercase tracking-widest font-bold",
-                  isChecked
-                    ? "text-[#f7e479] drop-shadow-[0_0_14px_rgba(247,228,121,0.6)] translate-x-1"
-                    : "text-neutral-400 hover:text-amber-200 hover:translate-x-0.5"
+                  "group relative py-1 px-3 text-left transition-all duration-300 cursor-pointer focus:outline-none flex items-center gap-3",
+                  "hover:!opacity-100 hover:scale-105"
                 )}
               >
-                <span className="shrink-0 flex items-center justify-center">
-                  {getIcon(item.id)}
+                {/* Leading Ember Indicator */}
+                {isActive ? (
+                  <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-red-500 to-amber-300 shadow-[0_0_14px_rgba(249,115,22,1),0_0_24px_rgba(239,68,68,0.9)] shrink-0 animate-pulse" />
+                ) : (
+                  <span className="w-1.5 h-1.5 rounded-full bg-orange-400/50 shadow-[0_0_8px_rgba(249,115,22,0.4)] group-hover:bg-amber-300 group-hover:shadow-[0_0_12px_rgba(251,191,36,0.9)] transition-all shrink-0" />
+                )}
+
+                {/* Course Label with Enhanced Luminance */}
+                <span
+                  className={cn(
+                    "font-serif tracking-widest uppercase transition-all duration-300 truncate",
+                    isActive
+                      ? "text-base sm:text-lg md:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-orange-300 to-amber-200 drop-shadow-[0_0_22px_rgba(249,115,22,0.85)]"
+                      : "text-xs sm:text-sm font-semibold text-orange-200/80 drop-shadow-[0_0_10px_rgba(249,115,22,0.25)] group-hover:text-amber-200 group-hover:drop-shadow-[0_0_16px_rgba(249,115,22,0.7)]"
+                  )}
+                >
+                  {item.label}
                 </span>
-                <span className="whitespace-nowrap">{item.label}</span>
-              </label>
-            </React.Fragment>
+              </button>
+            </li>
           );
         })}
-
-        {/* Glider Container & Moving Glow */}
-        <div className="glider-container">
-          <div
-            className="glider"
-            style={{
-              transform: `translateY(${activeIndex * 100}%)`,
-            }}
-          />
-        </div>
-      </div>
+      </ul>
     </div>
   );
 }

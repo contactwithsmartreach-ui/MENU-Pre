@@ -12,14 +12,12 @@ import { toast } from "sonner";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 
 const CATEGORY_ITEMS = [
-  { label: "Full Collection", id: "All" },
-  { label: "Artisan Pizzas", id: "Pizzas" },
-  { label: "Gourmet Burgers", id: "Burgers" },
+  { label: "All Items", id: "All" },
   { label: "Chef Specials", id: "Chef Specials" },
-  { label: "Starters & Crudo", id: "Starters" },
-  { label: "Entrées & Mains", id: "Mains" },
-  { label: "Artisan Desserts", id: "Desserts" },
-  { label: "Craft Cocktails", id: "Cocktails" },
+  { label: "Starters", id: "Starters" },
+  { label: "Mains", id: "Mains" },
+  { label: "Desserts", id: "Desserts" },
+  { label: "Cocktails", id: "Cocktails" },
 ];
 
 export default function RestaurantMenuPage() {
@@ -104,10 +102,10 @@ export default function RestaurantMenuPage() {
         id="cylinder-menu"
         className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-6 pb-12 px-2 sm:px-6"
       >
-        {/* Main Presentation Area: Glider Side Menu + 3D Cylinder with Reflections */}
-        <div className="relative z-10 w-full flex-1 flex flex-col lg:flex-row items-center lg:items-start justify-center gap-6 lg:gap-14 max-w-7xl mx-auto py-4">
-          {/* Gliding Radio Side Menu */}
-          <div className="shrink-0 flex items-center justify-center lg:sticky lg:top-28 bg-neutral-950/40 backdrop-blur-xl p-4 sm:p-5 rounded-3xl border border-orange-500/20 shadow-2xl shadow-black/60">
+        {/* Main Presentation Area: Vertical Spotlight Navbar + 3D Cylinder with Reflections */}
+        <div className="relative z-10 w-full flex-1 flex flex-col lg:flex-row items-center lg:items-start justify-center gap-6 lg:gap-12 max-w-7xl mx-auto py-4">
+          {/* Vertical Spotlight Navbar */}
+          <div className="shrink-0 flex items-center justify-center lg:sticky lg:top-28">
             <VerticalSpotlightNavbar
               items={CATEGORY_ITEMS}
               activeIndex={activeCategoryIdx}
