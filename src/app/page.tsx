@@ -10,15 +10,14 @@ import { VerticalSpotlightNavbar } from "@/components/restaurant/VerticalSpotlig
 import { MenuSectionDivider } from "@/components/restaurant/MenuSectionDivider";
 import { toast } from "sonner";
 import { MadeWithDyad } from "@/components/made-with-dyad";
-import { Sparkles, Award, ShieldCheck, Clock } from "lucide-react";
 
 const CATEGORY_ITEMS = [
-  { label: "All Masterpieces", id: "All" },
+  { label: "All Items", id: "All" },
   { label: "Chef Specials", id: "Chef Specials" },
-  { label: "Starters & Crudo", id: "Starters" },
-  { label: "Entrées & Mains", id: "Mains" },
-  { label: "Artisan Desserts", id: "Desserts" },
-  { label: "Craft Cocktails", id: "Cocktails" },
+  { label: "Starters", id: "Starters" },
+  { label: "Mains", id: "Mains" },
+  { label: "Desserts", id: "Desserts" },
+  { label: "Cocktails", id: "Cocktails" },
 ];
 
 export default function RestaurantMenuPage() {
@@ -26,19 +25,7 @@ export default function RestaurantMenuPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeCategoryIdx, setActiveCategoryIdx] = useState<number>(0);
 
-  const selectedCategory =
-    activeCategoryIdx === 2
-      ? "Starters"
-      : activeCategoryIdx === 3
-      ? "Mains"
-      : activeCategoryIdx === 4
-      ? "Desserts"
-      : activeCategoryIdx === 5
-      ? "Cocktails"
-      : activeCategoryIdx === 1
-      ? "Chef Specials"
-      : "All";
-
+  const selectedCategory = CATEGORY_ITEMS[activeCategoryIdx].id;
   const menuSectionRef = useRef<HTMLDivElement>(null);
   const cylinderContainerRef = useRef<HTMLDivElement>(null);
 
@@ -52,14 +39,17 @@ export default function RestaurantMenuPage() {
     setIsModalOpen(true);
   };
 
-  const handleDishAction = (dish: MenuItem) => {
-    toast.success(`Inspecting "${dish.name}"`, {
-      description: `Category: ${dish.category} • ${dish.calories} kcal • Rated ${dish.rating}/5.0`,
+  const handleAddToCart = (dish: MenuItem, quantity: number, notes?: string) => {
+    toast.success(`Added ${quantity}x ${dish.name} to order`, {
+      description: `$${(dish.price * quantity).toFixed(2)} • ${
+        notes ? `"${notes}"` : `Ready in ~${dish.prepTime}`
+      }`,
     });
   };
 
   const handleCategorySelect = (index: number) => {
     setActiveCategoryIdx(index);
+    // Smoothly focus directly onto the cards cylinder
     if (cylinderContainerRef.current) {
       cylinderContainerRef.current.scrollIntoView({
         behavior: "smooth",
@@ -73,16 +63,17 @@ export default function RestaurantMenuPage() {
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-[#080302] text-neutral-100 flex flex-col items-center justify-between select-none overflow-x-hidden">
+    <div className="relative min-h-screen w-full bg-[#0a0504] text-neutral-100 flex flex-col items-center justify-between select-none overflow-x-hidden">
       {/* Sahara Sunset Ambient Glowing Atmospheric Background */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[600px] bg-gradient-to-tr from-red-600/20 via-orange-500/20 to-pink-600/10 rounded-full blur-[200px] animate-pulse duration-1000" />
-        <div className="absolute top-1/4 left-1/4 -translate-x-1/2 w-[600px] h-[600px] bg-amber-500/15 rounded-full blur-[180px]" />
-        <div className="absolute bottom-10 right-1/4 translate-x-1/2 w-[650px] h-[500px] bg-red-700/15 rounded-full blur-[190px]" />
+        {/* Sahara Sunset Solar Core */}
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[550px] bg-gradient-to-tr from-red-600/25 via-orange-500/25 to-pink-600/15 rounded-full blur-[180px] animate-pulse duration-1000" />
+        <div className="absolute top-1/4 left-1/4 -translate-x-1/2 w-[550px] h-[550px] bg-amber-500/20 rounded-full blur-[160px]" />
+        <div className="absolute bottom-10 right-1/4 translate-x-1/2 w-[600px] h-[450px] bg-red-700/20 rounded-full blur-[170px]" />
 
         {/* Topographic Dune Wave Lines */}
         <svg
-          className="absolute inset-x-0 bottom-0 w-full h-[55%] opacity-10 pointer-events-none"
+          className="absolute inset-x-0 bottom-0 w-full h-[55%] opacity-15 pointer-events-none"
           viewBox="0 0 1440 320"
           preserveAspectRatio="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -102,71 +93,31 @@ export default function RestaurantMenuPage() {
 
         {/* Subtle Stardust Texture */}
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.035]"
           style={{
             backgroundImage:
               "radial-gradient(rgba(249, 115, 22, 0.8) 1px, transparent 1px)",
-            backgroundSize: "32px 32px",
+            backgroundSize: "28px 28px",
           }}
         />
       </div>
 
-      {/* Part 1: Cinematic Hero Section with Camera-Tracking Chef Hat & Explore Button */}
+      {/* Part 1: Top Hero Section with Floating Plate Experience */}
       <HeroPlateScrollExperience onScrollToMenu={handleScrollToMenu} />
-
-      {/* Luxury Highlights Bar */}
-      <div className="relative z-10 w-full max-w-5xl mx-auto px-4 py-6 grid grid-cols-1 sm:grid-cols-3 gap-4 border-y border-orange-500/20 bg-neutral-950/40 backdrop-blur-md">
-        <div className="flex items-center gap-3.5 justify-center sm:justify-start p-2">
-          <div className="w-10 h-10 rounded-full bg-orange-500/15 border border-orange-400/40 flex items-center justify-center text-orange-300">
-            <Award className="w-5 h-5" />
-          </div>
-          <div>
-            <h4 className="text-xs font-serif font-bold uppercase tracking-widest text-white">A5 Wagyu & Binchotan</h4>
-            <p className="text-[11px] text-neutral-400">Authentic Japanese culinary techniques</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3.5 justify-center sm:justify-start p-2">
-          <div className="w-10 h-10 rounded-full bg-orange-500/15 border border-orange-400/40 flex items-center justify-center text-orange-300">
-            <Sparkles className="w-5 h-5" />
-          </div>
-          <div>
-            <h4 className="text-xs font-serif font-bold uppercase tracking-widest text-white">Artisan Confectionery</h4>
-            <p className="text-[11px] text-neutral-400">Hand-crafted daily by master pastry chefs</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3.5 justify-center sm:justify-start p-2">
-          <div className="w-10 h-10 rounded-full bg-orange-500/15 border border-orange-400/40 flex items-center justify-center text-orange-300">
-            <ShieldCheck className="w-5 h-5" />
-          </div>
-          <div>
-            <h4 className="text-xs font-serif font-bold uppercase tracking-widest text-white">Sustainably Sourced</h4>
-            <p className="text-[11px] text-neutral-400">Wild-caught seafood & organic produce</p>
-          </div>
-        </div>
-      </div>
 
       {/* Transitional Section Separation Divider */}
       <MenuSectionDivider />
 
-      {/* Part 2: Interactive 3D Cylinder Gastronomy Exhibition */}
+      {/* Part 2: Interactive 3D Cylinder Gastronomy Menu */}
       <section
         ref={menuSectionRef}
         id="cylinder-menu"
-        className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-4 pb-16 px-2 sm:px-6"
+        className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-4 pb-12 px-2 sm:px-6"
       >
-        <div className="text-center mb-6 space-y-2">
-          <span className="text-xs font-serif uppercase tracking-[0.3em] text-orange-400">Interactive 3D Cylinder Gallery</span>
-          <h2 className="text-2xl sm:text-4xl font-serif font-bold text-white tracking-wider">
-            Explore Menu Anthology
-          </h2>
-        </div>
-
         {/* Main Presentation Area: Vertical Spotlight Navbar Tightly Coupled with 3D Cylinder */}
-        <div className="relative z-10 w-full flex-1 flex flex-col lg:flex-row items-center lg:items-center justify-center gap-6 lg:gap-4 max-w-7xl mx-auto py-2">
-          {/* Vertical Spotlight Navbar */}
-          <div className="shrink-0 flex items-center justify-center lg:pr-4 z-30">
+        <div className="relative z-10 w-full flex-1 flex flex-col lg:flex-row items-center lg:items-center justify-center gap-4 lg:gap-2 max-w-7xl mx-auto py-2">
+          {/* Vertical Spotlight Navbar (Larger, prominent and positioned right beside the cylinder) */}
+          <div className="shrink-0 flex items-center justify-center lg:pr-2 z-30">
             <VerticalSpotlightNavbar
               items={CATEGORY_ITEMS}
               activeIndex={activeCategoryIdx}
@@ -174,7 +125,7 @@ export default function RestaurantMenuPage() {
             />
           </div>
 
-          {/* Dedicated 3D Cylinder Menu Exhibition */}
+          {/* Dedicated 3D Cylinder Menu */}
           <div
             ref={cylinderContainerRef}
             className="flex-1 w-full flex items-center justify-center overflow-visible scroll-mt-20"
@@ -187,7 +138,7 @@ export default function RestaurantMenuPage() {
           </div>
         </div>
 
-        {/* Dish Detail Dialog for Exploration */}
+        {/* Dish Detail Dialog */}
         <DishDetailModal
           dish={selectedDish}
           isOpen={isModalOpen}
@@ -195,16 +146,12 @@ export default function RestaurantMenuPage() {
             setIsModalOpen(false);
             setSelectedDish(null);
           }}
-          onAddToCart={(dish) => handleDishAction(dish)}
+          onAddToCart={handleAddToCart}
         />
 
         {/* Footer */}
-        <footer className="relative z-10 w-full py-6 mt-12 border-t border-white/10">
-          <div className="max-w-4xl mx-auto px-4 text-center text-xs text-neutral-400 space-y-2">
-            <p className="font-serif tracking-widest uppercase text-orange-300">L&apos;AURA SAHARA &bull; FINE DINING EXHIBITION</p>
-            <p>Designed for immersive culinary exploration.</p>
-            <MadeWithDyad />
-          </div>
+        <footer className="relative z-10 w-full py-4 mt-8">
+          <MadeWithDyad />
         </footer>
       </section>
     </div>
