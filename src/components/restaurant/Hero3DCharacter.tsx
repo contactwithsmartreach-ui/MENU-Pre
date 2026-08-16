@@ -2,69 +2,15 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Float, Sparkles, MeshDistortMaterial } from "@react-three/drei";
-import * as THREE from "three";
-
-// Interactive 3D Character Model
-function CharacterMesh({ isHovered, isClicked }: { isHovered: boolean; isClicked: boolean }) {
-  const groupRef = useRef<THREE.Group>(null);
-  const headRef = useRef<THREE.Group>(null);
-  const leftEyeRef = useRef<THREE.Mesh>(null);
-  const rightEyeRef = useRef<THREE.Mesh>(null);
-  const leftArmRef = useRef<THREE.Group>(null);
-  const rightArmRef = useRef<THREE.Group>(null);
-  const hatRef = useRef<THREE.Group>(null);
-  const ringRef = useRef<THREE.Mesh>(null);
-
-  // Mouse tracking vector
-  const mousePos = useRef({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const handlePointerMove = (e: MouseEvent) => {
-      mousePos.current = {
-        x: (e.clientX / window.innerWidth) * 2 - 1,
-        y: -(e.clientY / window.innerHeight) * 2 + 1,
-      };
-    };
-    window.addEventListener("mousemove", handlePointerMove);
-    return () => window.removeEventListener("mousemove", handlePointerMove);
-  }, []);
-
-  useFrame((state, delta) => {
-    const t = state.clock.getElapsedTime();
-
-    if (groupRef.current) {
-      // Gentle idle body tilt towards cursor
-      const targetBodyRotY = mousePos.current.x * 0.45<dyad-write path="src/components/restaurant/Hero3DCharacter.tsx" description="Create an interactive 3D animated character with cursor tracking, floating physics and particle effects">
-"use client";
-
-import React, { useRef, useState, useEffect } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Float, Sparkles, MeshDistortMaterial } from "@react-three/drei";
-import * as THREE from "three";
-
-// Interactive 3D Character Model
-function CharacterMesh({ isHovered, isClicked }: { isHovered: boolean; isClicked: boolean }) {
-  const groupRef = useRef<THREE.Group>(null);
-  const headRef = useRef<THREE.Group>(null);
-  const leftEyeRef = useRef<THREE.Mesh>(null);
-  const rightEyeRef = useRef<THREE.Mesh>(null);
-  const leftArmRef = useRef<THREE.Group>(null);
-  const rightArmRef = useRef<THREE.Group>(null);
-  const hatRef = useRef<THREE.Group>(null);
-  const ringRef = useRef<THREE.Mesh>(null);
-
-  // Mouse tracking vector
-  const mousePos = useRef({ x: <dyad-write path="src/components/restaurant/Hero3DCharacter.tsx" description="Create an interactive 3D animated character with cursor tracking, floating physics and particle effects">
-"use client";
-
-import React, { useRef, useState, useEffect } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, Sparkles } from "@react-three/drei";
 import * as THREE from "three";
 
-// Interactive 3D Character Model
-function CharacterMesh({ isHovered, isClicked }: { isHovered: boolean; isClicked: boolean }) {
+interface CharacterMeshProps {
+  isHovered: boolean;
+  isClicked: boolean;
+}
+
+function CharacterMesh({ isHovered, isClicked }: CharacterMeshProps) {
   const groupRef = useRef<THREE.Group>(null);
   const headRef = useRef<THREE.Group>(null);
   const leftArmRef = useRef<THREE.Group>(null);
@@ -72,7 +18,6 @@ function CharacterMesh({ isHovered, isClicked }: { isHovered: boolean; isClicked
   const ringRef = useRef<THREE.Mesh>(null);
   const clickSpinRef = useRef(0);
 
-  // Mouse tracking coordinates normalized -1 to 1
   const mousePos = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -95,29 +40,46 @@ function CharacterMesh({ isHovered, isClicked }: { isHovered: boolean; isClicked
   useFrame((state, delta) => {
     const t = state.clock.getElapsedTime();
 
-    // Smooth spin decay when clicked
     if (clickSpinRef.current > 0) {
       clickSpinRef.current = THREE.MathUtils.damp(clickSpinRef.current, 0, 8, delta);
     }
 
     if (groupRef.current) {
-      // Gentle idle body tilt towards cursor
-      const targetBodyRotY = mousePos.current.x * 0.45 + (clickSpinRef.current > 0 ? clickSpinRef.current * 4 : 0);
+      const targetBodyRotY =
+        mousePos.current.x * 0.45 + (clickSpinRef.current > 0 ? clickSpinRef.current * 4 : 0);
       const targetBodyRotX = -mousePos.current.y * 0.25;
 
-      groupRef.current.rotation.y = THREE.MathUtils.damp(groupRef.current.rotation.y, targetBodyRotY, 5, delta);
-      groupRef.current.rotation.x = THREE.MathUtils.damp(groupRef.current.rotation.x, targetBodyRotX, 5, delta);
+      groupRef.current.rotation.y = THREE.MathUtils.damp(
+        groupRef.current.rotation.y,
+        targetBodyRotY,
+        5,
+        delta
+      );
+      groupRef.current.rotation.x = THREE.MathUtils.damp(
+        groupRef.current.rotation.x,
+        targetBodyRotX,
+        5,
+        delta
+      );
     }
 
-    // Head tracks cursor with higher responsiveness
     if (headRef.current) {
       const targetHeadRotY = mousePos.current.x * 0.65;
       const targetHeadRotX = -mousePos.current.y * 0.45;
-      headRef.current.rotation.y = THREE.MathUtils.damp(headRef.current.rotation.y, targetHeadRotY, 8, delta);
-      headRef.current.rotation.x = THREE.MathUtils.damp(headRef.current.rotation.x, targetHeadRotX, 8, delta);
+      headRef.current.rotation.y = THREE.MathUtils.damp(
+        headRef.current.rotation.y,
+        targetHeadRotY,
+        8,
+        delta
+      );
+      headRef.current.rotation.x = THREE.MathUtils.damp(
+        headRef.current.rotation.x,
+        targetHeadRotX,
+        8,
+        delta
+      );
     }
 
-    // Interactive waving / breathing arms
     if (rightArmRef.current) {
       const waveSpeed = isHovered ? 12 : 3;
       const waveAmp = isHovered ? 0.6 : 0.15;
@@ -129,7 +91,6 @@ function CharacterMesh({ isHovered, isClicked }: { isHovered: boolean; isClicked
       leftArmRef.current.rotation.z = 0.3 - Math.sin(t * 3) * 0.12;
     }
 
-    // Glowing orbital ring spinning
     if (ringRef.current) {
       ringRef.current.rotation.z += delta * 1.2;
       ringRef.current.rotation.x = Math.sin(t * 1.5) * 0.2;
@@ -146,7 +107,6 @@ function CharacterMesh({ isHovered, isClicked }: { isHovered: boolean; isClicked
           emissive="#ff5500"
           emissiveIntensity={2.5}
           roughness={0.2}
-          wireframe={false}
         />
       </mesh>
 
@@ -199,7 +159,7 @@ function CharacterMesh({ isHovered, isClicked }: { isHovered: boolean; isClicked
           />
         </mesh>
 
-        {/* CHEF / CULINARY CROWN TOQUE */}
+        {/* CHEF TOQUE */}
         <group position={[0, 0.55, 0]}>
           <mesh position={[0, 0, 0]}>
             <cylinderGeometry args={[0.42, 0.38, 0.2, 32]} />
@@ -221,8 +181,7 @@ function CharacterMesh({ isHovered, isClicked }: { isHovered: boolean; isClicked
           </mesh>
         </group>
 
-        {/* BIG GLOWING EXPRESSIVE EYES */}
-        {/* Left Eye */}
+        {/* EYES */}
         <mesh position={[-0.2, 0.08, 0.48]}>
           <sphereGeometry args={[0.13, 32, 32]} />
           <meshStandardMaterial
@@ -232,13 +191,11 @@ function CharacterMesh({ isHovered, isClicked }: { isHovered: boolean; isClicked
             roughness={0.1}
           />
         </mesh>
-        {/* Left Pupil */}
         <mesh position={[-0.2, 0.08, 0.58]}>
           <sphereGeometry args={[0.055, 16, 16]} />
           <meshBasicMaterial color="#000000" />
         </mesh>
 
-        {/* Right Eye */}
         <mesh position={[0.2, 0.08, 0.48]}>
           <sphereGeometry args={[0.13, 32, 32]} />
           <meshStandardMaterial
@@ -248,13 +205,12 @@ function CharacterMesh({ isHovered, isClicked }: { isHovered: boolean; isClicked
             roughness={0.1}
           />
         </mesh>
-        {/* Right Pupil */}
         <mesh position={[0.2, 0.08, 0.58]}>
           <sphereGeometry args={[0.055, 16, 16]} />
           <meshBasicMaterial color="#000000" />
         </mesh>
 
-        {/* CHEEKS ROSY GLOW */}
+        {/* CHEEKS */}
         <mesh position={[-0.32, -0.08, 0.42]}>
           <sphereGeometry args={[0.08, 16, 16]} />
           <meshBasicMaterial color="#ef4444" transparent opacity={0.65} />
@@ -277,31 +233,28 @@ function CharacterMesh({ isHovered, isClicked }: { isHovered: boolean; isClicked
           <capsuleGeometry args={[0.12, 0.45, 16, 16]} />
           <meshStandardMaterial color="#26100c" roughness={0.3} />
         </mesh>
-        {/* Golden Hand */}
         <mesh position={[-0.15, -0.55, 0]}>
           <sphereGeometry args={[0.14, 16, 16]} />
           <meshStandardMaterial color="#fbbf24" metalness={0.7} roughness={0.2} />
         </mesh>
       </group>
 
-      {/* RIGHT ARM (Waving) */}
+      {/* RIGHT ARM */}
       <group ref={rightArmRef} position={[0.65, -0.2, 0]}>
         <mesh position={[0.15, -0.25, 0]}>
           <capsuleGeometry args={[0.12, 0.45, 16, 16]} />
           <meshStandardMaterial color="#26100c" roughness={0.3} />
         </mesh>
-        {/* Golden Hand holding Culinary Spoon/Wand */}
         <mesh position={[0.15, -0.55, 0]}>
           <sphereGeometry args={[0.14, 16, 16]} />
           <meshStandardMaterial color="#fbbf24" metalness={0.7} roughness={0.2} />
         </mesh>
 
-        {/* Golden Culinary Wand */}
+        {/* Culinary Wand */}
         <mesh position={[0.22, -0.42, 0.15]} rotation={[0.4, 0, -0.3]}>
           <cylinderGeometry args={[0.02, 0.02, 0.6, 16]} />
           <meshStandardMaterial color="#fbbf24" metalness={0.9} roughness={0.1} />
         </mesh>
-        {/* Wand Ember Tip */}
         <mesh position={[0.3, -0.15, 0.25]}>
           <sphereGeometry args={[0.08, 16, 16]} />
           <meshStandardMaterial
@@ -313,7 +266,7 @@ function CharacterMesh({ isHovered, isClicked }: { isHovered: boolean; isClicked
         </mesh>
       </group>
 
-      {/* FEET / FLOATING BASE */}
+      {/* BASE */}
       <mesh position={[-0.26, -1.05, 0]}>
         <sphereGeometry args={[0.18, 16, 16]} />
         <meshStandardMaterial color="#1a0c0a" roughness={0.4} />
@@ -348,7 +301,6 @@ export function Hero3DCharacter() {
         className="w-full h-full"
         gl={{ antialias: true, alpha: true }}
       >
-        {/* Dynamic Studio Lighting with Sahara Sunset Radiance */}
         <ambientLight intensity={0.75} />
         <directionalLight
           position={[4, 6, 4]}
@@ -366,7 +318,6 @@ export function Hero3DCharacter() {
           color="#fff0d0"
         />
 
-        {/* Smooth Floating Motion */}
         <Float
           speed={isHovered ? 4.5 : 2.2}
           rotationIntensity={isHovered ? 0.4 : 0.2}
@@ -375,7 +326,6 @@ export function Hero3DCharacter() {
           <CharacterMesh isHovered={isHovered} isClicked={isClicked} />
         </Float>
 
-        {/* Ambient Ember Sparks / Stardust */}
         <Sparkles
           count={40}
           scale={4.2}
@@ -394,7 +344,6 @@ export function Hero3DCharacter() {
         />
       </Canvas>
 
-      {/* Floating Interactive Badge Hint */}
       <div className="absolute bottom-2 inset-x-0 flex justify-center pointer-events-none transition-opacity duration-300">
         <span className="text-[11px] sm:text-xs font-serif uppercase tracking-widest text-orange-300/80 bg-neutral-950/80 border border-orange-500/30 px-3 py-1 rounded-full backdrop-blur-md shadow-lg shadow-orange-500/10">
           ✨ {isHovered ? "Click to trigger spin!" : "Move mouse to interact"}
