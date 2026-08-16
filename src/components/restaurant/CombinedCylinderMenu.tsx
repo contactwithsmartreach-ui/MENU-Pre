@@ -5,7 +5,6 @@ import { MenuItem } from "@/types/restaurant";
 import { cn } from "@/lib/utils";
 import {
   Star,
-  Flame,
   ChevronLeft,
   ChevronRight,
   Eye,
@@ -49,7 +48,7 @@ export function CombinedCylinderMenu({
   const autoResumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const animFrameRef = useRef<number | null>(null);
 
-  // Responsive geometry
+  // Responsive geometry: larger cards with calibrated perspective
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 640);
@@ -59,11 +58,12 @@ export function CombinedCylinderMenu({
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const cardWidth = isMobile ? 220 : 310;
-  // Natural perspective radius
+  // Generously enlarged card dimensions
+  const cardWidth = isMobile ? 260 : 380;
+  // Natural cylinder radius to keep larger cards within view without screen overflow
   const radius =
     Math.round(cardWidth / 2 / Math.tan(Math.PI / Math.max(N, 1))) +
-    (isMobile ? 35 : 75);
+    (isMobile ? 20 : 40);
 
   // Apply smooth transform directly to the DOM for 60fps+ fluid rendering
   const setTransform = useCallback(
@@ -85,13 +85,10 @@ export function CombinedCylinderMenu({
       lastTime = time;
 
       if (isDraggingRef.current && isHorizontalDragRef.current) {
-        // Direct tracking during deliberate horizontal drag
         setTransform(currentRotationRef.current);
       } else if (isTransitioningToTargetRef.current) {
-        // Smooth cinematic glide to target card with soft spring damping
         const diff = targetRotationRef.current - currentRotationRef.current;
         if (Math.abs(diff) > 0.05) {
-          // Slow, graceful easing factor
           currentRotationRef.current += diff * Math.min(5.5 * dt, 0.18);
           setTransform(currentRotationRef.current);
         } else {
@@ -100,15 +97,13 @@ export function CombinedCylinderMenu({
           isTransitioningToTargetRef.current = false;
         }
       } else {
-        // Momentum & gentle decay or calm ambient drift
         if (Math.abs(velocityRef.current) > 0.01) {
           currentRotationRef.current += velocityRef.current;
           targetRotationRef.current = currentRotationRef.current;
-          velocityRef.current *= 0.965; // Extended, silky glide decay
+          velocityRef.current *= 0.965;
           setTransform(currentRotationRef.current);
         } else if (isAutoSpinningRef.current && hoveredIdx === null) {
-          // Slow, serene ambient cylinder drift (~2.6 degrees per second)
-          const ambientSpeed = 2.6;
+          const ambientSpeed = 2.4;
           currentRotationRef.current += ambientSpeed * dt;
           targetRotationRef.current = currentRotationRef.current;
           setTransform(currentRotationRef.current);
@@ -136,7 +131,6 @@ export function CombinedCylinderMenu({
 
       const targetAngle = -index * angleStep;
       const current = currentRotationRef.current;
-      // Calculate shortest rotational arc
       const diff = (((targetAngle - current + 180) % 360) + 360) % 360 - 180;
       targetRotationRef.current = current + diff;
 
@@ -144,7 +138,6 @@ export function CombinedCylinderMenu({
         onSelectItem(item);
       }
 
-      // Resume serene auto-drift after user stops interacting
       autoResumeTimeoutRef.current = setTimeout(() => {
         isAutoSpinningRef.current = true;
       }, 5500);
@@ -164,7 +157,7 @@ export function CombinedCylinderMenu({
     [selectedDishIndex, N, rotateToIndex, items]
   );
 
-  // Pointer & Drag Handlers with relaxed thresholding and soft velocity capping
+  // Pointer & Drag Handlers
   const handlePointerDown = (e: React.PointerEvent) => {
     if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
     isDraggingRef.current = true;
@@ -184,15 +177,12 @@ export function CombinedCylinderMenu({
     const deltaX = e.clientX - startXRef.current;
     const deltaY = e.clientY - startYRef.current;
 
-    // Detect user intent: let vertical scrolls flow naturally
     if (!isHorizontalDragRef.current) {
       if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 8) {
-        // Vertical swipe intent -> pass through to page scroll
         isDraggingRef.current = false;
         return;
       }
       if (Math.abs(deltaX) > 8 && Math.abs(deltaX) > Math.abs(deltaY)) {
-        // Horizontal swipe intent -> gently rotate cylinder
         isHorizontalDragRef.current = true;
         isAutoSpinningRef.current = false;
       }
@@ -206,12 +196,10 @@ export function CombinedCylinderMenu({
       const dt = Math.max(now - lastPointerTimeRef.current, 10);
       const instantVelocity = (stepX / dt) * 10;
 
-      // Soft, controlled drag sensitivity
-      const sensitivity = isMobile ? 0.28 : 0.22;
+      const sensitivity = isMobile ? 0.24 : 0.18;
       currentRotationRef.current -= stepX * sensitivity;
       targetRotationRef.current = currentRotationRef.current;
 
-      // Smooth low-pass velocity filter for gentle momentum
       velocityRef.current =
         velocityRef.current * 0.5 - instantVelocity * 0.5 * sensitivity;
 
@@ -225,23 +213,21 @@ export function CombinedCylinderMenu({
     isDraggingRef.current = false;
     isHorizontalDragRef.current = false;
 
-    // Gentle maximum velocity cap to maintain controlled elegance
-    velocityRef.current = Math.max(Math.min(velocityRef.current, 2.8), -2.8);
+    velocityRef.current = Math.max(Math.min(velocityRef.current, 2.5), -2.5);
 
     autoResumeTimeoutRef.current = setTimeout(() => {
       isAutoSpinningRef.current = true;
     }, 4500);
   };
 
-  // Horizontal wheel / trackpad slow and smooth gliding
+  // Horizontal wheel / trackpad
   const handleWheel = (e: React.WheelEvent) => {
     if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 4) {
       if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
       isAutoSpinningRef.current = false;
       isTransitioningToTargetRef.current = false;
 
-      // Silky, low-acceleration scroll impulse
-      const impulse = (e.deltaX > 0 ? -1 : 1) * Math.min(Math.abs(e.deltaX) * 0.018, 0.6);
+      const impulse = (e.deltaX > 0 ? -1 : 1) * Math.min(Math.abs(e.deltaX) * 0.015, 0.5);
       velocityRef.current += impulse;
 
       autoResumeTimeoutRef.current = setTimeout(() => {
@@ -263,7 +249,6 @@ export function CombinedCylinderMenu({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [stepRotate]);
 
-  // Card click handler
   const handleCardClick = (dish: MenuItem, index: number) => {
     if (dragDistanceRef.current > 8) return;
     setSelectedDishIndex(index);
@@ -271,7 +256,6 @@ export function CombinedCylinderMenu({
     onSelectItem(dish);
   };
 
-  // Find currently front-facing dish
   const normalizedRot = ((-currentRotationRef.current % 360) + 360) % 360;
   const frontIndex = Math.round(normalizedRot / angleStep) % N;
   const currentFrontDish = items[frontIndex] || items[0];
@@ -280,26 +264,26 @@ export function CombinedCylinderMenu({
     <div
       onWheel={handleWheel}
       className={cn(
-        "w-full flex flex-col items-center justify-between relative select-none gap-6 sm:gap-10 pb-8",
+        "w-full flex flex-col items-center justify-between relative select-none gap-8 sm:gap-12 pb-8 overflow-hidden",
         className
       )}
     >
-      {/* 1. FLUID 3D CYLINDER STAGE (touch-pan-y allows smooth vertical page scrolling) */}
+      {/* 1. FLUID 3D CYLINDER STAGE */}
       <div
-        className="relative w-full min-h-[580px] sm:min-h-[660px] lg:min-h-[720px] flex items-center justify-center overflow-visible touch-pan-y cursor-grab active:cursor-grabbing"
+        className="relative w-full min-h-[640px] sm:min-h-[720px] lg:min-h-[780px] flex items-center justify-center overflow-visible touch-pan-y cursor-grab active:cursor-grabbing"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
       >
         {/* Sahara Radiant Floor Glow */}
-        <div className="pointer-events-none absolute bottom-10 left-1/2 -translate-x-1/2 w-[500px] sm:w-[750px] h-32 bg-gradient-to-r from-red-600/35 via-orange-500/40 to-amber-400/35 blur-3xl rounded-full opacity-80" />
+        <div className="pointer-events-none absolute bottom-12 left-1/2 -translate-x-1/2 w-[600px] sm:w-[880px] h-36 bg-gradient-to-r from-red-600/35 via-orange-500/40 to-amber-400/35 blur-3xl rounded-full opacity-80" />
 
         {/* 3D Perspective Stage Container */}
         <div
           className="relative w-full h-full flex items-center justify-center [perspective-origin:50%_50%]"
           style={{
-            perspective: isMobile ? "950px" : "1350px",
+            perspective: isMobile ? "1100px" : "1550px",
           }}
         >
           {/* Rotating Cylinder Core */}
@@ -331,9 +315,9 @@ export function CombinedCylinderMenu({
                     }
                   }}
                   className={cn(
-                    "group absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[32px] sm:rounded-[38px] overflow-hidden cursor-pointer",
+                    "group absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[32px] sm:rounded-[40px] overflow-hidden cursor-pointer",
                     "border border-orange-500/35 bg-[#0d0706] shadow-2xl transition-all duration-300 transform-gpu",
-                    "hover:scale-[1.05] hover:border-orange-400 hover:shadow-[0_25px_60px_rgba(249,115,22,0.45)] hover:ring-2 hover:ring-orange-400/80 active:scale-95",
+                    "hover:border-orange-400 hover:shadow-[0_25px_60px_rgba(249,115,22,0.45)] hover:ring-2 hover:ring-orange-400/80 active:scale-[0.98]",
                     isHovered && "z-30"
                   )}
                   style={{
@@ -344,7 +328,7 @@ export function CombinedCylinderMenu({
                     WebkitBackfaceVisibility: "hidden",
                     // Liquid Glass Floor Reflection
                     WebkitBoxReflect:
-                      "below 16px linear-gradient(to bottom, transparent 60%, rgba(249, 115, 22, 0.35) 100%)",
+                      "below 16px linear-gradient(to bottom, transparent 65%, rgba(249, 115, 22, 0.3) 100%)",
                   }}
                 >
                   {/* Dish Image Background */}
@@ -352,7 +336,7 @@ export function CombinedCylinderMenu({
                     <img
                       src={dish.image}
                       alt={dish.name}
-                      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                       loading="lazy"
                       draggable={false}
                     />
@@ -361,19 +345,19 @@ export function CombinedCylinderMenu({
                   </div>
 
                   {/* Top Bar Badges */}
-                  <div className="relative z-10 p-4 sm:p-5 flex items-center justify-between w-full pointer-events-none">
+                  <div className="relative z-10 p-5 sm:p-6 flex items-center justify-between w-full pointer-events-none">
                     {dish.isSignature ? (
-                      <Badge className="bg-gradient-to-r from-red-500 to-orange-500 text-white font-serif tracking-wider uppercase px-3 py-1 rounded-full text-[11px] sm:text-xs shadow-lg shadow-red-500/50 border-0 flex items-center gap-1">
-                        <Sparkles className="w-3.5 h-3.5 text-amber-200 fill-amber-200 animate-pulse" />
+                      <Badge className="bg-gradient-to-r from-red-500 to-orange-500 text-white font-serif tracking-wider uppercase px-3.5 py-1.5 rounded-full text-xs shadow-lg shadow-red-500/50 border-0 flex items-center gap-1.5">
+                        <Sparkles className="w-4 h-4 text-amber-200 fill-amber-200 animate-pulse" />
                         Signature
                       </Badge>
                     ) : (
-                      <span className="text-[11px] sm:text-xs font-serif uppercase tracking-widest text-orange-200 bg-neutral-950/85 px-3 py-1 rounded-full border border-orange-500/30 backdrop-blur-md">
+                      <span className="text-xs sm:text-sm font-serif uppercase tracking-widest text-orange-200 bg-neutral-950/85 px-3.5 py-1.5 rounded-full border border-orange-500/30 backdrop-blur-md">
                         {dish.category}
                       </span>
                     )}
 
-                    <div className="flex items-center gap-1 bg-neutral-950/90 backdrop-blur-md px-2.5 py-1 rounded-full border border-orange-500/30 text-amber-300 text-xs sm:text-sm font-bold shadow-md">
+                    <div className="flex items-center gap-1.5 bg-neutral-950/90 backdrop-blur-md px-3 py-1.5 rounded-full border border-orange-500/30 text-amber-300 text-xs sm:text-sm font-bold shadow-md">
                       <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
                       <span>{dish.rating}</span>
                     </div>
@@ -383,37 +367,37 @@ export function CombinedCylinderMenu({
                   <div
                     className={cn(
                       "absolute inset-0 flex items-center justify-center z-20 pointer-events-none transition-all duration-200",
-                      isHovered ? "opacity-100 scale-100" : "opacity-0 scale-90"
+                      isHovered ? "opacity-100 scale-100" : "opacity-0 scale-95"
                     )}
                   >
-                    <span className="bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white font-serif tracking-widest uppercase px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold shadow-2xl shadow-red-600/60 border border-orange-200/60 flex items-center gap-2">
+                    <span className="bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white font-serif tracking-widest uppercase px-6 py-3 rounded-full text-xs sm:text-sm font-bold shadow-2xl shadow-red-600/60 border border-orange-200/60 flex items-center gap-2">
                       <Eye className="w-4 h-4" />
                       <span>CLICK TO ORDER</span>
                     </span>
                   </div>
 
                   {/* Bottom Dish Information */}
-                  <div className="absolute bottom-0 inset-x-0 z-10 p-4 sm:p-6 pt-12 bg-gradient-to-t from-[#0a0504] via-[#0a0504]/95 to-transparent flex flex-col justify-end pointer-events-none">
-                    <h3 className="text-base sm:text-xl font-serif font-bold text-white tracking-wide truncate group-hover:text-orange-300 transition-colors">
+                  <div className="absolute bottom-0 inset-x-0 z-10 p-5 sm:p-7 pt-16 bg-gradient-to-t from-[#0a0504] via-[#0a0504]/95 to-transparent flex flex-col justify-end pointer-events-none">
+                    <h3 className="text-lg sm:text-2xl font-serif font-bold text-white tracking-wide truncate group-hover:text-orange-300 transition-colors">
                       {dish.name}
                     </h3>
-                    <p className="text-xs sm:text-sm text-neutral-300 line-clamp-2 mt-1 font-light leading-snug">
+                    <p className="text-xs sm:text-sm text-neutral-300 line-clamp-2 mt-1.5 font-light leading-relaxed">
                       {dish.description}
                     </p>
 
-                    <div className="mt-3.5 pt-2.5 border-t border-orange-500/25 flex items-center justify-between">
+                    <div className="mt-4 pt-3 border-t border-orange-500/25 flex items-center justify-between">
                       <div className="flex items-baseline gap-1">
-                        <span className="text-xs sm:text-sm font-serif text-orange-400 font-bold">$</span>
-                        <span className="text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300 font-serif">
+                        <span className="text-sm font-serif text-orange-400 font-bold">$</span>
+                        <span className="text-2xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300 font-serif">
                           {dish.price}
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-3">
                         <span className="text-xs sm:text-sm text-orange-200/70 font-mono">
                           {dish.prepTime}
                         </span>
-                        <div className="w-8 h-8 rounded-full bg-orange-500/20 border border-orange-400/50 flex items-center justify-center text-orange-300 group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-neutral-950 transition-all shadow-md">
+                        <div className="w-9 h-9 rounded-full bg-orange-500/20 border border-orange-400/50 flex items-center justify-center text-orange-300 group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-neutral-950 transition-all shadow-md">
                           <Plus className="w-4 h-4 stroke-[2.5]" />
                         </div>
                       </div>
