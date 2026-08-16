@@ -105,7 +105,7 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
         >
           <SaharaButton
             onClick={onScrollToMenu}
-            primaryText="ENTER CYLINDER MENU"
+            primaryText="EXPLORE MENU"
             hoverText="TASTE THE SAHARA"
             size="md"
           />
