@@ -91,8 +91,8 @@ export function Chef3DCharacter({
 
             // Despill: remove background hue fringe from edge pixels
             data[i] = Math.min(255, Math.max(0, data[i] + (data[i] - bgR) * (1 - smoothAlpha) * 0.4));
-            data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + (data[i + 1] - bgG) * (1 - smoothAlpha) * 0.4));
-            data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + (data[i + 2] - bgB) * (1 - smoothAlpha) * 0.4));
+            data[i + 1] = Math.min(255, Math.max(0, data[i] + (data[i] - bgG) * (1 - smoothAlpha) * 0.4));
+            data[i + 2] = Math.min(255, Math.max(0, data[i] + (data[i] - bgB) * (1 - smoothAlpha) * 0.4));
           }
         }
 
@@ -128,23 +128,20 @@ export function Chef3DCharacter({
       ref={containerRef}
       onMouseMove={handleMouseMove}
       className={cn(
-        "relative flex flex-col items-center justify-center select-none pointer-events-auto group",
+        "relative flex flex-col items-center justify-end select-none pointer-events-auto group",
         className
       )}
     >
-      {/* 1. Volumetric Warm Key & Rim Backlighting */}
-      <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-[340px] sm:w-[480px] h-[340px] sm:h-[480px] rounded-full bg-gradient-to-tr from-amber-600/30 via-orange-500/25 to-red-600/20 blur-[90px] pointer-events-none -z-20" />
-      
-      {/* Top Silhouette Rim Highlight Core */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 w-48 sm:w-64 h-48 sm:h-64 rounded-full bg-amber-400/20 blur-3xl pointer-events-none -z-10" />
+      {/* Volumetric Warm Rim Lighting */}
+      <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-[320px] sm:w-[420px] h-[320px] sm:h-[420px] rounded-full bg-gradient-to-tr from-amber-600/25 via-orange-500/25 to-red-600/15 blur-[80px] pointer-events-none -z-20" />
 
-      {/* 2. Main Character Stage */}
+      {/* Main Character Body Stage */}
       <div className="relative flex items-center justify-center">
         {/* Dynamic Studio Key Lighting Glint */}
         <div
-          className="pointer-events-none absolute -inset-8 rounded-full opacity-60 transition-opacity duration-300 -z-10"
+          className="pointer-events-none absolute -inset-6 rounded-full opacity-60 transition-opacity duration-300 -z-10"
           style={{
-            background: `radial-gradient(400px circle at ${mouseLight.x}% ${mouseLight.y}%, rgba(251, 146, 60, 0.28), rgba(239, 68, 68, 0.08) 45%, transparent 70%)`,
+            background: `radial-gradient(350px circle at ${mouseLight.x}% ${mouseLight.y}%, rgba(251, 146, 60, 0.25), rgba(239, 68, 68, 0.06) 45%, transparent 70%)`,
           }}
         />
 
@@ -152,39 +149,23 @@ export function Chef3DCharacter({
         <canvas
           ref={canvasRef}
           className={cn(
-            "w-[300px] sm:w-[380px] md:w-[460px] h-auto object-contain transition-all duration-500 will-change-transform transform-gpu",
-            // Multi-layered photorealistic drop shadow filter
-            "filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.95)] drop-shadow-[0_28px_50px_rgba(0,0,0,0.85)] drop-shadow-[0_0_35px_rgba(249,115,22,0.35)] drop-shadow-[0_2px_4px_rgba(251,191,36,0.5)]",
+            "w-[260px] sm:w-[320px] md:w-[360px] h-auto object-contain transition-all duration-300 will-change-transform transform-gpu",
+            "filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.95)] drop-shadow-[0_20px_35px_rgba(0,0,0,0.85)] drop-shadow-[0_0_25px_rgba(249,115,22,0.3)]",
             isCutoutReady && !hasError ? "block opacity-100" : "hidden"
           )}
         />
 
-        {/* Fallback Direct Render with high contrast styling if canvas reading isn't supported */}
+        {/* Fallback Image */}
         {(!isCutoutReady || hasError) && (
-          <div className="relative w-[300px] sm:w-[380px] md:w-[460px] aspect-square flex items-center justify-center">
+          <div className="relative w-[260px] sm:w-[320px] md:w-[360px] aspect-square flex items-center justify-center">
             <img
               src={imageSrc}
               alt="3D Chef Character"
-              className="w-full h-full object-contain mix-blend-lighten filter drop-shadow-[0_25px_50px_rgba(0,0,0,0.9)] drop-shadow-[0_0_30px_rgba(249,115,22,0.4)]"
+              className="w-full h-full object-contain mix-blend-lighten filter drop-shadow-[0_20px_35px_rgba(0,0,0,0.9)]"
               loading="eager"
             />
           </div>
         )}
-      </div>
-
-      {/* 3. Photorealistic Multi-Tiered Contact & Ambient Ground Shadows */}
-      <div className="relative w-full flex flex-col items-center pointer-events-none -mt-8 sm:-mt-10">
-        {/* Tier 1: Deep Core Occlusion Contact Shadow (Sharp & Jet Black right beneath the base) */}
-        <div className="w-28 sm:w-40 h-3 bg-black/95 rounded-full blur-[3px] -mb-1" />
-
-        {/* Tier 2: Mid Ground Contact Shadow (Soft oval cast) */}
-        <div className="w-52 sm:w-72 h-8 bg-black/90 rounded-full blur-md" />
-
-        {/* Tier 3: Diffuse Ambient Bounce Shadow (Wide gradient dispersion with ember tint) */}
-        <div className="w-72 sm:w-[380px] h-12 bg-gradient-to-r from-neutral-950 via-black/85 to-neutral-950 rounded-full blur-xl -mt-6" />
-
-        {/* Tier 4: Warm Floor Reflection Bleed */}
-        <div className="w-48 sm:w-64 h-5 bg-orange-950/40 rounded-full blur-lg -mt-3" />
       </div>
     </div>
   );
