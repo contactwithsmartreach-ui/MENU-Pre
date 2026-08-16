@@ -27,16 +27,16 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const progress = Math.min(Math.max(scrollY / 700, 0), 1);
-  const translateY = progress * 100;
-  const scale = 1 - progress * 0.12;
-  const rotateDeg = progress * 45;
+  const progress = Math.min(Math.max(scrollY / 600, 0), 1);
+  const translateY = progress * 80;
+  const scale = 1 - progress * 0.1;
+  const rotateDeg = progress * 35;
 
   return (
-    <section className="relative w-full min-h-[85vh] sm:min-h-screen flex flex-col items-center justify-between px-4 pt-8 pb-6 sm:pb-10 text-center select-none overflow-hidden">
+    <section className="relative w-full min-h-[80vh] sm:min-h-screen flex flex-col items-center justify-between px-4 pt-8 pb-6 sm:pb-10 text-center select-none overflow-hidden [contain:layout_style]">
       {/* Hero Headline & Story */}
       <div className="relative z-10 max-w-2xl space-y-2.5 mt-2">
-        <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-[0.18em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300 drop-shadow-[0_10px_35px_rgba(249,115,22,0.35)]">
+        <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-[0.18em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300 drop-shadow-[0_10px_25px_rgba(249,115,22,0.3)]">
           L&apos;AURA SAHARA
         </h1>
         <p className="text-xs sm:text-sm md:text-base text-neutral-300 font-light max-w-lg mx-auto leading-relaxed">
@@ -46,56 +46,37 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
       </div>
 
       {/* Floating Realistic Culinary Plate Stage */}
-      <div className="relative z-10 my-2 sm:my-4 flex flex-col items-center justify-center -mb-10 sm:-mb-14">
-        {/* Steam Animation Elements */}
-        <div className="absolute -top-12 z-30 pointer-events-none opacity-60 flex gap-4">
-          <div className="w-10 h-24 bg-gradient-to-t from-orange-200/30 to-transparent rounded-full blur-xl animate-pulse duration-1000 transform -rotate-12" />
-          <div className="w-8 h-28 bg-gradient-to-t from-amber-100/40 to-transparent rounded-full blur-xl animate-pulse duration-700 delay-300" />
-        </div>
-
+      <div className="relative z-10 my-2 sm:my-4 flex flex-col items-center justify-center -mb-8 sm:-mb-12">
         {/* Outer Radiant Glow */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-red-600/30 via-orange-500/25 to-amber-400/20 rounded-full blur-2xl transform scale-110 pointer-events-none animate-pulse" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-red-600/20 via-orange-500/20 to-amber-400/15 rounded-full blur-2xl transform scale-105 pointer-events-none" />
 
-        {/* 3D Moving Plate Container (Bottom hides under button) */}
+        {/* 3D Moving Plate Container */}
         <div
           style={{
             transform: `translate3d(0, ${translateY}px, 0) scale(${scale}) rotate(${rotateDeg}deg)`,
             willChange: "transform",
           }}
-          className="relative z-10 w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 rounded-full p-3 sm:p-4 bg-gradient-to-b from-amber-500/20 via-neutral-900/90 to-black border-2 border-orange-500/40 shadow-[0_25px_60px_rgba(0,0,0,0.9),0_0_50px_rgba(249,115,22,0.3)] cursor-pointer group"
+          className="relative z-10 w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 rounded-full p-3 sm:p-4 bg-gradient-to-b from-amber-500/20 via-neutral-900/90 to-black border-2 border-orange-500/40 shadow-2xl cursor-pointer group transform-gpu"
           onClick={onScrollToMenu}
           role="button"
           tabIndex={0}
           onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onScrollToMenu()}
         >
           {/* Ceramic Dish Rim Layer */}
-          <div className="w-full h-full rounded-full p-2 sm:p-3 bg-[#120a08] border border-orange-400/30 shadow-inner flex items-center justify-center overflow-hidden relative">
-            {/* Cinematic Looping Gourmet Dish Video & Image Showcase */}
+          <div className="w-full h-full rounded-full p-2 sm:p-3 bg-[#120a08] border border-orange-400/30 flex items-center justify-center overflow-hidden relative">
             <div className="relative w-full h-full rounded-full overflow-hidden">
-              <video
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-full object-cover rounded-full scale-105 group-hover:scale-110 transition-transform duration-500 ease-out"
-                poster="https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=800&auto=format&fit=crop"
-              >
-                <source
-                  src="https://assets.mixkit.co/videos/preview/mixkit-close-up-of-a-gourmet-dish-being-prepared-43093-large.mp4"
-                  type="video/mp4"
-                />
-              </video>
-
-              {/* Gold leaf shimmer overlay */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-red-600/20 via-transparent to-amber-300/20 mix-blend-overlay pointer-events-none" />
-
-              {/* Glossy Plate Reflection */}
-              <div className="absolute inset-0 bg-gradient-to-b from-white/15 via-transparent to-black/60 pointer-events-none rounded-full" />
+              <img
+                src="https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=800&auto=format&fit=crop"
+                alt="Culinary Masterpiece"
+                className="w-full h-full object-cover rounded-full group-hover:scale-105 transition-transform duration-500 ease-out"
+                loading="eager"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-white/10 pointer-events-none rounded-full" />
             </div>
 
             {/* Center Floating Tag on Plate */}
             <div className="absolute top-4 inset-x-0 flex justify-center pointer-events-none">
-              <span className="bg-neutral-950/85 backdrop-blur-md border border-orange-400/40 px-3 py-1 rounded-full text-[10px] sm:text-xs font-serif uppercase tracking-widest text-orange-200 shadow-lg flex items-center gap-1.5">
+              <span className="bg-neutral-950/90 border border-orange-400/40 px-3 py-1 rounded-full text-[10px] sm:text-xs font-serif uppercase tracking-widest text-orange-200 shadow-md flex items-center gap-1.5">
                 <UtensilsCrossed className="w-3 h-3 text-orange-400" />
                 Chef&apos;s Signature
               </span>
@@ -103,19 +84,19 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
           </div>
         </div>
 
-        {/* Dynamic Floor Shadow beneath Plate */}
+        {/* Dynamic Floor Shadow */}
         <div
           style={{
-            transform: `scale(${1 - progress * 0.3})`,
-            opacity: Math.max(0.3, 0.8 - progress),
+            transform: `scale(${1 - progress * 0.2})`,
+            opacity: Math.max(0.3, 0.7 - progress),
           }}
-          className="w-48 sm:w-64 h-6 bg-black/80 rounded-full blur-xl mt-2 transition-opacity"
+          className="w-48 sm:w-64 h-5 bg-black/80 rounded-full blur-lg mt-2 transition-opacity"
         />
       </div>
 
-      {/* CTA Button & Scroll Indicator - Elevated on top to hide bottom of plate */}
+      {/* CTA Button & Scroll Indicator */}
       <div className="relative z-30 flex flex-col items-center gap-3 pt-2">
-        <div className="relative drop-shadow-[0_15px_30px_rgba(0,0,0,0.9)]">
+        <div className="relative drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
           <SaharaButton
             onClick={onScrollToMenu}
             primaryText="ENTER CYLINDER MENU"

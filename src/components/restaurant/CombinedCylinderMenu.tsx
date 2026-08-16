@@ -30,11 +30,14 @@ export function CombinedCylinderMenu({
   const angleStep = 360 / Math.max(N, 1);
   const defaultSpeed = 7; // degrees per sec
 
-  const [rotationY, setRotationY] = useState(0);
-  const [isAutoSpinning, setIsAutoSpinning] = useState(true);
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [selectedDishIndex, setSelectedDishIndex] = useState<number>(0);
+
+  // Direct DOM ref for zero-latency 60fps 3D transforms without React re-renders
+  const cylinderStageRef = useRef<HTMLDivElement>(null);
+  const rotationYRef = useRef(0);
+  const isAutoSpinningRef = useRef(true);
 
   // Runway horizontal ref for sideways cards
   const runwayRef = useRef<HTMLDivElement>(null);
@@ -46,11 +49,19 @@ export function CombinedCylinderMenu({
       setIsMobile(window.innerWidth < 640);
     };
     checkMobile();
-    window.addEventListener("resize", checkMobile);
+    window.addEventListener("resize", checkMobile, { passive: true });
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const cardWidth = isMobile ? 180 : 250;
+
+  // Direct DOM transform updater
+  const updateCylinderTransform = useCallback((angle: number) => {
+    rotationYRef.current = angle;
+    if (cylinderStageRef.current) {
+      cylinderStageRef.current.style.transform = `rotateY(${angle}deg)`;
+    }
+  }, []);
 
   // Gesture and animation refs for 3D cylinder
   const isDraggingRef = useRef(false);
@@ -80,7 +91,7 @@ export function CombinedCylinderMenu({
       if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
       scrollTimeoutRef.current = setTimeout(() => {
         isProgrammaticScrollRef.current = false;
-      }, 500);
+      }, 400);
     }
   }, []);
 
@@ -91,14 +102,14 @@ export function CombinedCylinderMenu({
       if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
 
       velocityRef.current = 0;
-      setIsAutoSpinning(false);
+      isAutoSpinningRef.current = false;
 
-      const current = rotationY;
+      const current = rotationYRef.current;
       const diff = (((targetAngle - current + 180) % 360) + 360) % 360 - 180;
       const finalTarget = current + diff;
 
       const startTime = performance.now();
-      const duration = 400;
+      const duration = 380;
       const startAngle = current;
       const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
@@ -107,22 +118,22 @@ export function CombinedCylinderMenu({
         const progress = Math.min(elapsed / duration, 1);
         const eased = easeOutCubic(progress);
 
-        setRotationY(startAngle + (finalTarget - startAngle) * eased);
+        updateCylinderTransform(startAngle + (finalTarget - startAngle) * eased);
 
         if (progress < 1) {
           momentumFrameRef.current = requestAnimationFrame(animate);
         } else {
-          setRotationY(finalTarget);
+          updateCylinderTransform(finalTarget);
           onComplete?.();
           autoResumeTimeoutRef.current = setTimeout(() => {
-            setIsAutoSpinning(true);
+            isAutoSpinningRef.current = true;
           }, 3500);
         }
       };
 
       momentumFrameRef.current = requestAnimationFrame(animate);
     },
-    [rotationY]
+    [updateCylinderTransform]
   );
 
   // Bring a dish to front of 3D cylinder and center in horizontal deck
@@ -153,7 +164,7 @@ export function CombinedCylinderMenu({
     [selectedDishIndex, N, bringToFront, items]
   );
 
-  // Auto-spin 3D cylinder loop
+  // Ultra-optimized Auto-spin RAF loop (direct DOM write, 0 React re-renders)
   useEffect(() => {
     let prev = performance.now();
 
@@ -162,12 +173,13 @@ export function CombinedCylinderMenu({
       prev = timestamp;
 
       if (
-        isAutoSpinning &&
+        isAutoSpinningRef.current &&
         !isDraggingRef.current &&
         hoveredIdx === null &&
         Math.abs(velocityRef.current) < 0.05
       ) {
-        setRotationY((p) => (p + defaultSpeed * delta) % 360);
+        const nextAngle = (rotationYRef.current + defaultSpeed * delta) % 360;
+        updateCylinderTransform(nextAngle);
       }
 
       animFrameRef.current = requestAnimationFrame(loop);
@@ -177,14 +189,14 @@ export function CombinedCylinderMenu({
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
-  }, [isAutoSpinning, defaultSpeed, hoveredIdx]);
+  }, [defaultSpeed, hoveredIdx, updateCylinderTransform]);
 
   // Inertia momentum
   const applyMomentum = useCallback(() => {
     const decay = 0.92;
     const step = () => {
       if (Math.abs(velocityRef.current) > 0.05) {
-        setRotationY((p) => p - velocityRef.current);
+        updateCylinderTransform(rotationYRef.current - velocityRef.current);
         velocityRef.current *= decay;
         momentumFrameRef.current = requestAnimationFrame(step);
       } else {
@@ -193,7 +205,7 @@ export function CombinedCylinderMenu({
     };
     if (momentumFrameRef.current) cancelAnimationFrame(momentumFrameRef.current);
     momentumFrameRef.current = requestAnimationFrame(step);
-  }, []);
+  }, [updateCylinderTransform]);
 
   // Cylinder Pointer interaction
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -207,7 +219,7 @@ export function CombinedCylinderMenu({
     startYRef.current = e.clientY;
     lastXRef.current = e.clientX;
     lastTimeRef.current = performance.now();
-    startRotRef.current = rotationY;
+    startRotRef.current = rotationYRef.current;
     velocityRef.current = 0;
   };
 
@@ -229,9 +241,9 @@ export function CombinedCylinderMenu({
     }
 
     if (hasMovedSignificantlyRef.current) {
-      const sensitivity = isMobile ? 0.46 : 0.38;
+      const sensitivity = isMobile ? 0.44 : 0.36;
       const newRotation = startRotRef.current - deltaX * sensitivity;
-      setRotationY(newRotation);
+      updateCylinderTransform(newRotation);
 
       const now = performance.now();
       const dt = Math.max(now - lastTimeRef.current, 8);
@@ -263,7 +275,7 @@ export function CombinedCylinderMenu({
 
   const handleWheel = (e: React.WheelEvent) => {
     const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-    setRotationY((prev) => prev + delta * 0.15);
+    updateCylinderTransform(rotationYRef.current + delta * 0.15);
   };
 
   // Horizontal scroll runway active item detection
@@ -303,11 +315,11 @@ export function CombinedCylinderMenu({
     "--ba": `calc(1turn / var(--n))`,
   } as React.CSSProperties;
 
-  const handleCylinderCardClick = (dish: MenuItem, index: number, isFacingFront: boolean) => {
+  const handleCylinderCardClick = (dish: MenuItem, index: number) => {
     if (hasMovedSignificantlyRef.current) return;
     setSelectedDishIndex(index);
     scrollCardToCenter(index);
-    if (isFacingFront) {
+    if (selectedDishIndex === index) {
       onSelectItem(dish);
     } else {
       bringToFront(index, false);
@@ -322,12 +334,12 @@ export function CombinedCylinderMenu({
     <div
       onWheel={handleWheel}
       className={cn(
-        "w-full flex flex-col items-center justify-between relative select-none gap-2 sm:gap-3",
+        "w-full flex flex-col items-center justify-between relative select-none gap-2 sm:gap-3 [contain:layout_style]",
         className
       )}
     >
       {/* 1. UPPER STAGE: 3D Cylinder Gastronomy Carousel */}
-      <div className="relative w-full min-h-[440px] sm:min-h-[500px] flex items-center justify-center">
+      <div className="relative w-full min-h-[440px] sm:min-h-[500px] flex items-center justify-center overflow-hidden">
         {/* 3D Cylinder Scene */}
         <div
           className="w-full flex-1 grid place-items-center cursor-grab active:cursor-grabbing overflow-visible py-2 touch-pan-y"
@@ -340,27 +352,20 @@ export function CombinedCylinderMenu({
           onPointerCancel={handlePointerUp}
         >
           <div
-            className="grid place-items-center [transform-style:preserve-3d] will-change-transform"
+            ref={cylinderStageRef}
+            className="grid place-items-center [transform-style:preserve-3d] will-change-transform transform-gpu"
             style={{
               ...customStyle,
-              transform: `rotateY(${rotationY}deg)`,
-              WebkitBoxReflect:
-                "below 10px linear-gradient(to bottom, transparent 65%, rgba(249, 115, 22, 0.2) 100%)",
+              transform: `rotateY(0deg)`,
             }}
           >
             {items.map((dish, i) => {
-              const cardAngle = ((i * angleStep + rotationY) % 360 + 360) % 360;
-              const angleFromFront = Math.min(cardAngle, 360 - cardAngle);
-              const isFacingFront = angleFromFront < angleStep * 0.75;
-              const isSideVisible = angleFromFront < 110;
-              const isHovered = hoveredIdx === i;
-
               return (
                 <div
                   key={dish.id}
                   onMouseEnter={() => !isMobile && setHoveredIdx(i)}
                   onMouseLeave={() => !isMobile && setHoveredIdx(null)}
-                  onClick={() => handleCylinderCardClick(dish, i, isFacingFront)}
+                  onClick={() => handleCylinderCardClick(dish, i)}
                   role="button"
                   tabIndex={0}
                   onKeyDown={(e) => {
@@ -369,13 +374,8 @@ export function CombinedCylinderMenu({
                     }
                   }}
                   className={cn(
-                    "group relative [grid-area:1/1] rounded-[24px] sm:rounded-[28px] overflow-hidden [backface-visibility:hidden] transition-all duration-300 transform-gpu cursor-pointer",
-                    "border bg-neutral-950/95 backdrop-blur-xl",
-                    isFacingFront
-                      ? "border-orange-400 shadow-[0_20px_50px_rgba(249,115,22,0.55)] ring-2 ring-orange-500/50 scale-105 z-30 opacity-100"
-                      : isSideVisible
-                      ? "border-orange-500/40 shadow-[0_10px_30px_rgba(0,0,0,0.7)] opacity-90 hover:opacity-100 hover:border-orange-400 hover:scale-105 z-20"
-                      : "border-orange-500/20 opacity-40 hover:opacity-80 z-10"
+                    "group relative [grid-area:1/1] rounded-[24px] sm:rounded-[28px] overflow-hidden [backface-visibility:hidden] transform-gpu cursor-pointer",
+                    "border border-orange-500/30 bg-[#0d0706] shadow-xl hover:border-orange-400"
                   )}
                   style={{
                     width: "var(--w)",
@@ -390,28 +390,27 @@ export function CombinedCylinderMenu({
                     <img
                       src={dish.image}
                       alt={dish.name}
-                      className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+                      className="w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
                       loading="lazy"
                       draggable={false}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/50 to-transparent" />
-                    <div className="absolute inset-0 bg-gradient-to-tr from-red-600/30 via-orange-500/20 to-pink-500/10 mix-blend-color-dodge" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/40 to-transparent" />
                   </div>
 
                   {/* Top Bar */}
                   <div className="relative z-10 p-3 sm:p-4 flex items-center justify-between w-full pointer-events-none">
                     {dish.isSignature ? (
-                      <Badge className="bg-gradient-to-r from-red-500 to-orange-500 text-white font-serif tracking-wider uppercase px-2.5 py-0.5 rounded-full text-[10px] shadow-lg shadow-red-500/30 border-0">
-                        <Flame className="w-3.5 h-3.5 fill-current mr-1 text-amber-200 animate-pulse" />
+                      <Badge className="bg-gradient-to-r from-red-500 to-orange-500 text-white font-serif tracking-wider uppercase px-2.5 py-0.5 rounded-full text-[10px] shadow border-0">
+                        <Flame className="w-3 h-3 fill-current mr-1 text-amber-200" />
                         Signature
                       </Badge>
                     ) : (
-                      <span className="text-[10px] font-serif uppercase tracking-widest text-orange-200 bg-neutral-950/80 px-2.5 py-0.5 rounded-full backdrop-blur-md border border-orange-500/30">
+                      <span className="text-[10px] font-serif uppercase tracking-widest text-orange-200 bg-neutral-950/80 px-2 py-0.5 rounded-full border border-orange-500/30">
                         {dish.category}
                       </span>
                     )}
 
-                    <div className="flex items-center gap-1 bg-neutral-950/85 backdrop-blur-md px-2 py-0.5 rounded-full border border-orange-500/30 text-amber-300 text-[11px] font-bold">
+                    <div className="flex items-center gap-1 bg-neutral-950/90 px-2 py-0.5 rounded-full border border-orange-500/30 text-amber-300 text-[11px] font-bold">
                       <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
                       <span>{dish.rating}</span>
                     </div>
@@ -420,15 +419,12 @@ export function CombinedCylinderMenu({
                   {/* Interactive Button Overlay */}
                   <div
                     className={cn(
-                      "absolute inset-0 flex items-center justify-center z-20 transition-all duration-200 pointer-events-none",
-                      isFacingFront || isHovered
-                        ? "opacity-100 scale-100"
-                        : "opacity-0 scale-90"
+                      "absolute inset-0 flex items-center justify-center z-20 transition-opacity duration-200 pointer-events-none opacity-0 group-hover:opacity-100"
                     )}
                   >
-                    <span className="bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white font-serif tracking-widest uppercase px-3.5 py-1.5 rounded-full text-[11px] font-bold shadow-xl shadow-red-600/50 border border-orange-200/50 flex items-center gap-1.5">
-                      {isFacingFront ? <Eye className="w-3.5 h-3.5" /> : <Utensils className="w-3.5 h-3.5" />}
-                      <span>{isFacingFront ? "VIEW DETAILS" : "BRING FORWARD"}</span>
+                    <span className="bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white font-serif tracking-widest uppercase px-3 py-1.5 rounded-full text-[11px] font-bold shadow-lg border border-orange-200/50 flex items-center gap-1.5">
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>VIEW DETAILS</span>
                     </span>
                   </div>
 
@@ -437,14 +433,14 @@ export function CombinedCylinderMenu({
                     <h3 className="text-sm sm:text-base font-serif font-bold text-white tracking-wide truncate group-hover:text-orange-300 transition-colors">
                       {dish.name}
                     </h3>
-                    <p className="text-[11px] sm:text-xs text-neutral-300/85 line-clamp-1 mt-0.5 font-light">
+                    <p className="text-[11px] sm:text-xs text-neutral-300 line-clamp-1 mt-0.5 font-light">
                       {dish.description}
                     </p>
 
-                    <div className="mt-2.5 pt-2 border-t border-orange-500/20 flex items-center justify-between">
+                    <div className="mt-2 pt-2 border-t border-orange-500/20 flex items-center justify-between">
                       <div className="flex items-baseline gap-0.5">
                         <span className="text-xs font-serif text-orange-400 font-bold">$</span>
-                        <span className="text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300 font-serif">
+                        <span className="text-xl font-extrabold text-amber-300 font-serif">
                           {dish.price}
                         </span>
                       </div>
@@ -461,52 +457,48 @@ export function CombinedCylinderMenu({
         </div>
       </div>
 
-      {/* 2. GAP CONTROLS: Left and Right vibrant full orange glowing stepper buttons */}
+      {/* 2. GAP CONTROLS: Left and Right vibrant full orange stepper buttons */}
       <div className="relative z-40 w-full max-w-xl px-4 flex items-center justify-between my-2">
-        {/* Left Full Orange Glowing Button */}
+        {/* Left Full Orange Button */}
         <div className="relative group">
-          <span className="absolute -inset-1 rounded-full bg-gradient-to-r from-orange-600 via-amber-500 to-orange-500 blur-lg opacity-80 group-hover:opacity-100 group-hover:blur-xl transition-all duration-300 animate-pulse" />
           <button
             type="button"
             aria-label="Rotate Previous Dish"
             onClick={() => stepRotate("prev")}
             className={cn(
-              "relative w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer",
+              "relative w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-transform duration-200 cursor-pointer",
               "bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 text-neutral-950 font-black",
-              "border-2 border-amber-300/80 shadow-[0_0_30px_rgba(249,115,22,0.85),0_0_50px_rgba(239,68,68,0.5)]",
-              "hover:scale-110 hover:shadow-[0_0_45px_rgba(249,115,22,1),0_0_70px_rgba(239,68,68,0.8)] active:scale-95"
+              "border-2 border-amber-300/80 shadow-[0_0_20px_rgba(249,115,22,0.6)] active:scale-95 hover:scale-105"
             )}
           >
-            <ChevronLeft className="w-6 h-6 text-neutral-950 stroke-[3] transition-transform group-hover:-translate-x-0.5 drop-shadow-[0_1px_2px_rgba(255,255,255,0.4)]" />
+            <ChevronLeft className="w-6 h-6 text-neutral-950 stroke-[3]" />
           </button>
         </div>
 
-        {/* Right Full Orange Glowing Button */}
+        {/* Right Full Orange Button */}
         <div className="relative group">
-          <span className="absolute -inset-1 rounded-full bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 blur-lg opacity-80 group-hover:opacity-100 group-hover:blur-xl transition-all duration-300 animate-pulse" />
           <button
             type="button"
             aria-label="Rotate Next Dish"
             onClick={() => stepRotate("next")}
             className={cn(
-              "relative w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer",
+              "relative w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-transform duration-200 cursor-pointer",
               "bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 text-neutral-950 font-black",
-              "border-2 border-amber-300/80 shadow-[0_0_30px_rgba(249,115,22,0.85),0_0_50px_rgba(239,68,68,0.5)]",
-              "hover:scale-110 hover:shadow-[0_0_45px_rgba(249,115,22,1),0_0_70px_rgba(239,68,68,0.8)] active:scale-95"
+              "border-2 border-amber-300/80 shadow-[0_0_20px_rgba(249,115,22,0.6)] active:scale-95 hover:scale-105"
             )}
           >
-            <ChevronRight className="w-6 h-6 text-neutral-950 stroke-[3] transition-transform group-hover:translate-x-0.5 drop-shadow-[0_1px_2px_rgba(255,255,255,0.4)]" />
+            <ChevronRight className="w-6 h-6 text-neutral-950 stroke-[3]" />
           </button>
         </div>
       </div>
 
-      {/* 3. LOWER STAGE: Sideways Melting Down Cards Runway with Faded Smoked Purple Interiors */}
-      <div className="w-full max-w-7xl px-2 sm:px-4 flex flex-col items-center">
+      {/* 3. LOWER STAGE: Sideways Cards Runway */}
+      <div className="w-full max-w-7xl px-2 sm:px-4 flex flex-col items-center [contain:content]">
         {/* Horizontal Scrolling Strip */}
         <div
           ref={runwayRef}
           onScroll={handleRunwayScroll}
-          className="w-full flex items-end gap-5 sm:gap-7 overflow-x-auto scrollbar-none py-6 sm:py-10 snap-x snap-mandatory scroll-smooth px-[calc(50%-100px)] sm:px-[calc(50%-125px)] overflow-y-visible"
+          className="w-full flex items-end gap-4 sm:gap-6 overflow-x-auto scrollbar-none py-4 sm:py-6 snap-x snap-mandatory scroll-smooth px-[calc(50%-100px)] sm:px-[calc(50%-125px)]"
         >
           {items.map((dish, index) => {
             const isSelected = selectedDishIndex === index;
@@ -531,104 +523,58 @@ export function CombinedCylinderMenu({
                   }
                 }}
                 className={cn(
-                  "group relative shrink-0 cursor-pointer transition-all duration-500 ease-out snap-center select-none flex flex-col items-center",
+                  "group relative shrink-0 cursor-pointer transition-all duration-300 ease-out snap-center select-none flex flex-col items-center will-change-transform transform-gpu",
                   isSelected
-                    ? "w-[210px] sm:w-[260px] z-30 scale-110 sm:scale-115 -translate-y-2"
-                    : "w-[145px] sm:w-[175px] z-10 scale-95 opacity-55 hover:opacity-85 hover:scale-100 grayscale-[0.2] hover:grayscale-0"
+                    ? "w-[210px] sm:w-[260px] z-30 scale-105 sm:scale-110 -translate-y-1"
+                    : "w-[145px] sm:w-[175px] z-10 scale-95 opacity-60 hover:opacity-85"
                 )}
               >
-                {/* OUTSIDE CARD TITLE: Big, Hard, Chunky, Solid White Header */}
-                <div className="w-full text-center mb-2.5 px-1">
+                {/* OUTSIDE CARD TITLE: Bold, Solid White Header */}
+                <div className="w-full text-center mb-2 px-1">
                   <h4
                     className={cn(
-                      "text-white font-sans font-black leading-none uppercase line-clamp-1 transition-all duration-300",
+                      "text-white font-sans font-black leading-none uppercase line-clamp-1 transition-opacity",
                       isSelected
-                        ? "text-base sm:text-lg md:text-xl tracking-wider opacity-100 drop-shadow-[0_4px_12px_rgba(0,0,0,1)] stroke-white"
-                        : "text-xs sm:text-sm tracking-wide opacity-75 group-hover:opacity-100 drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]"
+                        ? "text-base sm:text-lg md:text-xl tracking-wider opacity-100 drop-shadow-[0_2px_4px_rgba(0,0,0,1)]"
+                        : "text-xs sm:text-sm tracking-wide opacity-75"
                     )}
-                    style={{
-                      WebkitTextStroke: isSelected ? "0.5px rgba(255,255,255,0.7)" : "none",
-                      textShadow: isSelected
-                        ? "0 0 1px #fff, 0 2px 8px rgba(0,0,0,0.9)"
-                        : "none",
-                    }}
                   >
                     {dish.name}
                   </h4>
                 </div>
 
-                {/* Outer Purple/Orange Molten Heat Glow on Active */}
-                {isSelected && (
-                  <div className="absolute -inset-3 top-8 bg-gradient-to-b from-purple-600/30 via-orange-500/25 to-violet-900/40 rounded-[36px] blur-2xl pointer-events-none -z-10 animate-pulse" />
-                )}
-
-                {/* Melting Card Shell Wrapper with Smoked Faded Purple Interior */}
+                {/* Card Shell Wrapper */}
                 <div
                   className={cn(
-                    "relative w-full rounded-t-[30px] rounded-b-[18px] overflow-hidden p-3 flex flex-col justify-between transition-all duration-300",
-                    // Faded smoked purple gradient backdrop
-                    "bg-gradient-to-b from-[#24133b] via-[#160c26] to-[#0c0517]",
-                    "border-t-2 border-x",
+                    "relative w-full rounded-t-[26px] rounded-b-[16px] overflow-hidden p-3 flex flex-col justify-between transition-colors duration-200",
+                    "bg-[#1c0e2d] border-t-2 border-x",
                     isSelected
-                      ? "border-t-amber-300 border-x-purple-400/80 shadow-[0_0_35px_rgba(168,85,247,0.4),0_0_25px_rgba(249,115,22,0.3),0_15px_30px_rgba(0,0,0,0.9)]"
-                      : "border-t-purple-400/30 border-x-purple-500/20 shadow-[0_10px_25px_rgba(0,0,0,0.7)]"
+                      ? "border-t-amber-300 border-x-purple-400/80 shadow-2xl"
+                      : "border-t-purple-400/30 border-x-purple-500/20 shadow-md"
                   )}
                 >
-                  {/* Subtle Faded Purple Shimmer Mist inside card */}
-                  <div className="absolute inset-0 bg-gradient-to-tr from-purple-900/30 via-violet-800/10 to-transparent pointer-events-none" />
-
-                  {/* Top Molten Viscous Wax Drip Overlay Layer */}
-                  <div className="absolute top-0 inset-x-0 h-5 pointer-events-none z-20 overflow-hidden opacity-95">
-                    <svg
-                      viewBox="0 0 200 30"
-                      preserveAspectRatio="none"
-                      className="w-full h-full drop-shadow-[0_2px_6px_rgba(0,0,0,0.7)]"
-                    >
-                      <defs>
-                        <linearGradient id={`top-melt-${dish.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                          <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.9" />
-                          <stop offset="60%" stopColor="#c084fc" stopOpacity="0.8" />
-                          <stop offset="100%" stopColor="#7e22ce" stopOpacity="0.6" />
-                        </linearGradient>
-                      </defs>
-                      <path
-                        d="M 0,0 L 200,0 L 200,8 C 185,8 180,22 170,22 C 160,22 155,6 142,6 C 130,6 126,18 116,18 C 105,18 100,4 88,4 C 74,4 70,26 56,26 C 45,26 40,8 26,8 C 14,8 8,18 0,18 Z"
-                        fill={`url(#top-melt-${dish.id})`}
-                      />
-                      {/* Specular Wax Highlight line */}
-                      <path
-                        d="M 0,4 C 8,14 14,5 26,5 C 40,5 45,22 56,22 C 70,22 74,2 88,2 C 100,2 105,15 116,15 C 126,15 130,4 142,4 C 155,4 160,19 170,19 C 180,19 185,5 200,5"
-                        fill="none"
-                        stroke="rgba(255,255,255,0.4)"
-                        strokeWidth="1"
-                      />
-                    </svg>
-                  </div>
-
-                  {/* Dish Image inside soft purple-tinted frame */}
+                  {/* Dish Image */}
                   <div
                     className={cn(
-                      "relative w-full rounded-[22px] overflow-hidden mb-2.5 transition-all duration-300 z-10",
+                      "relative w-full rounded-[18px] overflow-hidden mb-2.5 transition-all duration-200 z-10",
                       isSelected
-                        ? "h-32 sm:h-40 ring-1 ring-purple-400/50 shadow-inner"
+                        ? "h-32 sm:h-40 ring-1 ring-purple-400/50"
                         : "h-22 sm:h-26"
                     )}
                   >
                     <img
                       src={dish.image}
                       alt={dish.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-out"
                       loading="lazy"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#120722] via-transparent to-transparent" />
-                    <div className="absolute inset-0 bg-gradient-to-tr from-purple-600/25 via-transparent to-amber-500/15 mix-blend-color-dodge" />
 
                     {/* Badges on Image */}
                     {dish.isSignature ? (
                       <span
                         className={cn(
-                          "absolute top-2 left-2 rounded-full bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 text-white font-serif uppercase tracking-wider font-bold shadow-md shadow-red-500/40 flex items-center gap-1",
-                          isSelected ? "px-2 py-0.5 text-[10px]" : "px-1.5 py-0.5 text-[9px]"
+                          "absolute top-2 left-2 rounded-full bg-gradient-to-r from-red-600 to-amber-500 text-white font-serif uppercase tracking-wider font-bold shadow px-2 py-0.5 text-[9px] flex items-center gap-1"
                         )}
                       >
                         <Sparkles className="w-2.5 h-2.5 text-amber-200" />
@@ -636,23 +582,23 @@ export function CombinedCylinderMenu({
                       </span>
                     ) : (
                       isSelected && (
-                        <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-[#180a2b]/85 backdrop-blur-md border border-purple-400/40 text-purple-200 font-serif text-[9px] uppercase tracking-wider">
+                        <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-[#180a2b]/90 border border-purple-400/40 text-purple-200 font-serif text-[9px] uppercase tracking-wider">
                           {dish.category}
                         </span>
                       )
                     )}
 
-                    <div className="absolute bottom-2 right-2 flex items-center gap-0.5 text-amber-300 text-[10px] font-bold bg-[#120722]/90 px-1.5 py-0.5 rounded-md backdrop-blur-md border border-purple-500/30">
+                    <div className="absolute bottom-2 right-2 flex items-center gap-0.5 text-amber-300 text-[10px] font-bold bg-[#120722]/90 px-1.5 py-0.5 rounded-md border border-purple-500/30">
                       <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-400" />
                       <span>{dish.rating}</span>
                     </div>
                   </div>
 
-                  {/* Info Text in Faded Purple interior */}
+                  {/* Info Text */}
                   <div className="flex-1 flex flex-col justify-between relative z-10 px-1">
                     <div>
                       {isSelected ? (
-                        <p className="text-[11px] text-purple-200/80 line-clamp-2 mt-0.5 font-light leading-snug">
+                        <p className="text-[11px] text-purple-200 line-clamp-2 mt-0.5 font-light leading-snug">
                           {dish.description}
                         </p>
                       ) : (
@@ -665,7 +611,7 @@ export function CombinedCylinderMenu({
                     {/* Price & Action */}
                     <div
                       className={cn(
-                        "mt-2.5 pt-2 flex items-center justify-between transition-colors",
+                        "mt-2 pt-1.5 flex items-center justify-between",
                         isSelected ? "border-t border-purple-500/30" : "border-t border-purple-400/10"
                       )}
                     >
@@ -675,7 +621,7 @@ export function CombinedCylinderMenu({
                           className={cn(
                             "font-serif font-extrabold tracking-tight",
                             isSelected
-                              ? "text-lg sm:text-xl text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-purple-200"
+                              ? "text-lg sm:text-xl text-amber-300"
                               : "text-sm text-purple-200"
                           )}
                         >
@@ -685,9 +631,9 @@ export function CombinedCylinderMenu({
 
                       <div
                         className={cn(
-                          "rounded-full flex items-center justify-center transition-all duration-300",
+                          "rounded-full flex items-center justify-center transition-transform",
                           isSelected
-                            ? "w-7 h-7 bg-gradient-to-r from-orange-500 to-purple-600 text-white shadow-lg shadow-purple-500/50 scale-105"
+                            ? "w-7 h-7 bg-gradient-to-r from-orange-500 to-purple-600 text-white shadow-md"
                             : "w-5 h-5 bg-purple-950/80 border border-purple-400/20 text-purple-300 group-hover:bg-orange-500 group-hover:text-neutral-950"
                         )}
                       >
@@ -701,105 +647,17 @@ export function CombinedCylinderMenu({
                   </div>
                 </div>
 
-                {/* 4. REALISTIC LIQUID MELTING DRIP FRAME: Organic viscous drips with glass-like tears & physics */}
-                <div className="relative -mt-1 w-full pointer-events-none overflow-visible">
+                {/* Bottom Melting Drip Graphic */}
+                <div className="relative -mt-1 w-full pointer-events-none overflow-hidden">
                   <svg
-                    viewBox="0 0 200 48"
+                    viewBox="0 0 200 36"
                     preserveAspectRatio="none"
-                    className={cn(
-                      "w-full h-9 sm:h-12 transition-all duration-500 filter",
-                      isSelected
-                        ? "drop-shadow-[0_8px_14px_rgba(168,85,247,0.35)] drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)]"
-                        : "drop-shadow-[0_4px_6px_rgba(0,0,0,0.7)]"
-                    )}
+                    className="w-full h-7 sm:h-9"
                   >
-                    <defs>
-                      {/* Fluid Melting Gradient: Faded Purple into Molten Sunset Amber */}
-                      <linearGradient id={`melt-grad-${dish.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stopColor={isSelected ? "#1b0a33" : "#120722"} />
-                        <stop offset="45%" stopColor={isSelected ? "#7e22ce" : "#4c1d95"} stopOpacity="0.95" />
-                        <stop offset="85%" stopColor={isSelected ? "#ea580c" : "#9333ea"} />
-                        <stop offset="100%" stopColor={isSelected ? "#f59e0b" : "#c084fc"} />
-                      </linearGradient>
-
-                      {/* Molten Glow Rim Highlight */}
-                      <linearGradient id={`glow-rim-${dish.id}`} x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#c084fc" />
-                        <stop offset="40%" stopColor="#fb923c" />
-                        <stop offset="80%" stopColor="#f59e0b" />
-                        <stop offset="100%" stopColor="#e879f9" />
-                      </linearGradient>
-                    </defs>
-
-                    {/* Smooth Organic Viscous Drip Silhouette */}
                     <path
-                      d="M 0,0 
-                         L 200,0 
-                         L 200,6 
-                         C 192,6 189,16 183,16 
-                         C 177,16 175,5 166,5 
-                         C 157,5 153,38 144,38 
-                         C 137,38 135,12 127,12 
-                         C 119,12 117,26 109,26 
-                         C 101,26 97,7 89,7 
-                         C 81,7 76,44 66,44 
-                         C 58,44 56,14 46,14 
-                         C 36,14 32,30 22,30 
-                         C 14,30 10,8 0,8 
-                         Z"
-                      fill={`url(#melt-grad-${dish.id})`}
+                      d="M 0,0 L 200,0 L 200,6 C 192,6 189,14 183,14 C 177,14 175,5 166,5 C 157,5 153,28 144,28 C 137,28 135,10 127,10 C 119,10 117,20 109,20 C 101,20 97,6 89,6 C 81,6 76,32 66,32 C 58,32 56,12 46,12 C 36,12 32,22 22,22 C 14,22 10,7 0,7 Z"
+                      fill={isSelected ? "#7e22ce" : "#3b1754"}
                     />
-
-                    {/* Specular Liquid Light Contour Reflection */}
-                    <path
-                      d="M 0,8 
-                         C 10,8 14,30 22,30 
-                         C 32,30 36,14 46,14 
-                         C 56,14 58,44 66,44 
-                         C 76,44 81,7 89,7 
-                         C 97,7 101,26 109,26 
-                         C 117,26 119,12 127,12 
-                         C 135,12 137,38 144,38 
-                         C 153,38 157,5 166,5 
-                         C 175,5 177,16 183,16 
-                         C 189,16 192,6 200,6"
-                      fill="none"
-                      stroke={isSelected ? `url(#glow-rim-${dish.id})` : "rgba(192,132,252,0.35)"}
-                      strokeWidth={isSelected ? "2.2" : "1.2"}
-                      strokeLinecap="round"
-                    />
-
-                    {/* Realistic Detached Viscous Wax Teardrops */}
-                    {isSelected && (
-                      <>
-                        {/* Teardrop under main drip (x: 66) */}
-                        <g className="animate-pulse">
-                          <ellipse
-                            cx="66"
-                            cy="50"
-                            rx="2.6"
-                            ry="3.4"
-                            fill="#f59e0b"
-                            className="drop-shadow-[0_0_8px_rgba(245,158,11,1)]"
-                          />
-                          {/* Inner glossy highlight on teardrop */}
-                          <circle cx="65" cy="48.5" r="0.9" fill="#fff" opacity="0.8" />
-                        </g>
-
-                        {/* Teardrop under secondary drip (x: 144) */}
-                        <g className="animate-pulse delay-200">
-                          <ellipse
-                            cx="144"
-                            cy="45"
-                            rx="2.2"
-                            ry="2.8"
-                            fill="#fb923c"
-                            className="drop-shadow-[0_0_7px_rgba(251,146,60,1)]"
-                          />
-                          <circle cx="143.2" cy="43.8" r="0.7" fill="#fff" opacity="0.8" />
-                        </g>
-                      </>
-                    )}
                   </svg>
                 </div>
               </div>
