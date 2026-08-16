@@ -9,7 +9,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Eye,
-  Utensils,
   Plus,
   Sparkles,
 } from "lucide-react";
@@ -28,7 +27,7 @@ export function CombinedCylinderMenu({
 }: CombinedCylinderMenuProps) {
   const N = items.length;
   const angleStep = 360 / Math.max(N, 1);
-  const defaultSpeed = 7; // degrees per sec
+  const defaultSpeed = 6; // degrees per sec
 
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -49,11 +48,10 @@ export function CombinedCylinderMenu({
       setIsMobile(window.innerWidth < 640);
     };
     checkMobile();
-    window.addEventListener("resize", checkMobile, { passive: true });
+    window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Increased card dimensions for a larger, more impactful cylinder presentation
   const cardWidth = isMobile ? 220 : 310;
 
   // Direct DOM transform updater
@@ -73,7 +71,7 @@ export function CombinedCylinderMenu({
   const lastXRef = useRef(0);
   const lastTimeRef = useRef(0);
   const velocityRef = useRef(0);
-  const hasMovedSignificantlyRef = useRef(false);
+  const dragDistanceRef = useRef(0);
   const animFrameRef = useRef<number | null>(null);
   const momentumFrameRef = useRef<number | null>(null);
   const autoResumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -214,7 +212,7 @@ export function CombinedCylinderMenu({
     if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
 
     isDraggingRef.current = true;
-    hasMovedSignificantlyRef.current = false;
+    dragDistanceRef.current = 0;
     hasCapturedPointerRef.current = false;
     startXRef.current = e.clientX;
     startYRef.current = e.clientY;
@@ -228,9 +226,9 @@ export function CombinedCylinderMenu({
     if (!isDraggingRef.current) return;
     const deltaX = e.clientX - startXRef.current;
     const deltaY = e.clientY - startYRef.current;
+    dragDistanceRef.current = Math.hypot(deltaX, deltaY);
 
-    if (Math.abs(deltaX) > 6 || Math.abs(deltaY) > 6) {
-      hasMovedSignificantlyRef.current = true;
+    if (dragDistanceRef.current > 6) {
       if (!hasCapturedPointerRef.current) {
         try {
           (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
@@ -239,9 +237,7 @@ export function CombinedCylinderMenu({
           // safe fallback
         }
       }
-    }
 
-    if (hasMovedSignificantlyRef.current) {
       const sensitivity = isMobile ? 0.44 : 0.36;
       const newRotation = startRotRef.current - deltaX * sensitivity;
       updateCylinderTransform(newRotation);
@@ -269,7 +265,7 @@ export function CombinedCylinderMenu({
       hasCapturedPointerRef.current = false;
     }
 
-    if (hasMovedSignificantlyRef.current && Math.abs(velocityRef.current) > 0.3) {
+    if (dragDistanceRef.current > 8 && Math.abs(velocityRef.current) > 0.3) {
       applyMomentum();
     }
   };
@@ -316,19 +312,21 @@ export function CombinedCylinderMenu({
     "--ba": `calc(1turn / var(--n))`,
   } as React.CSSProperties;
 
+  // Direct Click Handler for Cylinder Cards
   const handleCylinderCardClick = (dish: MenuItem, index: number) => {
-    if (hasMovedSignificantlyRef.current) return;
+    if (dragDistanceRef.current > 8) return; // Prevent triggering if user dragged
     setSelectedDishIndex(index);
     scrollCardToCenter(index);
-    if (selectedDishIndex === index) {
-      onSelectItem(dish);
-    } else {
-      bringToFront(index, false);
-    }
+    bringToFront(index, false);
+    onSelectItem(dish); // Open modal immediately on tap/click
   };
 
+  // Direct Click Handler for Sideways Runway Cards
   const handleSidewaysCardClick = (dish: MenuItem, index: number) => {
+    setSelectedDishIndex(index);
+    scrollCardToCenter(index);
     bringToFront(index, false);
+    onSelectItem(dish); // Open modal immediately on tap/click
   };
 
   return (
@@ -371,12 +369,12 @@ export function CombinedCylinderMenu({
                   tabIndex={0}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
-                      bringToFront(i, true, dish);
+                      handleCylinderCardClick(dish, i);
                     }
                   }}
                   className={cn(
                     "group relative [grid-area:1/1] rounded-[28px] sm:rounded-[34px] overflow-hidden [backface-visibility:hidden] transform-gpu cursor-pointer",
-                    "border border-orange-500/30 bg-[#0d0706] shadow-2xl hover:border-orange-400"
+                    "border border-orange-500/30 bg-[#0d0706] shadow-2xl hover:border-orange-400 hover:scale-[1.03] transition-transform duration-200"
                   )}
                   style={{
                     width: "var(--w)",
@@ -417,7 +415,7 @@ export function CombinedCylinderMenu({
                     </div>
                   </div>
 
-                  {/* Interactive Button Overlay */}
+                  {/* Interactive Button Overlay on Hover/Focus */}
                   <div
                     className={cn(
                       "absolute inset-0 flex items-center justify-center z-20 transition-opacity duration-200 pointer-events-none opacity-0 group-hover:opacity-100"
@@ -425,7 +423,7 @@ export function CombinedCylinderMenu({
                   >
                     <span className="bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white font-serif tracking-widest uppercase px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold shadow-xl border border-orange-200/50 flex items-center gap-2">
                       <Eye className="w-4 h-4" />
-                      <span>VIEW DETAILS</span>
+                      <span>CLICK TO ORDER</span>
                     </span>
                   </div>
 
@@ -508,26 +506,19 @@ export function CombinedCylinderMenu({
               <div
                 key={dish.id}
                 data-dish-card
-                onClick={() => {
-                  if (isSelected) {
-                    onSelectItem(dish);
-                  } else {
-                    handleSidewaysCardClick(dish, index);
-                  }
-                }}
+                onClick={() => handleSidewaysCardClick(dish, index)}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
-                    if (isSelected) onSelectItem(dish);
-                    else handleSidewaysCardClick(dish, index);
+                    handleSidewaysCardClick(dish, index);
                   }
                 }}
                 className={cn(
                   "group relative shrink-0 cursor-pointer transition-all duration-300 ease-out snap-center select-none flex flex-col items-center will-change-transform transform-gpu",
                   isSelected
                     ? "w-[210px] sm:w-[260px] z-30 scale-105 sm:scale-110 -translate-y-1"
-                    : "w-[145px] sm:w-[175px] z-10 scale-95 opacity-60 hover:opacity-85"
+                    : "w-[145px] sm:w-[175px] z-10 scale-95 opacity-60 hover:opacity-100 hover:scale-100"
                 )}
               >
                 {/* OUTSIDE CARD TITLE: Bold, Solid White Header */}
@@ -537,7 +528,7 @@ export function CombinedCylinderMenu({
                       "text-white font-sans font-black leading-none uppercase line-clamp-1 transition-opacity",
                       isSelected
                         ? "text-base sm:text-lg md:text-xl tracking-wider opacity-100 drop-shadow-[0_2px_4px_rgba(0,0,0,1)]"
-                        : "text-xs sm:text-sm tracking-wide opacity-75"
+                        : "text-xs sm:text-sm tracking-wide opacity-75 group-hover:opacity-100"
                     )}
                   >
                     {dish.name}
@@ -547,11 +538,11 @@ export function CombinedCylinderMenu({
                 {/* Card Shell Wrapper */}
                 <div
                   className={cn(
-                    "relative w-full rounded-t-[26px] rounded-b-[16px] overflow-hidden p-3 flex flex-col justify-between transition-colors duration-200",
+                    "relative w-full rounded-t-[26px] rounded-b-[16px] overflow-hidden p-3 flex flex-col justify-between transition-all duration-200",
                     "bg-[#1c0e2d] border-t-2 border-x",
                     isSelected
-                      ? "border-t-amber-300 border-x-purple-400/80 shadow-2xl"
-                      : "border-t-purple-400/30 border-x-purple-500/20 shadow-md"
+                      ? "border-t-amber-300 border-x-purple-400/80 shadow-2xl ring-1 ring-amber-400/30"
+                      : "border-t-purple-400/30 border-x-purple-500/20 shadow-md group-hover:border-purple-400/60"
                   )}
                 >
                   {/* Dish Image */}
