@@ -90,22 +90,22 @@ export default function RestaurantMenuPage() {
         />
       </div>
 
-      {/* Part 1: Top Hero Section with Floating Plate Video Experience */}
+      {/* Part 1: Top Hero Section with Floating Plate Experience */}
       <HeroPlateScrollExperience onScrollToMenu={handleScrollToMenu} />
 
       {/* Transitional Section Separation Divider */}
       <MenuSectionDivider />
 
-      {/* Part 2: Interactive Gastronomy Section with Combined 3D Cylinder + Sideways Cards */}
+      {/* Part 2: Interactive 3D Cylinder Gastronomy Menu */}
       <section
         ref={menuSectionRef}
         id="cylinder-menu"
-        className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-6 pb-6 px-2 sm:px-6"
+        className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-6 pb-12 px-2 sm:px-6"
       >
-        {/* Main Presentation Area: Vertical Spotlight Navbar + Combined 3D Cylinder & Sideways Cards */}
-        <div className="relative z-10 w-full flex-1 flex flex-col lg:flex-row items-center lg:items-start justify-center gap-6 lg:gap-8 max-w-7xl mx-auto py-2">
+        {/* Main Presentation Area: Vertical Spotlight Navbar + 3D Cylinder with Reflections */}
+        <div className="relative z-10 w-full flex-1 flex flex-col lg:flex-row items-center lg:items-start justify-center gap-6 lg:gap-12 max-w-7xl mx-auto py-4">
           {/* Vertical Spotlight Navbar */}
-          <div className="shrink-0 flex items-center justify-center lg:sticky lg:top-24">
+          <div className="shrink-0 flex items-center justify-center lg:sticky lg:top-28">
             <VerticalSpotlightNavbar
               items={CATEGORY_ITEMS}
               activeIndex={activeCategoryIdx}
@@ -113,7 +113,7 @@ export default function RestaurantMenuPage() {
             />
           </div>
 
-          {/* Unified Combined 3D Cylinder & Sideways Cards Carousel */}
+          {/* Dedicated 3D Cylinder Menu */}
           <div className="flex-1 w-full flex items-center justify-center overflow-visible">
             <CombinedCylinderMenu
               key={selectedCategory}
