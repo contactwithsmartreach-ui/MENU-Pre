@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Eye,
+  Plus,
   Sparkles,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -61,11 +62,16 @@ export function CombinedCylinderMenu({
     }
   }, []);
 
-  // Background Drag Tracking
-  const isDraggingBackgroundRef = useRef(false);
+  // Gesture tracking refs
+  const isDraggingStageRef = useRef(false);
+  const cardTapStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
   const startXRef = useRef(0);
+  const startYRef = useRef(0);
+  const startRotRef = useRef(0);
   const lastXRef = useRef(0);
-  const hasMovedSignificantlyRef = useRef(false);
+  const lastTimeRef = useRef(0);
+  const velocityRef = useRef(0);
+  const dragDistRef = useRef(0);
 
   const animFrameRef = useRef<number | null>(null);
   const momentumFrameRef = useRef<number | null>(null);
@@ -95,6 +101,7 @@ export function CombinedCylinderMenu({
       if (momentumFrameRef.current) cancelAnimationFrame(momentumFrameRef.current);
       if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
 
+      velocityRef.current = 0;
       isAutoSpinningRef.current = false;
 
       const current = rotationYRef.current;
@@ -102,7 +109,7 @@ export function CombinedCylinderMenu({
       const finalTarget = current + diff;
 
       const startTime = performance.now();
-      const duration = 280;
+      const duration = 300;
       const startAngle = current;
       const easeOutQuart = (t: number) => 1 - Math.pow(1 - t, 4);
 
@@ -167,8 +174,9 @@ export function CombinedCylinderMenu({
 
       if (
         isAutoSpinningRef.current &&
-        !isDraggingBackgroundRef.current &&
-        hoveredIdx === null
+        !isDraggingStageRef.current &&
+        hoveredIdx === null &&
+        Math.abs(velocityRef.current) < 0.05
       ) {
         const nextAngle = (rotationYRef.current + defaultSpeed * delta) % 360;
         updateCylinderTransform(nextAngle);
@@ -183,31 +191,64 @@ export function CombinedCylinderMenu({
     };
   }, [defaultSpeed, hoveredIdx, updateCylinderTransform]);
 
-  // Background Drag: Only activates if dragging the stage background, NOT when clicking cards
-  const handleStageMouseDown = (e: React.MouseEvent) => {
-    // If the event target is inside a card, do not drag
-    if ((e.target as HTMLElement).closest("[data-cylinder-card]")) {
-      return;
-    }
-    isDraggingBackgroundRef.current = true;
-    hasMovedSignificantlyRef.current = false;
+  // Inertia momentum on release
+  const applyMomentum = useCallback(() => {
+    const decay = 0.92;
+    const step = () => {
+      if (Math.abs(velocityRef.current) > 0.05) {
+        updateCylinderTransform(rotationYRef.current - velocityRef.current);
+        velocityRef.current *= decay;
+        momentumFrameRef.current = requestAnimationFrame(step);
+      } else {
+        velocityRef.current = 0;
+      }
+    };
+    if (momentumFrameRef.current) cancelAnimationFrame(momentumFrameRef.current);
+    momentumFrameRef.current = requestAnimationFrame(step);
+  }, [updateCylinderTransform]);
+
+  // Stage pointer handlers
+  const handleStagePointerDown = (e: React.PointerEvent) => {
+    if (momentumFrameRef.current) cancelAnimationFrame(momentumFrameRef.current);
+    if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
+
+    isDraggingStageRef.current = true;
+    dragDistRef.current = 0;
     startXRef.current = e.clientX;
+    startYRef.current = e.clientY;
     lastXRef.current = e.clientX;
+    lastTimeRef.current = performance.now();
+    startRotRef.current = rotationYRef.current;
+    velocityRef.current = 0;
   };
 
-  const handleStageMouseMove = (e: React.MouseEvent) => {
-    if (!isDraggingBackgroundRef.current) return;
-    const deltaX = e.clientX - lastXRef.current;
-    if (Math.abs(e.clientX - startXRef.current) > 5) {
-      hasMovedSignificantlyRef.current = true;
+  const handleStagePointerMove = (e: React.PointerEvent) => {
+    if (!isDraggingStageRef.current) return;
+    const deltaX = e.clientX - startXRef.current;
+    const deltaY = e.clientY - startYRef.current;
+    dragDistRef.current = Math.hypot(deltaX, deltaY);
+
+    if (dragDistRef.current > 10) {
       const sensitivity = isMobile ? 0.44 : 0.36;
-      updateCylinderTransform(rotationYRef.current - deltaX * sensitivity);
+      updateCylinderTransform(startRotRef.current - deltaX * sensitivity);
+
+      const now = performance.now();
+      const dt = Math.max(now - lastTimeRef.current, 8);
+      const instV = ((e.clientX - lastXRef.current) / dt) * 8;
+
+      velocityRef.current = velocityRef.current * 0.3 + instV * 0.7;
       lastXRef.current = e.clientX;
+      lastTimeRef.current = now;
     }
   };
 
-  const handleStageMouseUp = () => {
-    isDraggingBackgroundRef.current = false;
+  const handleStagePointerUp = () => {
+    if (!isDraggingStageRef.current) return;
+    isDraggingStageRef.current = false;
+
+    if (dragDistRef.current > 10 && Math.abs(velocityRef.current) > 0.3) {
+      applyMomentum();
+    }
   };
 
   const handleWheel = (e: React.WheelEvent) => {
@@ -252,8 +293,8 @@ export function CombinedCylinderMenu({
     "--ba": `calc(1turn / var(--n))`,
   } as React.CSSProperties;
 
-  // Direct, instant, foolproof card click
-  const handleCardClick = (dish: MenuItem, index: number) => {
+  // Direct card select & modal open handler anywhere on card
+  const handleSelectDish = (dish: MenuItem, index: number) => {
     setSelectedDishIndex(index);
     scrollCardToCenter(index);
     bringToFront(index, false);
@@ -272,14 +313,14 @@ export function CombinedCylinderMenu({
       <div className="relative w-full min-h-[520px] sm:min-h-[620px] lg:min-h-[680px] flex items-center justify-center overflow-hidden">
         {/* 3D Cylinder Scene */}
         <div
-          className="w-full flex-1 grid place-items-center cursor-default overflow-visible py-4"
+          className="w-full flex-1 grid place-items-center cursor-grab active:cursor-grabbing overflow-visible py-4 touch-pan-y"
           style={{
             perspective: isMobile ? "50em" : "75em",
           }}
-          onMouseDown={handleStageMouseDown}
-          onMouseMove={handleStageMouseMove}
-          onMouseUp={handleStageMouseUp}
-          onMouseLeave={handleStageMouseUp}
+          onPointerDown={handleStagePointerDown}
+          onPointerMove={handleStagePointerMove}
+          onPointerUp={handleStagePointerUp}
+          onPointerCancel={handleStagePointerUp}
         >
           <div
             ref={cylinderStageRef}
@@ -291,16 +332,44 @@ export function CombinedCylinderMenu({
           >
             {items.map((dish, i) => {
               return (
-                <button
-                  type="button"
+                <div
                   key={dish.id}
                   data-cylinder-card
-                  onClick={() => handleCardClick(dish, i)}
                   onMouseEnter={() => !isMobile && setHoveredIdx(i)}
                   onMouseLeave={() => !isMobile && setHoveredIdx(null)}
+                  onPointerDown={(e) => {
+                    cardTapStartRef.current = {
+                      x: e.clientX,
+                      y: e.clientY,
+                      time: performance.now(),
+                    };
+                  }}
+                  onPointerUp={(e) => {
+                    if (cardTapStartRef.current) {
+                      const dist = Math.hypot(
+                        e.clientX - cardTapStartRef.current.x,
+                        e.clientY - cardTapStartRef.current.y
+                      );
+                      if (dist < 15) {
+                        e.stopPropagation();
+                        handleSelectDish(dish, i);
+                      }
+                    }
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSelectDish(dish, i);
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      handleSelectDish(dish, i);
+                    }
+                  }}
                   className={cn(
-                    "group relative [grid-area:1/1] rounded-[28px] sm:rounded-[34px] overflow-hidden [backface-visibility:hidden] transform-gpu cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-amber-400 p-0 m-0",
-                    "border border-orange-500/30 bg-[#0d0706] shadow-2xl hover:border-orange-400 hover:scale-[1.03] active:scale-95 transition-transform duration-150"
+                    "group relative [grid-area:1/1] rounded-[28px] sm:rounded-[34px] overflow-hidden [backface-visibility:hidden] transform-gpu cursor-pointer",
+                    "border border-orange-500/30 bg-[#0d0706] shadow-2xl hover:border-orange-400 hover:scale-[1.03] active:scale-95 transition-transform duration-150 pointer-events-auto"
                   )}
                   style={{
                     width: "var(--w)",
@@ -310,6 +379,17 @@ export function CombinedCylinderMenu({
                       "rotateY(calc(var(--i) * var(--ba))) translateZ(calc(-1 * (0.5 * var(--w) + 0.5em) / tan(0.5 * var(--ba))))",
                   } as React.CSSProperties}
                 >
+                  {/* Invisible Full Surface Hitbox Button */}
+                  <button
+                    type="button"
+                    aria-label={`Open ${dish.name}`}
+                    className="absolute inset-0 w-full h-full z-30 cursor-pointer bg-transparent border-0 focus:outline-none"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSelectDish(dish, i);
+                    }}
+                  />
+
                   {/* Dish Image */}
                   <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
                     <img
@@ -375,7 +455,7 @@ export function CombinedCylinderMenu({
                       </span>
                     </div>
                   </div>
-                </button>
+                </div>
               );
             })}
           </div>
@@ -429,13 +509,19 @@ export function CombinedCylinderMenu({
             const isSelected = selectedDishIndex === index;
 
             return (
-              <button
+              <div
                 key={dish.id}
-                type="button"
                 data-dish-card
-                onClick={() => handleCardClick(dish, index)}
+                onClick={() => handleSelectDish(dish, index)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    handleSelectDish(dish, index);
+                  }
+                }}
                 className={cn(
-                  "group relative shrink-0 cursor-pointer transition-all duration-300 ease-out snap-center select-none flex flex-col items-center will-change-transform transform-gpu text-left p-0 border-0 bg-transparent focus:outline-none",
+                  "group relative shrink-0 cursor-pointer transition-all duration-300 ease-out snap-center select-none flex flex-col items-center will-change-transform transform-gpu",
                   isSelected
                     ? "w-[210px] sm:w-[260px] z-30 scale-105 sm:scale-110 -translate-y-1"
                     : "w-[145px] sm:w-[175px] z-10 scale-95 opacity-60 hover:opacity-100 hover:scale-100"
@@ -549,7 +635,11 @@ export function CombinedCylinderMenu({
                             : "w-5 h-5 bg-purple-950/80 border border-purple-400/20 text-purple-300 group-hover:bg-orange-500 group-hover:text-neutral-950"
                         )}
                       >
-                        <Eye className="w-3.5 h-3.5" />
+                        {isSelected ? (
+                          <Eye className="w-3.5 h-3.5" />
+                        ) : (
+                          <Plus className="w-3 h-3 stroke-[2.5]" />
+                        )}
                       </div>
                     </div>
                   </div>
@@ -568,7 +658,7 @@ export function CombinedCylinderMenu({
                     />
                   </svg>
                 </div>
-              </button>
+              </div>
             );
           })}
         </div>
