@@ -5,7 +5,7 @@ import { MENU_ITEMS } from "@/data/menu-data";
 import { MenuItem } from "@/types/restaurant";
 import { CombinedCylinderMenu } from "@/components/restaurant/CombinedCylinderMenu";
 import { DishDetailModal } from "@/components/restaurant/DishDetailModal";
-import { HeroPlateScrollExperience } from "@/components/restaurant/HeroPlateScrollExperience";
+import { Hero3DCharacterExperience } from "@/components/restaurant/Hero3DCharacterExperience";
 import { VerticalSpotlightNavbar } from "@/components/restaurant/VerticalSpotlightNavbar";
 import { MenuSectionDivider } from "@/components/restaurant/MenuSectionDivider";
 import { toast } from "sonner";
@@ -102,8 +102,8 @@ export default function RestaurantMenuPage() {
         />
       </div>
 
-      {/* Part 1: Top Hero Section with Floating Plate Experience */}
-      <HeroPlateScrollExperience onScrollToMenu={handleScrollToMenu} />
+      {/* Part 1: Interactive 3D Character Hero with Scroll Animation */}
+      <Hero3DCharacterExperience onScrollToMenu={handleScrollToMenu} />
 
       {/* Transitional Section Separation Divider */}
       <MenuSectionDivider />
@@ -116,7 +116,7 @@ export default function RestaurantMenuPage() {
       >
         {/* Main Presentation Area: Vertical Spotlight Navbar Tightly Coupled with 3D Cylinder */}
         <div className="relative z-10 w-full flex-1 flex flex-col lg:flex-row items-center lg:items-center justify-center gap-4 lg:gap-2 max-w-7xl mx-auto py-2">
-          {/* Vertical Spotlight Navbar (Larger, prominent and positioned right beside the cylinder) */}
+          {/* Vertical Spotlight Navbar */}
           <div className="shrink-0 flex items-center justify-center lg:pr-2 z-30">
             <VerticalSpotlightNavbar
               items={CATEGORY_ITEMS}

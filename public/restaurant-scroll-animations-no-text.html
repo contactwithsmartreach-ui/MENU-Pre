@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scroll Animations — No Text</title>
+<style>
+  :root{ --bg:#f6f3ee; --accent:#b5482a; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{ background:var(--bg); overflow-x:hidden; }
+  section{ position:relative; }
+
+  /* ============================================================
+     ANIMATION 1 — pinned image that rotates + scales on scroll
+     ============================================================ */
+  #pinned-dish{ height:300vh; position:relative; }
+  #pinned-dish .pin-inner{
+    position:sticky; top:0; height:100vh;
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+  }
+  #pinned-dish .glow{
+    position:absolute; width:520px; height:520px; border-radius:50%;
+    background:radial-gradient(circle, rgba(181,72,42,0.18), transparent 70%);
+    filter:blur(10px);
+  }
+  #pinned-dish .dish-img{
+    width:min(46vw,420px); aspect-ratio:1/1; border-radius:50%;
+    background:
+      radial-gradient(circle at 35% 30%, #e8b98a, #b5482a 55%, #6b2a17 100%);
+    box-shadow:0 40px 80px -20px rgba(0,0,0,0.35);
+    will-change:transform;
+  }
+
+  /* ============================================================
+     ANIMATION 2 — panels that fade + slide in as they enter view
+     (kept content-free: plain shape blocks, no copy)
+     ============================================================ */
+  #reveal-sections{ max-width:900px; margin:0 auto; padding:20vh 24px; }
+  .reveal-panel{
+    min-height:60vh; display:flex; align-items:center; justify-content:center;
+  }
+  .reveal-panel .shape{
+    width:min(70vw,420px); height:220px; border-radius:18px;
+    background:linear-gradient(135deg,#ffffff,#e7e3db);
+    box-shadow:0 30px 60px -25px rgba(0,0,0,0.25);
+    opacity:0; transform:translateY(30px) scale(0.96);
+    transition:opacity .8s ease, transform .8s ease;
+  }
+  .reveal-panel.is-visible .shape{ opacity:1; transform:translateY(0) scale(1); }
+
+  /* ============================================================
+     ANIMATION 3 — infinite marquee rows (icon shapes, no text)
+     scrolling in opposite directions, pausing + highlighting
+     on hover
+     ============================================================ */
+  #marquee-block{ padding:14vh 0; overflow:hidden; }
+  .marquee-row{ display:flex; width:max-content; }
+  .marquee-row .icon{
+    width:70px; height:70px; margin:0 26px; flex:none;
+    border-radius:50%;
+    background:linear-gradient(135deg,#ffffff,#e2ded4);
+    box-shadow:0 14px 26px -12px rgba(0,0,0,0.3);
+    opacity:.35; transition:opacity .3s ease, transform .3s ease;
+  }
+  .marquee-row .icon:hover{ opacity:1; transform:scale(1.12); background:linear-gradient(135deg,#f3c8a8,var(--accent)); }
+  .marquee-row.dir-left{ animation:scrollLeft 24s linear infinite; }
+  .marquee-row.dir-right{ animation:scrollRight 28s linear infinite; margin-top:20px; }
+  .marquee-row.dir-left:hover, .marquee-row.dir-right:hover{ animation-play-state:paused; }
+
+  @keyframes scrollLeft{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+  @keyframes scrollRight{ from{transform:translateX(-50%);} to{transform:translateX(0);} }
+
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}
+    .marquee-row{ animation:none !important; }
+    .reveal-panel .shape{ transition:none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     ANIMATION 1 MARKUP — pinned rotating/scaling image
+     ============================================================ -->
+<section id="pinned-dish">
+  <div class="pin-inner">
+    <div class="glow"></div>
+    <div class="dish-img" id="pin-dish"></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     ANIMATION 2 MARKUP — scroll reveal panels (no text)
+     ============================================================ -->
+<section id="reveal-sections">
+  <div class="reveal-panel"><div class="shape"></div></div>
+  <div class="reveal-panel"><div class="shape"></div></div>
+  <div class="reveal-panel"><div class="shape"></div></div>
+</section>
+
+<!-- ============================================================
+     ANIMATION 3 MARKUP — infinite marquee icon rows
+     ============================================================ -->
+<section id="marquee-block">
+  <div class="marquee-row dir-left">
+    <div class="icon"></div><div class="icon"></div><div class="icon"></div><div class="icon"></div><div class="icon"></div><div class="icon"></div>
+    <div class="icon"></div><div class="icon"></div><div class="icon"></div><div class="icon"></div><div class="icon"></div><div class="icon"></div>
+  </div>
+  <div class="marquee-row dir-right">
+    <div class="icon"></div><div class="icon"></div><div class="icon"></div><div class="icon"></div><div class="icon"></div><div class="icon"></div>
+    <div class="icon"></div><div class="icon"></div><div class="icon"></div><div class="icon"></div><div class="icon"></div><div class="icon"></div>
+  </div>
+</section>
+
+<script>
+/* ============================================================
+   ANIMATION 1 SCRIPT — rotate + scale the pinned image based on
+   how far the user has scrolled through the #pinned-dish section
+   ============================================================ */
+(function(){
+  const section = document.getElementById('pinned-dish');
+  const dish = document.getElementById('pin-dish');
+
+  function onScroll(){
+    const rect = section.getBoundingClientRect();
+    const total = rect.height - window.innerHeight;
+    let progress = -rect.top / total;
+    progress = Math.min(Math.max(progress, 0), 1);
+
+    const rotate = progress * 360;
+    const scale = 0.7 + progress * 0.6;
+    dish.style.transform = `rotate(${rotate}deg) scale(${scale})`;
+  }
+
+  window.addEventListener('scroll', onScroll, { passive:true });
+  onScroll();
+})();
+
+/* ============================================================
+   ANIMATION 2 SCRIPT — reveal each panel once it enters the
+   viewport, using IntersectionObserver (no scroll listener needed)
+   ============================================================ */
+(function(){
+  const panels = document.querySelectorAll('.reveal-panel');
+  const observer = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add('is-visible');
+      }
+    });
+  }, { threshold:0.3 });
+
+  panels.forEach(p => observer.observe(p));
+})();
+
+/* ============================================================
+   ANIMATION 3 — pure CSS keyframes (scrollLeft/scrollRight above),
+   no JS required. Rows are duplicated in the HTML so the
+   translateX(-50%) loop is seamless.
+   ============================================================ */
+</script>
+</body>
+</html>
