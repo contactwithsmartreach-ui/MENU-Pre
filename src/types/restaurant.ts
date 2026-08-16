@@ -1,7 +1,7 @@
 export interface MenuItem {
   id: string;
   name: string;
-  category: "Starters" | "Mains" | "Chef Specials" | "Desserts" | "Cocktails";
+  category: "Pizzas" | "Burgers" | "Starters" | "Mains" | "Chef Specials" | "Desserts" | "Cocktails";
   price: number;
   description: string;
   image: string;
