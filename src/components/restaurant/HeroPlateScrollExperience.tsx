@@ -24,9 +24,6 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
   const opacity = Math.max(0.2, 1 - scrollY * 0.002);
   const translateY = scrollY * 0.2;
 
-  // Button tracking translation (moves down slightly slower for depth effect)
-  const buttonTranslateY = scrollY * 0.12;
-
   return (
     <section className="relative w-full min-h-[75vh] sm:min-h-[85vh] flex flex-col items-center justify-between px-4 pt-6 pb-6 sm:pb-10 text-center select-none overflow-hidden [contain:layout_style]">
       {/* Giant Floating Chef Hat at the Very Top of the Screen */}
@@ -61,13 +58,8 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
         <div className="absolute inset-0 bg-gradient-to-tr from-red-600/15 via-orange-500/15 to-amber-400/10 rounded-full blur-3xl transform scale-105 pointer-events-none" />
       </div>
 
-      {/* CTA Button & Scroll Indicator with Tracking Animation */}
-      <div
-        className="relative z-30 flex flex-col items-center gap-6 pt-2 pb-2 transition-transform duration-75 ease-out"
-        style={{
-          transform: `translateY(${buttonTranslateY}px)`,
-        }}
-      >
+      {/* CTA Button & Scroll Indicator */}
+      <div className="relative z-30 flex flex-col items-center gap-6 pt-2 pb-2">
         <div
           className="relative drop-shadow-[0_12px_28px_rgba(0,0,0,0.85)]"
           style={{
