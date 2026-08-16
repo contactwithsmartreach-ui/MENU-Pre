@@ -3,13 +3,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
-// Universal high-definition transparent 3D chef character assets for production & localhost
-const PRIMARY_CHEF_URL =
-  "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?q=80&w=1000&auto=format&fit=crop";
-
-const BACKUP_3D_CHEF_URL =
-  "https://images.unsplash.com/photo-1583394293214-28ded15ee548?q=80&w=1000&auto=format&fit=crop";
-
 interface Chef3DCharacterProps {
   className?: string;
   imageSrc?: string;
@@ -17,40 +10,18 @@ interface Chef3DCharacterProps {
 
 export function Chef3DCharacter({
   className,
-  imageSrc,
+  imageSrc = "dyad-media://media/bold-badger-bob/.dyad/media/4ed13bbf469718326bee283f8bf1bf01c834a9b55fbad911915caf745e013c1e.jpg",
 }: Chef3DCharacterProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isCutoutReady, setIsCutoutReady] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const [currentSrc, setCurrentSrc] = useState<string>("");
   const [mouseLight, setMouseLight] = useState({ x: 50, y: 50 });
-
-  // Resolve image source: gracefully handle dyad-media protocols in localhost/production
-  useEffect(() => {
-    const isStandardBrowser =
-      typeof window !== "undefined" &&
-      !window.location.protocol.startsWith("dyad");
-
-    if (imageSrc) {
-      if (imageSrc.startsWith("dyad-media://") && isStandardBrowser) {
-        // If loaded in standard localhost or production where dyad-media:// protocol isn't natively bound
-        setCurrentSrc(PRIMARY_CHEF_URL);
-      } else {
-        setCurrentSrc(imageSrc);
-      }
-    } else {
-      setCurrentSrc(PRIMARY_CHEF_URL);
-    }
-  }, [imageSrc]);
 
   // High-fidelity background isolation with edge despill & anti-aliased matting
   useEffect(() => {
-    if (!currentSrc) return;
-
     let isCancelled = false;
     const img = new Image();
-    img.crossOrigin = "anonymous";
 
     img.onload = () => {
       if (isCancelled) return;
@@ -114,6 +85,7 @@ export function Chef3DCharacter({
             data[i + 3] = 0;
           } else if (dist < outerThreshold) {
             const alphaFactor = (dist - innerThreshold) / (outerThreshold - innerThreshold);
+            // Smooth hermite interpolation for organic soft edges
             const smoothAlpha = alphaFactor * alphaFactor * (3 - 2 * alphaFactor);
             data[i + 3] = Math.floor(data[i + 3] * smoothAlpha);
 
@@ -126,31 +98,23 @@ export function Chef3DCharacter({
 
         ctx.putImageData(imgData, 0, 0);
         setIsCutoutReady(true);
-        setHasError(false);
       } catch {
-        // Fallback gracefully without breaking rendering
         setHasError(true);
       }
     };
 
     img.onerror = () => {
-      if (!isCancelled) {
-        if (currentSrc !== BACKUP_3D_CHEF_URL) {
-          setCurrentSrc(BACKUP_3D_CHEF_URL);
-        } else {
-          setHasError(true);
-        }
-      }
+      if (!isCancelled) setHasError(true);
     };
 
-    img.src = currentSrc;
+    img.src = imageSrc;
 
     return () => {
       isCancelled = true;
     };
-  }, [currentSrc]);
+  }, [imageSrc]);
 
-  // Studio lighting tracker on mouse move
+  // Subtle interactive studio lighting tracker
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
@@ -184,35 +148,42 @@ export function Chef3DCharacter({
           }}
         />
 
-        {/* Processed Cutout Canvas */}
+        {/* Processed High-Def Cutout Canvas */}
         <canvas
           ref={canvasRef}
           className={cn(
             "w-[300px] sm:w-[380px] md:w-[460px] h-auto object-contain transition-all duration-500 will-change-transform transform-gpu",
+            // Multi-layered photorealistic drop shadow filter
             "filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.95)] drop-shadow-[0_28px_50px_rgba(0,0,0,0.85)] drop-shadow-[0_0_35px_rgba(249,115,22,0.35)] drop-shadow-[0_2px_4px_rgba(251,191,36,0.5)]",
             isCutoutReady && !hasError ? "block opacity-100" : "hidden"
           )}
         />
 
-        {/* Universal Fallback for Standard Localhost / Production Browsers */}
-        {(!isCutoutReady || hasError) && currentSrc && (
+        {/* Fallback Direct Render with high contrast styling if canvas reading isn't supported */}
+        {(!isCutoutReady || hasError) && (
           <div className="relative w-[300px] sm:w-[380px] md:w-[460px] aspect-square flex items-center justify-center">
             <img
-              src={currentSrc}
-              alt="3D Master Chef"
-              crossOrigin="anonymous"
-              className="w-full h-full object-contain rounded-3xl filter drop-shadow-[0_25px_50px_rgba(0,0,0,0.9)] drop-shadow-[0_0_30px_rgba(249,115,22,0.4)]"
+              src={imageSrc}
+              alt="3D Chef Character"
+              className="w-full h-full object-contain mix-blend-lighten filter drop-shadow-[0_25px_50px_rgba(0,0,0,0.9)] drop-shadow-[0_0_30px_rgba(249,115,22,0.4)]"
               loading="eager"
             />
           </div>
         )}
       </div>
 
-      {/* 3. Multi-Tiered Ground Shadows */}
+      {/* 3. Photorealistic Multi-Tiered Contact & Ambient Ground Shadows */}
       <div className="relative w-full flex flex-col items-center pointer-events-none -mt-8 sm:-mt-10">
+        {/* Tier 1: Deep Core Occlusion Contact Shadow (Sharp & Jet Black right beneath the base) */}
         <div className="w-28 sm:w-40 h-3 bg-black/95 rounded-full blur-[3px] -mb-1" />
+
+        {/* Tier 2: Mid Ground Contact Shadow (Soft oval cast) */}
         <div className="w-52 sm:w-72 h-8 bg-black/90 rounded-full blur-md" />
+
+        {/* Tier 3: Diffuse Ambient Bounce Shadow (Wide gradient dispersion with ember tint) */}
         <div className="w-72 sm:w-[380px] h-12 bg-gradient-to-r from-neutral-950 via-black/85 to-neutral-950 rounded-full blur-xl -mt-6" />
+
+        {/* Tier 4: Warm Floor Reflection Bleed */}
         <div className="w-48 sm:w-64 h-5 bg-orange-950/40 rounded-full blur-lg -mt-3" />
       </div>
     </div>
