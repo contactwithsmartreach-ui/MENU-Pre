@@ -8,8 +8,14 @@ import { DishDetailModal } from "@/components/restaurant/DishDetailModal";
 import { HeroPlateScrollExperience } from "@/components/restaurant/HeroPlateScrollExperience";
 import { VerticalSpotlightNavbar } from "@/components/restaurant/VerticalSpotlightNavbar";
 import { MenuSectionDivider } from "@/components/restaurant/MenuSectionDivider";
+import { ChefScrollShowcase } from "@/components/restaurant/ChefScrollShowcase";
+import { RestaurantStorySection } from "@/components/restaurant/RestaurantStorySection";
+import { OrderDrawer } from "@/components/restaurant/OrderDrawer";
+import { CartItem } from "@/types/restaurant";
 import { toast } from "sonner";
 import { MadeWithDyad } from "@/components/made-with-dyad";
+import { ShoppingBag, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const CATEGORY_ITEMS = [
   { label: "All Items", id: "All" },
@@ -24,6 +30,8 @@ export default function RestaurantMenuPage() {
   const [selectedDish, setSelectedDish] = useState<MenuItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeCategoryIdx, setActiveCategoryIdx] = useState<number>(0);
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [isOrderDrawerOpen, setIsOrderDrawerOpen] = useState(false);
 
   const selectedCategory = CATEGORY_ITEMS[activeCategoryIdx].id;
   const menuSectionRef = useRef<HTMLDivElement>(null);
@@ -40,6 +48,20 @@ export default function RestaurantMenuPage() {
   };
 
   const handleAddToCart = (dish: MenuItem, quantity: number, notes?: string) => {
+    setCart((prevCart) => {
+      const existingIndex = prevCart.findIndex((item) => item.dish.id === dish.id);
+      if (existingIndex > -1) {
+        const updated = [...prevCart];
+        updated[existingIndex] = {
+          ...updated[existingIndex],
+          quantity: updated[existingIndex].quantity + quantity,
+          specialInstructions: notes || updated[existingIndex].specialInstructions,
+        };
+        return updated;
+      }
+      return [...prevCart, { dish, quantity, specialInstructions: notes }];
+    });
+
     toast.success(`Added ${quantity}x ${dish.name} to order`, {
       description: `$${(dish.price * quantity).toFixed(2)} • ${
         notes ? `"${notes}"` : `Ready in ~${dish.prepTime}`
@@ -47,9 +69,22 @@ export default function RestaurantMenuPage() {
     });
   };
 
+  const handleUpdateQuantity = (dishId: string, quantity: number) => {
+    setCart((prev) =>
+      prev.map((item) => (item.dish.id === dishId ? { ...item, quantity } : item))
+    );
+  };
+
+  const handleRemoveItem = (dishId: string) => {
+    setCart((prev) => prev.filter((item) => item.dish.id !== dishId));
+  };
+
+  const handleClearCart = () => {
+    setCart([]);
+  };
+
   const handleCategorySelect = (index: number) => {
     setActiveCategoryIdx(index);
-    // Smoothly focus directly onto the cards cylinder
     if (cylinderContainerRef.current) {
       cylinderContainerRef.current.scrollIntoView({
         behavior: "smooth",
@@ -62,16 +97,32 @@ export default function RestaurantMenuPage() {
     menuSectionRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const totalCartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+
   return (
     <div className="relative min-h-screen w-full bg-[#0a0504] text-neutral-100 flex flex-col items-center justify-between select-none overflow-x-hidden">
+      {/* Floating Header Order Button */}
+      <header className="fixed top-4 right-4 z-50 flex items-center gap-3">
+        <Button
+          onClick={() => setIsOrderDrawerOpen(true)}
+          className="relative bg-neutral-950/90 backdrop-blur-xl border border-orange-500/50 hover:border-orange-400 text-white px-4 py-2.5 rounded-full shadow-[0_0_20px_rgba(249,115,22,0.3)] flex items-center gap-2 cursor-pointer transition-transform hover:scale-105"
+        >
+          <ShoppingBag className="w-4 h-4 text-orange-400" />
+          <span className="text-xs font-serif font-bold uppercase tracking-wider">Table Order</span>
+          {totalCartCount > 0 && (
+            <span className="w-5 h-5 rounded-full bg-gradient-to-r from-red-500 to-orange-500 text-white text-[10px] font-bold flex items-center justify-center shadow-md">
+              {totalCartCount}
+            </span>
+          )}
+        </Button>
+      </header>
+
       {/* Sahara Sunset Ambient Glowing Atmospheric Background */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        {/* Sahara Sunset Solar Core */}
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[550px] bg-gradient-to-tr from-red-600/25 via-orange-500/25 to-pink-600/15 rounded-full blur-[180px] animate-pulse duration-1000" />
         <div className="absolute top-1/4 left-1/4 -translate-x-1/2 w-[550px] h-[550px] bg-amber-500/20 rounded-full blur-[160px]" />
         <div className="absolute bottom-10 right-1/4 translate-x-1/2 w-[600px] h-[450px] bg-red-700/20 rounded-full blur-[170px]" />
 
-        {/* Topographic Dune Wave Lines */}
         <svg
           className="absolute inset-x-0 bottom-0 w-full h-[55%] opacity-15 pointer-events-none"
           viewBox="0 0 1440 320"
@@ -91,7 +142,6 @@ export default function RestaurantMenuPage() {
           />
         </svg>
 
-        {/* Subtle Stardust Texture */}
         <div
           className="absolute inset-0 opacity-[0.035]"
           style={{
@@ -102,21 +152,41 @@ export default function RestaurantMenuPage() {
         />
       </div>
 
-      {/* Part 1: Top Hero Section with Floating Plate Experience */}
+      {/* Part 1: Top Hero Section with Camera-Tracking Chef Hat & CTA */}
       <HeroPlateScrollExperience onScrollToMenu={handleScrollToMenu} />
 
       {/* Transitional Section Separation Divider */}
       <MenuSectionDivider />
 
-      {/* Part 2: Interactive 3D Cylinder Gastronomy Menu */}
+      {/* Part 2: Restaurant Story & Ambiance */}
+      <RestaurantStorySection />
+
+      <MenuSectionDivider />
+
+      {/* Part 3: Culinary Craft & Skills Showcase with Camera Scroll Tracking */}
+      <ChefScrollShowcase />
+
+      <MenuSectionDivider />
+
+      {/* Part 4: Interactive 3D Cylinder Gastronomy Menu */}
       <section
         ref={menuSectionRef}
         id="cylinder-menu"
-        className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-4 pb-12 px-2 sm:px-6"
+        className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-6 pb-16 px-2 sm:px-6"
       >
-        {/* Main Presentation Area: Vertical Spotlight Navbar Tightly Coupled with 3D Cylinder */}
+        <div className="text-center space-y-2 mb-6">
+          <span className="text-xs font-serif uppercase tracking-[0.3em] text-orange-400">
+            Interactive Rotating Gallery
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-serif font-black text-white">
+            Explore The 3D Cylinder Menu
+          </h2>
+          <p className="text-xs sm:text-sm text-neutral-400 max-w-md mx-auto">
+            Swipe, drag, or select categories to inspect and order our masterwork courses.
+          </p>
+        </div>
+
         <div className="relative z-10 w-full flex-1 flex flex-col lg:flex-row items-center lg:items-center justify-center gap-4 lg:gap-2 max-w-7xl mx-auto py-2">
-          {/* Vertical Spotlight Navbar (Larger, prominent and positioned right beside the cylinder) */}
           <div className="shrink-0 flex items-center justify-center lg:pr-2 z-30">
             <VerticalSpotlightNavbar
               items={CATEGORY_ITEMS}
@@ -125,7 +195,6 @@ export default function RestaurantMenuPage() {
             />
           </div>
 
-          {/* Dedicated 3D Cylinder Menu */}
           <div
             ref={cylinderContainerRef}
             className="flex-1 w-full flex items-center justify-center overflow-visible scroll-mt-20"
@@ -138,7 +207,6 @@ export default function RestaurantMenuPage() {
           </div>
         </div>
 
-        {/* Dish Detail Dialog */}
         <DishDetailModal
           dish={selectedDish}
           isOpen={isModalOpen}
@@ -149,8 +217,17 @@ export default function RestaurantMenuPage() {
           onAddToCart={handleAddToCart}
         />
 
-        {/* Footer */}
-        <footer className="relative z-10 w-full py-4 mt-8">
+        <OrderDrawer
+          isOpen={isOrderDrawerOpen}
+          onClose={() => setIsOrderDrawerOpen(false)}
+          cart={cart}
+          onUpdateQuantity={handleUpdateQuantity}
+          onRemoveItem={handleRemoveItem}
+          onClearCart={handleClearCart}
+        />
+
+        <footer className="relative z-10 w-full py-6 mt-12 border-t border-white/10 text-center">
+          <p className="text-xs text-neutral-400 font-serif mb-2">&copy; L&apos;Aura Sahara Luxury Dining Experience. All rights reserved.</p>
           <MadeWithDyad />
         </footer>
       </section>
