@@ -537,15 +537,21 @@ export function CombinedCylinderMenu({
                     : "w-[145px] sm:w-[175px] z-10 scale-95 opacity-55 hover:opacity-85 hover:scale-100 grayscale-[0.2] hover:grayscale-0"
                 )}
               >
-                {/* OUTSIDE CARD TITLE: Big, Hard, Simple, Pure White Text */}
-                <div className="w-full text-center mb-2 px-1">
+                {/* OUTSIDE CARD TITLE: Big, Hard, Chunky, Solid White Header */}
+                <div className="w-full text-center mb-2.5 px-1">
                   <h4
                     className={cn(
-                      "text-white font-sans font-black tracking-tight leading-tight uppercase line-clamp-1 transition-all duration-300",
+                      "text-white font-sans font-black leading-none uppercase line-clamp-1 transition-all duration-300",
                       isSelected
-                        ? "text-sm sm:text-base md:text-lg opacity-100 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
-                        : "text-xs sm:text-sm opacity-65 group-hover:opacity-100"
+                        ? "text-base sm:text-lg md:text-xl tracking-wider opacity-100 drop-shadow-[0_4px_12px_rgba(0,0,0,1)] stroke-white"
+                        : "text-xs sm:text-sm tracking-wide opacity-75 group-hover:opacity-100 drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]"
                     )}
+                    style={{
+                      WebkitTextStroke: isSelected ? "0.5px rgba(255,255,255,0.7)" : "none",
+                      textShadow: isSelected
+                        ? "0 0 1px #fff, 0 2px 8px rgba(0,0,0,0.9)"
+                        : "none",
+                    }}
                   >
                     {dish.name}
                   </h4>
