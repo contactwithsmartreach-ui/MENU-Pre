@@ -8,6 +8,7 @@ import { DishDetailModal } from "@/components/restaurant/DishDetailModal";
 import { HeroPlateScrollExperience } from "@/components/restaurant/HeroPlateScrollExperience";
 import { VerticalSpotlightNavbar } from "@/components/restaurant/VerticalSpotlightNavbar";
 import { MenuSectionDivider } from "@/components/restaurant/MenuSectionDivider";
+import { CurvedFoodExperience } from "@/components/restaurant/CurvedFoodExperience";
 import { toast } from "sonner";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 
@@ -49,7 +50,6 @@ export default function RestaurantMenuPage() {
 
   const handleCategorySelect = (index: number) => {
     setActiveCategoryIdx(index);
-    // Smoothly focus directly onto the cards cylinder
     if (cylinderContainerRef.current) {
       cylinderContainerRef.current.scrollIntoView({
         behavior: "smooth",
@@ -112,11 +112,11 @@ export default function RestaurantMenuPage() {
       <section
         ref={menuSectionRef}
         id="cylinder-menu"
-        className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-4 pb-12 px-2 sm:px-6"
+        className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-4 pb-8 px-2 sm:px-6"
       >
         {/* Main Presentation Area: Vertical Spotlight Navbar Tightly Coupled with 3D Cylinder */}
         <div className="relative z-10 w-full flex-1 flex flex-col lg:flex-row items-center lg:items-center justify-center gap-4 lg:gap-2 max-w-7xl mx-auto py-2">
-          {/* Vertical Spotlight Navbar (Larger, prominent and positioned right beside the cylinder) */}
+          {/* Vertical Spotlight Navbar */}
           <div className="shrink-0 flex items-center justify-center lg:pr-2 z-30">
             <VerticalSpotlightNavbar
               items={CATEGORY_ITEMS}
@@ -137,23 +137,29 @@ export default function RestaurantMenuPage() {
             />
           </div>
         </div>
-
-        {/* Dish Detail Dialog */}
-        <DishDetailModal
-          dish={selectedDish}
-          isOpen={isModalOpen}
-          onClose={() => {
-            setIsModalOpen(false);
-            setSelectedDish(null);
-          }}
-          onAddToCart={handleAddToCart}
-        />
-
-        {/* Footer */}
-        <footer className="relative z-10 w-full py-4 mt-8">
-          <MadeWithDyad />
-        </footer>
       </section>
+
+      {/* Separation Divider Between Cylinder Menu and Curved OptionWheel Menu */}
+      <MenuSectionDivider />
+
+      {/* Part 3: Spatial UI Curved OptionWheel Food Spectrum */}
+      <CurvedFoodExperience onSelectDish={handleOpenDish} />
+
+      {/* Dish Detail Dialog */}
+      <DishDetailModal
+        dish={selectedDish}
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedDish(null);
+        }}
+        onAddToCart={handleAddToCart}
+      />
+
+      {/* Footer */}
+      <footer className="relative z-10 w-full py-4 mt-8">
+        <MadeWithDyad />
+      </footer>
     </div>
   );
 }
