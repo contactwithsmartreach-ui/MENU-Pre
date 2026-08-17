@@ -13,7 +13,7 @@ interface SaharaButtonProps {
 
 export function SaharaButton({
   onClick,
-  primaryText = "ORDER",
+  primaryText = "WELCOME",
   hoverText = "SAHARA",
   size = "lg",
   className,
