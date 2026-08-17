@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "L'Aura | Interactive 3D Cylinder Restaurant Menu",
-  description: "Experience luxury dining with our interactive 3D rotating cylinder menu.",
+  title: "L'Aura Sahara | Luxury Glassmorphism 3D Gastronomy",
+  description: "Experience luxury dining with our interactive 3D rotating cylinder menu and white glassmorphism aesthetics.",
 };
 
 export default function RootLayout({
@@ -24,12 +24,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-neutral-950 text-white min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-50 text-neutral-900 min-h-screen selection:bg-amber-500/20 selection:text-amber-900`}
       >
         {children}
-        <Toaster position="top-center" richColors theme="dark" />
+        <Toaster position="top-center" richColors theme="light" />
       </body>
     </html>
   );

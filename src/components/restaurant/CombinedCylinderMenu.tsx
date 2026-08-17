@@ -31,7 +31,6 @@ export function CombinedCylinderMenu({
   const [isMobile, setIsMobile] = useState(false);
   const [selectedDishIndex, setSelectedDishIndex] = useState<number>(0);
 
-  // High-performance DOM transform & smooth physics tracking
   const cylinderRef = useRef<HTMLDivElement>(null);
   const currentRotationRef = useRef(0);
   const targetRotationRef = useRef(0);
@@ -48,7 +47,6 @@ export function CombinedCylinderMenu({
   const autoResumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const animFrameRef = useRef<number | null>(null);
 
-  // Responsive geometry: larger cards with calibrated perspective
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 640);
@@ -58,14 +56,11 @@ export function CombinedCylinderMenu({
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Generously enlarged card dimensions
   const cardWidth = isMobile ? 260 : 380;
-  // Natural cylinder radius to keep larger cards within view without screen overflow
   const radius =
     Math.round(cardWidth / 2 / Math.tan(Math.PI / Math.max(N, 1))) +
     (isMobile ? 20 : 40);
 
-  // Apply smooth transform directly to the DOM for 60fps+ fluid rendering
   const setTransform = useCallback(
     (deg: number) => {
       currentRotationRef.current = deg;
@@ -76,7 +71,6 @@ export function CombinedCylinderMenu({
     [radius]
   );
 
-  // Silky Smooth Physics Animation Loop
   useEffect(() => {
     let lastTime = performance.now();
 
@@ -119,7 +113,6 @@ export function CombinedCylinderMenu({
     };
   }, [hoveredIdx, setTransform]);
 
-  // Smooth cinematic glide to specific dish index
   const rotateToIndex = useCallback(
     (index: number, openModal = false, item?: MenuItem) => {
       if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
@@ -157,7 +150,6 @@ export function CombinedCylinderMenu({
     [selectedDishIndex, N, rotateToIndex, items]
   );
 
-  // Pointer & Drag Handlers
   const handlePointerDown = (e: React.PointerEvent) => {
     if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
     isDraggingRef.current = true;
@@ -220,7 +212,6 @@ export function CombinedCylinderMenu({
     }, 4500);
   };
 
-  // Horizontal wheel / trackpad
   const handleWheel = (e: React.WheelEvent) => {
     if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 4) {
       if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
@@ -236,7 +227,6 @@ export function CombinedCylinderMenu({
     }
   };
 
-  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft") {
@@ -268,7 +258,7 @@ export function CombinedCylinderMenu({
         className
       )}
     >
-      {/* 1. FLUID 3D CYLINDER STAGE */}
+      {/* 1. FLUID 3D CYLINDER STAGE WITH GLASS REFLECTIONS */}
       <div
         className="relative w-full min-h-[640px] sm:min-h-[720px] lg:min-h-[780px] flex items-center justify-center overflow-visible touch-pan-y cursor-grab active:cursor-grabbing"
         onPointerDown={handlePointerDown}
@@ -276,10 +266,10 @@ export function CombinedCylinderMenu({
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
       >
-        {/* Sahara Radiant Floor Glow */}
-        <div className="pointer-events-none absolute bottom-10 left-1/2 -translate-x-1/2 w-[600px] sm:w-[880px] h-36 bg-gradient-to-r from-red-600/35 via-orange-500/40 to-amber-400/35 blur-3xl rounded-full opacity-80" />
+        {/* Iridescent White Floor Glow & Mirror Stage */}
+        <div className="pointer-events-none absolute bottom-8 left-1/2 -translate-x-1/2 w-[650px] sm:w-[920px] h-40 bg-gradient-to-r from-amber-200/50 via-white/80 to-rose-200/50 blur-3xl rounded-full opacity-90" />
 
-        {/* 3D Perspective Stage Container */}
+        {/* 3D Perspective Stage */}
         <div
           className="relative w-full h-full flex items-center justify-center [perspective-origin:50%_50%]"
           style={{
@@ -316,9 +306,10 @@ export function CombinedCylinderMenu({
                   }}
                   className={cn(
                     "group absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[32px] sm:rounded-[40px] overflow-hidden cursor-pointer",
-                    "border border-orange-500/35 bg-[#0d0706] shadow-2xl transition-all duration-300 transform-gpu",
-                    "hover:border-orange-400 hover:shadow-[0_25px_60px_rgba(249,115,22,0.45)] hover:ring-2 hover:ring-orange-400/80 active:scale-[0.98]",
-                    isHovered && "z-30"
+                    "border border-white/80 bg-white/70 backdrop-blur-2xl transition-all duration-300 transform-gpu",
+                    "shadow-[0_20px_50px_rgba(0,0,0,0.08),inset_0_1px_1px_rgba(255,255,255,1)]",
+                    "hover:border-amber-400 hover:shadow-[0_25px_60px_rgba(245,158,11,0.25),inset_0_1px_2px_rgba(255,255,255,1)] hover:scale-[1.02] active:scale-[0.98]",
+                    isHovered && "z-30 ring-2 ring-amber-400/60"
                   )}
                   style={{
                     width: `${cardWidth}px`,
@@ -326,9 +317,9 @@ export function CombinedCylinderMenu({
                     transform: `rotateY(${itemAngle}deg) translateZ(${radius}px)`,
                     backfaceVisibility: "hidden",
                     WebkitBackfaceVisibility: "hidden",
-                    // Liquid Glass Floor Reflection
+                    // High-Gloss White Glass Floor Reflection
                     WebkitBoxReflect:
-                      "below 16px linear-gradient(to bottom, transparent 65%, rgba(249, 115, 22, 0.3) 100%)",
+                      "below 14px linear-gradient(to bottom, transparent 65%, rgba(255, 255, 255, 0.75) 100%)",
                   }}
                 >
                   {/* Dish Image Background */}
@@ -340,25 +331,25 @@ export function CombinedCylinderMenu({
                       loading="lazy"
                       draggable={false}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0504] via-[#0a0504]/40 to-transparent" />
-                    <div className="absolute inset-0 bg-gradient-to-tr from-red-600/30 via-orange-500/20 to-transparent mix-blend-color-dodge opacity-80 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/85 via-neutral-950/20 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/10 via-rose-500/10 to-transparent mix-blend-overlay opacity-80" />
                   </div>
 
-                  {/* Top Bar Badges */}
+                  {/* Top Glass Bar Badges */}
                   <div className="relative z-10 p-5 sm:p-6 flex items-center justify-between w-full pointer-events-none">
                     {dish.isSignature ? (
-                      <Badge className="bg-gradient-to-r from-red-500 to-orange-500 text-white font-serif tracking-wider uppercase px-3.5 py-1.5 rounded-full text-xs shadow-lg shadow-red-500/50 border-0 flex items-center gap-1.5">
-                        <Sparkles className="w-4 h-4 text-amber-200 fill-amber-200 animate-pulse" />
+                      <Badge className="bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white font-serif tracking-wider uppercase px-3.5 py-1.5 rounded-full text-xs shadow-md shadow-orange-500/30 border-0 flex items-center gap-1.5">
+                        <Sparkles className="w-4 h-4 text-amber-100 fill-amber-100 animate-pulse" />
                         Signature
                       </Badge>
                     ) : (
-                      <span className="text-xs sm:text-sm font-serif uppercase tracking-widest text-orange-200 bg-neutral-950/85 px-3.5 py-1.5 rounded-full border border-orange-500/30 backdrop-blur-md">
+                      <span className="text-xs sm:text-sm font-serif uppercase tracking-widest text-neutral-800 bg-white/85 px-3.5 py-1.5 rounded-full border border-white/70 backdrop-blur-md shadow-sm font-semibold">
                         {dish.category}
                       </span>
                     )}
 
-                    <div className="flex items-center gap-1.5 bg-neutral-950/90 backdrop-blur-md px-3 py-1.5 rounded-full border border-orange-500/30 text-amber-300 text-xs sm:text-sm font-bold shadow-md">
-                      <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                    <div className="flex items-center gap-1.5 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/80 text-amber-600 text-xs sm:text-sm font-bold shadow-md">
+                      <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
                       <span>{dish.rating}</span>
                     </div>
                   </div>
@@ -370,34 +361,34 @@ export function CombinedCylinderMenu({
                       isHovered ? "opacity-100 scale-100" : "opacity-0 scale-95"
                     )}
                   >
-                    <span className="bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white font-serif tracking-widest uppercase px-6 py-3 rounded-full text-xs sm:text-sm font-bold shadow-2xl shadow-red-600/60 border border-orange-200/60 flex items-center gap-2">
-                      <Eye className="w-4 h-4" />
+                    <span className="bg-white/95 backdrop-blur-xl text-neutral-950 font-serif tracking-widest uppercase px-6 py-3 rounded-full text-xs sm:text-sm font-bold shadow-xl shadow-black/20 border border-white flex items-center gap-2">
+                      <Eye className="w-4 h-4 text-amber-600" />
                       <span>CLICK TO ORDER</span>
                     </span>
                   </div>
 
-                  {/* Bottom Dish Information */}
-                  <div className="absolute bottom-0 inset-x-0 z-10 p-5 sm:p-7 pt-16 bg-gradient-to-t from-[#0a0504] via-[#0a0504]/95 to-transparent flex flex-col justify-end pointer-events-none">
-                    <h3 className="text-lg sm:text-2xl font-serif font-bold text-white tracking-wide truncate group-hover:text-orange-300 transition-colors">
+                  {/* Bottom Dish Information Glass Overlay */}
+                  <div className="absolute bottom-0 inset-x-0 z-10 p-5 sm:p-7 pt-16 bg-gradient-to-t from-neutral-950/95 via-neutral-950/70 to-transparent flex flex-col justify-end pointer-events-none text-white">
+                    <h3 className="text-lg sm:text-2xl font-serif font-bold text-white tracking-wide truncate group-hover:text-amber-300 transition-colors">
                       {dish.name}
                     </h3>
-                    <p className="text-xs sm:text-sm text-neutral-300 line-clamp-2 mt-1.5 font-light leading-relaxed">
+                    <p className="text-xs sm:text-sm text-neutral-200 line-clamp-2 mt-1.5 font-light leading-relaxed">
                       {dish.description}
                     </p>
 
-                    <div className="mt-4 pt-3 border-t border-orange-500/25 flex items-center justify-between">
+                    <div className="mt-4 pt-3 border-t border-white/20 flex items-center justify-between">
                       <div className="flex items-baseline gap-1">
-                        <span className="text-sm font-serif text-orange-400 font-bold">$</span>
-                        <span className="text-2xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300 font-serif">
+                        <span className="text-sm font-serif text-amber-300 font-bold">$</span>
+                        <span className="text-2xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-orange-200 to-white font-serif">
                           {dish.price}
                         </span>
                       </div>
 
                       <div className="flex items-center gap-3">
-                        <span className="text-xs sm:text-sm text-orange-200/70 font-mono">
+                        <span className="text-xs sm:text-sm text-amber-200/90 font-mono">
                           {dish.prepTime}
                         </span>
-                        <div className="w-9 h-9 rounded-full bg-orange-500/20 border border-orange-400/50 flex items-center justify-center text-orange-300 group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-neutral-950 transition-all shadow-md">
+                        <div className="w-9 h-9 rounded-full bg-white/20 border border-white/40 flex items-center justify-center text-white group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-white transition-all shadow-md">
                           <Plus className="w-4 h-4 stroke-[2.5]" />
                         </div>
                       </div>
@@ -410,54 +401,54 @@ export function CombinedCylinderMenu({
         </div>
       </div>
 
-      {/* 2. FLOATING TEXT & BUTTON CONTROLS */}
-      <div className="relative z-40 w-full max-w-3xl px-4 flex flex-col items-center gap-6 mt-10 sm:mt-14">
-        {/* Frameless Floating Control Cluster */}
+      {/* 2. FLOATING TEXT & GLASS BUTTON CONTROLS */}
+      <div className="relative z-40 w-full max-w-3xl px-4 flex flex-col items-center gap-6 mt-8 sm:mt-12">
+        {/* Glassmorphic Floating Control Cluster */}
         <div className="relative w-full max-w-xl flex items-center justify-between px-2 sm:px-6">
-          {/* Previous Floating Button */}
+          {/* Previous Glass Button */}
           <button
             type="button"
             aria-label="Rotate Previous Dish"
             onClick={() => stepRotate("prev")}
             className={cn(
               "group relative w-12 h-12 sm:w-14 sm:h-14 rounded-full shrink-0 flex items-center justify-center transition-all duration-300 cursor-pointer",
-              "bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 text-neutral-950 font-black",
-              "border-2 border-amber-300/80 shadow-[0_0_25px_rgba(249,115,22,0.65)] active:scale-90 hover:scale-110"
+              "bg-white/80 backdrop-blur-xl border border-white/80 text-neutral-800",
+              "shadow-[0_10px_25px_rgba(0,0,0,0.08),inset_0_1px_1px_rgba(255,255,255,1)] hover:border-amber-400 hover:text-amber-600 active:scale-90 hover:scale-110"
             )}
           >
-            <ChevronLeft className="w-6 h-6 text-neutral-950 stroke-[3] group-hover:-translate-x-0.5 transition-transform" />
+            <ChevronLeft className="w-6 h-6 stroke-[2.5] group-hover:-translate-x-0.5 transition-transform" />
           </button>
 
-          {/* Frameless Floating Center Dish Text */}
+          {/* Center Floating Glass Dish Pill */}
           {currentFrontDish && (
             <button
               type="button"
               onClick={() => onSelectItem(currentFrontDish)}
-              className="flex flex-col items-center justify-center text-center cursor-pointer group px-4 py-1 transition-transform hover:scale-105"
+              className="flex flex-col items-center justify-center text-center cursor-pointer group px-5 py-2 rounded-full bg-white/70 backdrop-blur-xl border border-white/90 shadow-[0_10px_30px_rgba(0,0,0,0.06)] transition-all hover:scale-105 hover:bg-white/90"
             >
-              <span className="text-base sm:text-xl font-serif font-bold text-white tracking-wide group-hover:text-orange-300 transition-colors drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] truncate max-w-[260px] sm:max-w-xs">
+              <span className="text-base sm:text-lg font-serif font-bold text-neutral-900 tracking-wide group-hover:text-amber-700 transition-colors truncate max-w-[240px] sm:max-w-xs">
                 {currentFrontDish.name}
               </span>
-              <span className="text-xs sm:text-sm text-amber-400 font-serif font-semibold mt-0.5 tracking-wider drop-shadow-md flex items-center gap-2">
+              <span className="text-xs sm:text-sm text-amber-600 font-serif font-bold mt-0.5 tracking-wider flex items-center gap-2">
                 <span>${currentFrontDish.price}</span>
-                <span className="text-orange-400/60">&bull;</span>
-                <span className="text-orange-300/90 underline underline-offset-4">Click to Order</span>
+                <span className="text-neutral-300">&bull;</span>
+                <span className="text-neutral-600 group-hover:text-amber-700 underline underline-offset-2">Click to Order</span>
               </span>
             </button>
           )}
 
-          {/* Next Floating Button */}
+          {/* Next Glass Button */}
           <button
             type="button"
             aria-label="Rotate Next Dish"
             onClick={() => stepRotate("next")}
             className={cn(
               "group relative w-12 h-12 sm:w-14 sm:h-14 rounded-full shrink-0 flex items-center justify-center transition-all duration-300 cursor-pointer",
-              "bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 text-neutral-950 font-black",
-              "border-2 border-amber-300/80 shadow-[0_0_25px_rgba(249,115,22,0.65)] active:scale-90 hover:scale-110"
+              "bg-white/80 backdrop-blur-xl border border-white/80 text-neutral-800",
+              "shadow-[0_10px_25px_rgba(0,0,0,0.08),inset_0_1px_1px_rgba(255,255,255,1)] hover:border-amber-400 hover:text-amber-600 active:scale-90 hover:scale-110"
             )}
           >
-            <ChevronRight className="w-6 h-6 text-neutral-950 stroke-[3] group-hover:translate-x-0.5 transition-transform" />
+            <ChevronRight className="w-6 h-6 stroke-[2.5] group-hover:translate-x-0.5 transition-transform" />
           </button>
         </div>
       </div>

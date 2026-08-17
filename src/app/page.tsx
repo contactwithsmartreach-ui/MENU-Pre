@@ -49,7 +49,6 @@ export default function RestaurantMenuPage() {
 
   const handleCategorySelect = (index: number) => {
     setActiveCategoryIdx(index);
-    // Smoothly focus directly onto the cards cylinder
     if (cylinderContainerRef.current) {
       cylinderContainerRef.current.scrollIntoView({
         behavior: "smooth",
@@ -63,49 +62,49 @@ export default function RestaurantMenuPage() {
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-[#0a0504] text-neutral-100 flex flex-col items-center justify-between select-none overflow-x-hidden">
-      {/* Sahara Sunset Ambient Glowing Atmospheric Background */}
+    <div className="relative min-h-screen w-full bg-gradient-to-b from-[#fafaf9] via-[#f5f5f4] to-[#f4f2ee] text-neutral-900 flex flex-col items-center justify-between select-none overflow-x-hidden">
+      {/* Translucent Glassmorphism Atmosphere & Soft Ambient Prismatic Glows */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        {/* Sahara Sunset Solar Core */}
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[550px] bg-gradient-to-tr from-red-600/25 via-orange-500/25 to-pink-600/15 rounded-full blur-[180px] animate-pulse duration-1000" />
-        <div className="absolute top-1/4 left-1/4 -translate-x-1/2 w-[550px] h-[550px] bg-amber-500/20 rounded-full blur-[160px]" />
-        <div className="absolute bottom-10 right-1/4 translate-x-1/2 w-[600px] h-[450px] bg-red-700/20 rounded-full blur-[170px]" />
+        {/* Soft Pearlescent & Gold Aura Blooms */}
+        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[900px] h-[600px] bg-gradient-to-tr from-amber-200/40 via-orange-200/35 to-rose-200/30 rounded-full blur-[140px]" />
+        <div className="absolute top-1/3 left-10 w-[600px] h-[600px] bg-gradient-to-br from-orange-200/30 to-amber-100/40 rounded-full blur-[130px]" />
+        <div className="absolute bottom-20 right-10 w-[700px] h-[550px] bg-gradient-to-tl from-rose-200/30 via-orange-100/40 to-amber-200/35 rounded-full blur-[150px]" />
 
-        {/* Topographic Dune Wave Lines */}
+        {/* Crystalline Glass Geometric Overlay Grid */}
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage:
+              "radial-gradient(#000 1px, transparent 1px)",
+            backgroundSize: "32px 32px",
+          }}
+        />
+
+        {/* Soft Dune Glass Surface Waves */}
         <svg
-          className="absolute inset-x-0 bottom-0 w-full h-[55%] opacity-15 pointer-events-none"
+          className="absolute inset-x-0 bottom-0 w-full h-[45%] opacity-25 pointer-events-none"
           viewBox="0 0 1440 320"
           preserveAspectRatio="none"
           xmlns="http://www.w3.org/2000/svg"
         >
           <defs>
-            <linearGradient id="bg-sahara-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="hsl(37, 99%, 67%)" />
-              <stop offset="50%" stopColor="#ef4444" />
-              <stop offset="100%" stopColor="hsl(316, 73%, 52%)" />
+            <linearGradient id="glass-dune-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.4" />
+              <stop offset="50%" stopColor="#fb923c" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#f43f5e" stopOpacity="0.2" />
             </linearGradient>
           </defs>
           <path
-            fill="url(#bg-sahara-grad)"
-            d="M0,192L48,176C96,160,192,128,288,138.7C384,149,480,203,576,213.3C672,224,768,192,864,165.3C960,139,1056,117,1152,128C1248,139,1344,181,1392,202.7L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+            fill="url(#glass-dune-grad)"
+            d="M0,160L48,154.7C96,149,192,139,288,149.3C384,160,480,192,576,197.3C672,203,768,181,864,160C960,139,1056,117,1152,122.7C1248,128,1344,160,1392,176L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
           />
         </svg>
-
-        {/* Subtle Stardust Texture */}
-        <div
-          className="absolute inset-0 opacity-[0.035]"
-          style={{
-            backgroundImage:
-              "radial-gradient(rgba(249, 115, 22, 0.8) 1px, transparent 1px)",
-            backgroundSize: "28px 28px",
-          }}
-        />
       </div>
 
-      {/* Part 1: Top Hero Section with Floating Plate Experience */}
+      {/* Part 1: Top Hero Section with Floating Chef Hat & Glass Reflective Experience */}
       <HeroPlateScrollExperience onScrollToMenu={handleScrollToMenu} />
 
-      {/* Transitional Section Separation Divider */}
+      {/* Glassmorphic Section Separation Divider */}
       <MenuSectionDivider />
 
       {/* Part 2: Interactive 3D Cylinder Gastronomy Menu */}
@@ -115,8 +114,8 @@ export default function RestaurantMenuPage() {
         className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-4 pb-12 px-2 sm:px-6"
       >
         {/* Main Presentation Area: Vertical Spotlight Navbar Tightly Coupled with 3D Cylinder */}
-        <div className="relative z-10 w-full flex-1 flex flex-col lg:flex-row items-center lg:items-center justify-center gap-4 lg:gap-2 max-w-7xl mx-auto py-2">
-          {/* Vertical Spotlight Navbar (Larger, prominent and positioned right beside the cylinder) */}
+        <div className="relative z-10 w-full flex-1 flex flex-col lg:flex-row items-center lg:items-center justify-center gap-6 lg:gap-4 max-w-7xl mx-auto py-2">
+          {/* Vertical Spotlight Navbar */}
           <div className="shrink-0 flex items-center justify-center lg:pr-2 z-30">
             <VerticalSpotlightNavbar
               items={CATEGORY_ITEMS}
@@ -138,7 +137,7 @@ export default function RestaurantMenuPage() {
           </div>
         </div>
 
-        {/* Dish Detail Dialog */}
+        {/* Dish Detail Glass Dialog */}
         <DishDetailModal
           dish={selectedDish}
           isOpen={isModalOpen}
@@ -150,7 +149,7 @@ export default function RestaurantMenuPage() {
         />
 
         {/* Footer */}
-        <footer className="relative z-10 w-full py-4 mt-8">
+        <footer className="relative z-10 w-full py-4 mt-8 text-center text-xs text-neutral-500">
           <MadeWithDyad />
         </footer>
       </section>
