@@ -2,6 +2,7 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
+import { playSoftClickSound } from "@/lib/audio";
 
 interface SaharaButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   primaryText?: string;
@@ -24,9 +25,14 @@ export function SaharaButton({
     xl: "px-16 sm:px-20 py-6 sm:py-7 text-lg sm:text-xl tracking-[0.3em]",
   };
 
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    playSoftClickSound();
+    onClick?.(e);
+  };
+
   return (
     <button
-      onClick={onClick}
+      onClick={handleClick}
       className={cn(
         "group relative overflow-hidden rounded-full cursor-pointer z-10 select-none will-change-transform transform-gpu",
         "bg-gradient-to-r from-red-500 via-orange-500 to-amber-500",
@@ -39,20 +45,16 @@ export function SaharaButton({
       )}
       {...props}
     >
-      {/* Ghost text for layout sizing */}
       <span className="opacity-0">{primaryText}</span>
 
-      {/* Primary Slide-Out Text */}
       <p className="absolute inset-0 z-40 flex items-center justify-center font-extrabold bg-gradient-to-r from-red-600 via-orange-600 to-amber-600 bg-clip-text text-transparent transition-transform duration-300 group-hover:-translate-y-full tracking-[0.25em]">
         {primaryText}
       </p>
 
-      {/* Hover Slide-In Text */}
       <p className="absolute inset-0 z-40 flex items-center justify-center font-black bg-gradient-to-r from-red-700 via-rose-700 to-orange-700 bg-clip-text text-transparent translate-y-full transition-transform duration-300 group-hover:translate-y-0 tracking-[0.28em]">
         {hoverText}
       </p>
 
-      {/* Dynamic Dune Topography SVG Waves */}
       <svg
         className="absolute w-full h-full scale-x-125 rotate-180 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 opacity-75 group-hover:-translate-y-[45%] transition-transform duration-300 pointer-events-none"
         viewBox="0 0 2400 800"

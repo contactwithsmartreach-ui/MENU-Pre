@@ -12,6 +12,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { playSoftClickSound } from "@/lib/audio";
 
 export interface CombinedCylinderMenuProps {
   items: MenuItem[];
@@ -122,6 +123,7 @@ export function CombinedCylinderMenu({
   // Smooth cinematic glide to specific dish index
   const rotateToIndex = useCallback(
     (index: number, openModal = false, item?: MenuItem) => {
+      playSoftClickSound();
       if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
       isAutoSpinningRef.current = false;
       velocityRef.current = 0;
@@ -220,7 +222,6 @@ export function CombinedCylinderMenu({
     }, 4500);
   };
 
-  // Horizontal wheel / trackpad
   const handleWheel = (e: React.WheelEvent) => {
     if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 4) {
       if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
@@ -236,7 +237,6 @@ export function CombinedCylinderMenu({
     }
   };
 
-  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft") {
@@ -251,6 +251,7 @@ export function CombinedCylinderMenu({
 
   const handleCardClick = (dish: MenuItem, index: number) => {
     if (dragDistanceRef.current > 8) return;
+    playSoftClickSound();
     setSelectedDishIndex(index);
     rotateToIndex(index, false);
     onSelectItem(dish);
@@ -276,17 +277,14 @@ export function CombinedCylinderMenu({
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
       >
-        {/* Sahara Radiant Floor Glow */}
         <div className="pointer-events-none absolute bottom-10 left-1/2 -translate-x-1/2 w-[600px] sm:w-[880px] h-36 bg-gradient-to-r from-red-600/35 via-orange-500/40 to-amber-400/35 blur-3xl rounded-full opacity-80" />
 
-        {/* 3D Perspective Stage Container */}
         <div
           className="relative w-full h-full flex items-center justify-center [perspective-origin:50%_50%]"
           style={{
             perspective: isMobile ? "1100px" : "1550px",
           }}
         >
-          {/* Rotating Cylinder Core */}
           <div
             ref={cylinderRef}
             className="relative w-0 h-0 [transform-style:preserve-3d] will-change-transform transform-gpu"
@@ -326,12 +324,10 @@ export function CombinedCylinderMenu({
                     transform: `rotateY(${itemAngle}deg) translateZ(${radius}px)`,
                     backfaceVisibility: "hidden",
                     WebkitBackfaceVisibility: "hidden",
-                    // Liquid Glass Floor Reflection
                     WebkitBoxReflect:
                       "below 16px linear-gradient(to bottom, transparent 65%, rgba(249, 115, 22, 0.3) 100%)",
                   }}
                 >
-                  {/* Dish Image Background */}
                   <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
                     <img
                       src={dish.image}
@@ -344,7 +340,6 @@ export function CombinedCylinderMenu({
                     <div className="absolute inset-0 bg-gradient-to-tr from-red-600/30 via-orange-500/20 to-transparent mix-blend-color-dodge opacity-80 group-hover:opacity-100 transition-opacity" />
                   </div>
 
-                  {/* Top Bar Badges */}
                   <div className="relative z-10 p-5 sm:p-6 flex items-center justify-between w-full pointer-events-none">
                     {dish.isSignature ? (
                       <Badge className="bg-gradient-to-r from-red-500 to-orange-500 text-white font-serif tracking-wider uppercase px-3.5 py-1.5 rounded-full text-xs shadow-lg shadow-red-500/50 border-0 flex items-center gap-1.5">
@@ -363,7 +358,6 @@ export function CombinedCylinderMenu({
                     </div>
                   </div>
 
-                  {/* Floating Action Badge on Hover */}
                   <div
                     className={cn(
                       "absolute inset-0 flex items-center justify-center z-20 pointer-events-none transition-all duration-200",
@@ -376,7 +370,6 @@ export function CombinedCylinderMenu({
                     </span>
                   </div>
 
-                  {/* Bottom Dish Information */}
                   <div className="absolute bottom-0 inset-x-0 z-10 p-5 sm:p-7 pt-16 bg-gradient-to-t from-[#0a0504] via-[#0a0504]/95 to-transparent flex flex-col justify-end pointer-events-none">
                     <h3 className="text-lg sm:text-2xl font-serif font-bold text-white tracking-wide truncate group-hover:text-orange-300 transition-colors">
                       {dish.name}
@@ -412,9 +405,7 @@ export function CombinedCylinderMenu({
 
       {/* 2. FLOATING TEXT & BUTTON CONTROLS */}
       <div className="relative z-40 w-full max-w-3xl px-4 flex flex-col items-center gap-6 mt-10 sm:mt-14">
-        {/* Frameless Floating Control Cluster */}
         <div className="relative w-full max-w-xl flex items-center justify-between px-2 sm:px-6">
-          {/* Previous Floating Button */}
           <button
             type="button"
             aria-label="Rotate Previous Dish"
@@ -428,11 +419,13 @@ export function CombinedCylinderMenu({
             <ChevronLeft className="w-6 h-6 text-neutral-950 stroke-[3] group-hover:-translate-x-0.5 transition-transform" />
           </button>
 
-          {/* Frameless Floating Center Dish Text */}
           {currentFrontDish && (
             <button
               type="button"
-              onClick={() => onSelectItem(currentFrontDish)}
+              onClick={() => {
+                playSoftClickSound();
+                onSelectItem(currentFrontDish);
+              }}
               className="flex flex-col items-center justify-center text-center cursor-pointer group px-4 py-1 transition-transform hover:scale-105"
             >
               <span className="text-base sm:text-xl font-serif font-bold text-white tracking-wide group-hover:text-orange-300 transition-colors drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] truncate max-w-[260px] sm:max-w-xs">
@@ -446,7 +439,6 @@ export function CombinedCylinderMenu({
             </button>
           )}
 
-          {/* Next Floating Button */}
           <button
             type="button"
             aria-label="Rotate Next Dish"

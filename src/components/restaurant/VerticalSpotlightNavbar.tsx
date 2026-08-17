@@ -2,6 +2,7 @@
 
 import React, { useRef } from "react";
 import { cn } from "@/lib/utils";
+import { playSoftClickSound } from "@/lib/audio";
 
 export interface NavItem {
   label: string;
@@ -37,13 +38,13 @@ export function VerticalSpotlightNavbar({
   const listRef = useRef<HTMLUListElement>(null);
 
   const handleItemClick = (item: NavItem, index: number) => {
+    playSoftClickSound();
     if (controlledActiveIndex === undefined) {
       setInternalActiveIndex(index);
     }
     onItemClick?.(item, index);
   };
 
-  // Allow mouse wheel scrolling across categories for fast transitions
   const handleWheel = (e: React.WheelEvent) => {
     if (Math.abs(e.deltaY) > 20) {
       if (e.deltaY > 0 && activeIndex < items.length - 1) {
@@ -62,7 +63,6 @@ export function VerticalSpotlightNavbar({
         className
       )}
     >
-      {/* Background Radiant Glow centered behind the active element */}
       <div
         className="pointer-events-none absolute left-0 w-60 h-60 -translate-x-10 bg-gradient-to-r from-red-600/35 via-orange-500/40 to-amber-400/30 rounded-full blur-3xl transition-all duration-500 ease-out"
         style={{
@@ -70,7 +70,6 @@ export function VerticalSpotlightNavbar({
         }}
       />
 
-      {/* Pure Floating Typography List - Larger & Closer to the Cylinder */}
       <ul
         ref={listRef}
         className="relative flex flex-col items-center lg:items-start gap-3 sm:gap-5 z-10 [perspective:1200px]"
@@ -79,7 +78,6 @@ export function VerticalSpotlightNavbar({
           const distance = Math.abs(activeIndex - idx);
           const isActive = activeIndex === idx;
 
-          // Clear, bold depth scaling with elevated visibility
           let scale = 1;
           let opacity = 1;
           let translateZ = 0;
@@ -121,14 +119,12 @@ export function VerticalSpotlightNavbar({
                   "hover:!opacity-100 hover:scale-105 active:scale-95"
                 )}
               >
-                {/* Leading Radiant Ember Beacon */}
                 {isActive ? (
                   <span className="w-3.5 h-3.5 rounded-full bg-gradient-to-r from-red-500 to-amber-300 shadow-[0_0_18px_rgba(249,115,22,1),0_0_30px_rgba(239,68,68,0.9)] shrink-0 animate-pulse" />
                 ) : (
                   <span className="w-2 h-2 rounded-full bg-orange-400/50 shadow-[0_0_10px_rgba(249,115,22,0.4)] group-hover:bg-amber-300 group-hover:shadow-[0_0_16px_rgba(251,191,36,0.9)] transition-all shrink-0" />
                 )}
 
-                {/* Bold Large Course Label */}
                 <span
                   className={cn(
                     "font-serif tracking-widest uppercase transition-all duration-300 whitespace-nowrap",
