@@ -8,6 +8,7 @@ import { DishDetailModal } from "@/components/restaurant/DishDetailModal";
 import { HeroPlateScrollExperience } from "@/components/restaurant/HeroPlateScrollExperience";
 import { VerticalSpotlightNavbar } from "@/components/restaurant/VerticalSpotlightNavbar";
 import { MenuSectionDivider } from "@/components/restaurant/MenuSectionDivider";
+import { AmbientAudioToggle } from "@/components/restaurant/AmbientAudioToggle";
 import { toast } from "sonner";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 
@@ -64,6 +65,11 @@ export default function RestaurantMenuPage() {
 
   return (
     <div className="relative min-h-screen w-full bg-[#0a0504] text-neutral-100 flex flex-col items-center justify-between select-none overflow-x-hidden">
+      {/* Floating Top Bar with Ambient Audio Toggle */}
+      <header className="fixed top-4 right-4 sm:top-6 sm:right-6 z-50">
+        <AmbientAudioToggle />
+      </header>
+
       {/* Sahara Sunset Ambient Glowing Atmospheric Background */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         {/* Sahara Sunset Solar Core */}
