@@ -18,7 +18,7 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
         window.requestAnimationFrame(() => {
           if (hatRef.current) {
             const scrollY = window.scrollY;
-            const translateY = Math.min(scrollY * 0.3, 140);
+            const translateY = Math.min(scrollY * 0.28, 130);
             const scale = Math.max(0.8, 1 - scrollY * 0.0008);
             const opacity = Math.max(0.15, 1 - scrollY * 0.0025);
             const rotate = (scrollY * 0.12) % 360;
@@ -37,7 +37,7 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
   }, []);
 
   return (
-    <section className="relative w-full min-h-[46vh] sm:min-h-[52vh] flex flex-col items-center justify-center px-4 pt-6 pb-2 text-center select-none overflow-hidden [contain:layout_style]">
+    <section className="relative w-full min-h-[48vh] sm:min-h-[54vh] flex flex-col items-center justify-center px-4 pt-8 pb-4 text-center select-none overflow-hidden [contain:layout_style]">
       {/* Hero Headline */}
       <div className="relative z-10 max-w-2xl space-y-1 mt-1">
         <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-[0.18em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300 drop-shadow-[0_10px_25px_rgba(249,115,22,0.3)]">
@@ -49,7 +49,7 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
       </div>
 
       {/* CTA Button & Scroll-Following Chef Hat */}
-      <div className="relative z-30 flex flex-col items-center gap-4 pt-4 pb-1">
+      <div className="relative z-30 flex flex-col items-center gap-6 pt-5 pb-2">
         {/* Hardware-accelerated Scrolling Chef Hat */}
         <div
           ref={hatRef}
@@ -63,22 +63,22 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
           <div className="w-10 h-2.5 bg-black/60 rounded-full blur-sm mt-1" />
         </div>
 
-        {/* Explore Menu Button with Sahara Dune Wave Animations */}
-        <div className="relative drop-shadow-[0_12px_28px_rgba(0,0,0,0.85)]">
+        {/* Exact Sahara Button Component */}
+        <div className="relative pt-1 pb-4">
           <SaharaButton
             onClick={onScrollToMenu}
-            primaryText="EXPLORE MENU"
-            hoverText="TASTE THE SAHARA"
-            size="md"
+            primaryText="WELCOME"
+            hoverText="SAHARA"
+            size="lg"
           />
         </div>
 
         <button
           type="button"
           onClick={onScrollToMenu}
-          className="flex items-center gap-1 text-[11px] font-serif uppercase tracking-widest text-orange-300/75 hover:text-orange-200 transition-colors mt-1 animate-bounce cursor-pointer"
+          className="flex items-center gap-1 text-[11px] font-serif uppercase tracking-widest text-orange-300/75 hover:text-orange-200 transition-colors mt-2 animate-bounce cursor-pointer"
         >
-          <span>Scroll to Cylinder</span>
+          <span>Explore Cylinder Menu</span>
           <ChevronDown className="w-3.5 h-3.5" />
         </button>
       </div>

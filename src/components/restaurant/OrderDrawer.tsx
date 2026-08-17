@@ -9,9 +9,9 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { Plus, Minus, Trash2, ShoppingBag, ArrowRight } from "lucide-react";
+import { Plus, Minus, Trash2, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
+import { SaharaButton } from "./SaharaButton";
 
 interface OrderDrawerProps {
   isOpen: boolean;
@@ -47,8 +47,8 @@ export function OrderDrawer({
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent className="bg-neutral-950 text-white border-neutral-800 w-full sm:max-w-md flex flex-col p-6">
-        <SheetHeader className="text-left border-b border-white/10 pb-4">
+      <SheetContent className="bg-[#0c0605] text-white border-orange-500/30 w-full sm:max-w-md flex flex-col p-6">
+        <SheetHeader className="text-left border-b border-orange-500/20 pb-4">
           <div className="flex items-center justify-between">
             <SheetTitle className="text-2xl font-serif text-amber-400 flex items-center gap-2">
               <ShoppingBag className="w-5 h-5" />
@@ -58,7 +58,7 @@ export function OrderDrawer({
               <button
                 type="button"
                 onClick={onClearCart}
-                className="text-xs text-neutral-400 hover:text-red-400 transition-colors"
+                className="text-xs text-orange-300/70 hover:text-red-400 transition-colors"
               >
                 Clear all
               </button>
@@ -73,7 +73,7 @@ export function OrderDrawer({
 
         {cart.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center p-6 space-y-4">
-            <div className="w-16 h-16 rounded-full bg-neutral-900 border border-white/10 flex items-center justify-center text-neutral-500">
+            <div className="w-16 h-16 rounded-full bg-neutral-900 border border-orange-500/20 flex items-center justify-center text-neutral-500">
               <ShoppingBag className="w-8 h-8" />
             </div>
             <div className="space-y-1">
@@ -88,7 +88,7 @@ export function OrderDrawer({
             {cart.map((item) => (
               <div
                 key={item.dish.id}
-                className="flex items-center gap-3 p-3 rounded-2xl bg-neutral-900/80 border border-white/10"
+                className="flex items-center gap-3 p-3 rounded-2xl bg-neutral-900/80 border border-orange-500/20"
               >
                 <img
                   src={item.dish.image}
@@ -109,7 +109,7 @@ export function OrderDrawer({
                   )}
                 </div>
 
-                <div className="flex items-center gap-1.5 bg-neutral-950 border border-white/10 rounded-full px-2 py-1">
+                <div className="flex items-center gap-1.5 bg-neutral-950 border border-orange-500/20 rounded-full px-2 py-1">
                   <button
                     type="button"
                     onClick={() =>
@@ -144,7 +144,7 @@ export function OrderDrawer({
         )}
 
         {cart.length > 0 && (
-          <div className="border-t border-white/10 pt-4 space-y-3">
+          <div className="border-t border-orange-500/20 pt-4 space-y-4 pb-2">
             <div className="space-y-1.5 text-sm">
               <div className="flex justify-between text-neutral-400 text-xs">
                 <span>Subtotal</span>
@@ -154,19 +154,21 @@ export function OrderDrawer({
                 <span>Estimated Tax (8.25%)</span>
                 <span>${tax.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-white font-bold font-serif text-base pt-1 border-t border-white/10">
+              <div className="flex justify-between text-white font-bold font-serif text-base pt-1 border-t border-orange-500/20">
                 <span>Total</span>
                 <span className="text-amber-400">${total.toFixed(2)}</span>
               </div>
             </div>
 
-            <Button
-              onClick={handleCheckout}
-              className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-neutral-950 font-bold py-6 rounded-full text-base flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20"
-            >
-              <span>Confirm Table Order</span>
-              <ArrowRight className="w-4 h-4" />
-            </Button>
+            <div className="w-full flex justify-center pt-2">
+              <SaharaButton
+                onClick={handleCheckout}
+                primaryText={`CONFIRM • $${total.toFixed(2)}`}
+                hoverText="CHECKOUT"
+                size="md"
+                className="w-full"
+              />
+            </div>
           </div>
         )}
       </SheetContent>

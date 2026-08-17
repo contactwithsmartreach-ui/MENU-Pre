@@ -147,13 +147,12 @@ export function DishDetailModal({
               </button>
             </div>
 
-            <div className="flex-1 flex justify-end">
+            <div className="flex-1 flex justify-end pb-2">
               <SaharaButton
                 onClick={handleAdd}
-                primaryText={`ADD • $${(dish.price * quantity).toFixed(2)}`}
+                primaryText={`ADD $${(dish.price * quantity).toFixed(2)}`}
                 hoverText="CONFIRM"
                 size="md"
-                className="w-full py-4"
               />
             </div>
           </div>
