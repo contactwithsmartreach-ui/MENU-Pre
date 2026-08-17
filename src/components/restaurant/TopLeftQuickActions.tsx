@@ -24,15 +24,15 @@ export function TopLeftQuickActions() {
   };
 
   return (
-    <div className="fixed top-28 left-4 sm:left-6 z-50 flex flex-col items-center gap-3">
+    <div className="fixed top-24 left-3 sm:left-5 z-50 flex flex-col items-center gap-2.5">
       {/* 1. Phone Button */}
       <button
         type="button"
         aria-label="Call Restaurant"
         onClick={handlePhoneClick}
-        className="group relative flex justify-center items-center p-3 rounded-xl drop-shadow-xl bg-gradient-to-tr from-[#16a34a] to-[#22c55e] text-white font-semibold hover:scale-110 transition-all duration-300 shadow-[0_4px_15px_rgba(34,197,94,0.4)] cursor-pointer hover:shadow-[0_8px_25px_rgba(34,197,94,0.7)]"
+        className="group relative flex justify-center items-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-neutral-950/90 backdrop-blur-xl border border-emerald-500/40 text-emerald-400 hover:text-white hover:bg-emerald-600 transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.25)] hover:shadow-[0_0_20px_rgba(16,185,129,0.6)] hover:scale-105 cursor-pointer"
       >
-        <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-white stroke-[2.2]" />
+        <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.2]" />
       </button>
 
       {/* 2. Location Button */}
@@ -40,9 +40,9 @@ export function TopLeftQuickActions() {
         type="button"
         aria-label="Restaurant Location"
         onClick={handleLocationClick}
-        className="group relative flex justify-center items-center p-3 rounded-xl drop-shadow-xl bg-gradient-to-tr from-[#ea580c] to-[#f97316] text-white font-semibold hover:scale-110 transition-all duration-300 shadow-[0_4px_15px_rgba(249,115,22,0.4)] cursor-pointer hover:shadow-[0_8px_25px_rgba(249,115,22,0.7)]"
+        className="group relative flex justify-center items-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-neutral-950/90 backdrop-blur-xl border border-orange-500/40 text-orange-400 hover:text-white hover:bg-orange-600 transition-all duration-300 shadow-[0_0_15px_rgba(249,115,22,0.25)] hover:shadow-[0_0_20px_rgba(249,115,22,0.6)] hover:scale-105 cursor-pointer"
       >
-        <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-white stroke-[2.2]" />
+        <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.2]" />
       </button>
 
       {/* 3. Instagram Button */}
@@ -50,10 +50,10 @@ export function TopLeftQuickActions() {
         type="button"
         aria-label="Instagram Profile"
         onClick={() => handleSocialClick("Instagram")}
-        className="group relative flex justify-center items-center p-3 rounded-xl drop-shadow-xl bg-gradient-to-tr from-[#f09433] via-[#e6683c] via-[#dc2743] via-[#cc2366] to-[#bc1888] text-white font-semibold hover:scale-110 transition-all duration-300 shadow-[0_4px_15px_rgba(220,39,67,0.4)] cursor-pointer hover:shadow-[0_8px_25px_rgba(220,39,67,0.7)]"
+        className="group relative flex justify-center items-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-neutral-950/90 backdrop-blur-xl border border-pink-500/40 text-pink-400 hover:text-white hover:bg-gradient-to-tr hover:from-amber-500 hover:via-rose-600 hover:to-purple-600 transition-all duration-300 shadow-[0_0_15px_rgba(236,72,153,0.25)] hover:shadow-[0_0_20px_rgba(236,72,153,0.6)] hover:scale-105 cursor-pointer"
       >
         <svg
-          className="w-4 h-4 sm:w-5 sm:h-5"
+          className="w-3.5 h-3.5 sm:w-4 sm:h-4"
           fill="currentColor"
           viewBox="0 0 448 512"
           xmlns="http://www.w3.org/2000/svg"
@@ -67,10 +67,10 @@ export function TopLeftQuickActions() {
         type="button"
         aria-label="Facebook Page"
         onClick={() => handleSocialClick("Facebook")}
-        className="group relative flex justify-center items-center p-3 rounded-xl drop-shadow-xl bg-[#316FF6] text-white font-semibold hover:scale-110 transition-all duration-300 shadow-[0_4px_15px_rgba(49,111,246,0.4)] cursor-pointer hover:shadow-[0_8px_25px_rgba(49,111,246,0.7)]"
+        className="group relative flex justify-center items-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-neutral-950/90 backdrop-blur-xl border border-blue-500/40 text-blue-400 hover:text-white hover:bg-blue-600 transition-all duration-300 shadow-[0_0_15px_rgba(59,130,246,0.25)] hover:shadow-[0_0_20px_rgba(59,130,246,0.6)] hover:scale-105 cursor-pointer"
       >
         <svg
-          className="w-4 h-4 sm:w-5 sm:h-5"
+          className="w-3.5 h-3.5 sm:w-4 sm:h-4"
           fill="currentColor"
           viewBox="0 0 448 512"
           xmlns="http://www.w3.org/2000/svg"
