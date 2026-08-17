@@ -8,6 +8,8 @@ import {
   Eye,
   Plus,
   Sparkles,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -451,7 +453,7 @@ export function CombinedCylinderMenu({
       {/* 2. FLOATING CONTROLS & DIRECT SELECTION - PLACED FURTHER DOWN */}
       <div className="relative z-40 w-full max-w-3xl px-4 flex flex-col items-center gap-3 sm:gap-4 mt-6 sm:mt-10 pb-4">
         <div className="relative w-full max-w-xl flex items-center justify-between px-1 sm:px-6">
-          {/* Previous Uiverse Sahara Button */}
+          {/* Previous Uiverse Sahara Compact Icon Button */}
           <button
             type="button"
             aria-label="Rotate Previous Dish"
@@ -460,15 +462,9 @@ export function CombinedCylinderMenu({
               WebkitBoxReflect:
                 "below 0px linear-gradient(to bottom, rgba(0,0,0,0.0), rgba(0,0,0,0.4))",
             }}
-            className="px-6 py-2.5 sm:px-8 sm:py-3 bg-gradient-to-r from-red-500 to-orange-500 rounded-full shadow-xl group-hover:shadow-2xl group-hover:shadow-red-600 shadow-red-600 uppercase font-serif tracking-widest relative overflow-hidden group text-transparent cursor-pointer z-10 after:absolute after:rounded-full after:bg-red-200 after:h-[85%] after:w-[95%] after:left-1/2 after:top-1/2 after:-translate-x-1/2 after:-translate-y-1/2 hover:saturate-[1.15] active:saturate-[1.4]"
+            className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center bg-gradient-to-r from-red-500 to-orange-500 rounded-full shadow-xl group-hover:shadow-2xl group-hover:shadow-red-600 shadow-red-600 relative overflow-hidden group text-transparent cursor-pointer z-10 after:absolute after:rounded-full after:bg-red-200 after:h-[85%] after:w-[95%] after:left-1/2 after:top-1/2 after:-translate-x-1/2 after:-translate-y-1/2 hover:saturate-[1.15] active:saturate-[1.4]"
           >
-            Prev
-            <p className="absolute z-40 font-semibold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent top-1/2 left-1/2 -translate-x-1/2 group-hover:-translate-y-full h-full w-full transition-all duration-300 -translate-y-[30%] tracking-widest text-xs sm:text-sm">
-              PREV
-            </p>
-            <p className="absolute z-40 top-1/2 left-1/2 bg-gradient-to-r from-red-700 to-orange-700 bg-clip-text text-transparent -translate-x-1/2 translate-y-full h-full w-full transition-all duration-300 group-hover:-translate-y-[40%] tracking-widest font-extrabold text-xs sm:text-sm">
-              DISH
-            </p>
+            <ChevronLeft className="absolute z-40 w-6 h-6 text-neutral-950 stroke-[3] transition-transform duration-300 group-hover:scale-110" />
             <svg
               className="absolute w-full h-full scale-x-125 rotate-180 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 group-hover:animate-none animate-pulse group-hover:-translate-y-[45%] transition-all duration-300 pointer-events-none"
               viewBox="0 0 2400 800"
@@ -508,7 +504,7 @@ export function CombinedCylinderMenu({
             </button>
           )}
 
-          {/* Next Uiverse Sahara Button */}
+          {/* Next Uiverse Sahara Compact Icon Button */}
           <button
             type="button"
             aria-label="Rotate Next Dish"
@@ -517,15 +513,9 @@ export function CombinedCylinderMenu({
               WebkitBoxReflect:
                 "below 0px linear-gradient(to bottom, rgba(0,0,0,0.0), rgba(0,0,0,0.4))",
             }}
-            className="px-6 py-2.5 sm:px-8 sm:py-3 bg-gradient-to-r from-red-500 to-orange-500 rounded-full shadow-xl group-hover:shadow-2xl group-hover:shadow-red-600 shadow-red-600 uppercase font-serif tracking-widest relative overflow-hidden group text-transparent cursor-pointer z-10 after:absolute after:rounded-full after:bg-red-200 after:h-[85%] after:w-[95%] after:left-1/2 after:top-1/2 after:-translate-x-1/2 after:-translate-y-1/2 hover:saturate-[1.15] active:saturate-[1.4]"
+            className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center bg-gradient-to-r from-red-500 to-orange-500 rounded-full shadow-xl group-hover:shadow-2xl group-hover:shadow-red-600 shadow-red-600 relative overflow-hidden group text-transparent cursor-pointer z-10 after:absolute after:rounded-full after:bg-red-200 after:h-[85%] after:w-[95%] after:left-1/2 after:top-1/2 after:-translate-x-1/2 after:-translate-y-1/2 hover:saturate-[1.15] active:saturate-[1.4]"
           >
-            Next
-            <p className="absolute z-40 font-semibold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent top-1/2 left-1/2 -translate-x-1/2 group-hover:-translate-y-full h-full w-full transition-all duration-300 -translate-y-[30%] tracking-widest text-xs sm:text-sm">
-              NEXT
-            </p>
-            <p className="absolute z-40 top-1/2 left-1/2 bg-gradient-to-r from-red-700 to-orange-700 bg-clip-text text-transparent -translate-x-1/2 translate-y-full h-full w-full transition-all duration-300 group-hover:-translate-y-[40%] tracking-widest font-extrabold text-xs sm:text-sm">
-              SAHARA
-            </p>
+            <ChevronRight className="absolute z-40 w-6 h-6 text-neutral-950 stroke-[3] transition-transform duration-300 group-hover:scale-110" />
             <svg
               className="absolute w-full h-full scale-x-125 rotate-180 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 group-hover:animate-none animate-pulse group-hover:-translate-y-[45%] transition-all duration-300 pointer-events-none"
               viewBox="0 0 2400 800"
