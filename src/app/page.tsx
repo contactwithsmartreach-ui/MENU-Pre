@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { MENU_ITEMS } from "@/data/menu-data";
 import { MenuItem } from "@/types/restaurant";
 import { CombinedCylinderMenu } from "@/components/restaurant/CombinedCylinderMenu";
@@ -47,19 +47,23 @@ export default function RestaurantMenuPage() {
     });
   };
 
-  const handleCategorySelect = (index: number) => {
-    setActiveCategoryIdx(index);
-    // Smoothly focus directly onto the cards cylinder
-    if (cylinderContainerRef.current) {
-      cylinderContainerRef.current.scrollIntoView({
+  // Ultra-smooth zero-lag scrolling to the cylinder area
+  const smoothScrollToMenu = useCallback(() => {
+    if (!menuSectionRef.current) return;
+    const targetY = menuSectionRef.current.getBoundingClientRect().top + window.scrollY - 30;
+    
+    // Only scroll if we are not already in the viewing window
+    if (Math.abs(window.scrollY - targetY) > 80) {
+      window.scrollTo({
+        top: targetY,
         behavior: "smooth",
-        block: "center",
       });
     }
-  };
+  }, []);
 
-  const handleScrollToMenu = () => {
-    menuSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+  const handleCategorySelect = (index: number) => {
+    setActiveCategoryIdx(index);
+    smoothScrollToMenu();
   };
 
   return (
@@ -103,7 +107,7 @@ export default function RestaurantMenuPage() {
       </div>
 
       {/* Part 1: Top Hero Section with Floating Plate Experience */}
-      <HeroPlateScrollExperience onScrollToMenu={handleScrollToMenu} />
+      <HeroPlateScrollExperience onScrollToMenu={smoothScrollToMenu} />
 
       {/* Transitional Section Separation Divider */}
       <MenuSectionDivider />
@@ -125,13 +129,12 @@ export default function RestaurantMenuPage() {
             />
           </div>
 
-          {/* Dedicated 3D Cylinder Menu */}
+          {/* Dedicated 3D Cylinder Menu (Maintained persistently for smooth transitions) */}
           <div
             ref={cylinderContainerRef}
             className="flex-1 w-full flex items-center justify-center overflow-visible scroll-mt-20"
           >
             <CombinedCylinderMenu
-              key={selectedCategory}
               items={filteredItems}
               onSelectItem={handleOpenDish}
             />
