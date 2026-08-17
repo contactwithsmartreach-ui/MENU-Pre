@@ -12,10 +12,13 @@ import { toast } from "sonner";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 
 const CATEGORY_ITEMS = [
+  { label: "All", id: "All" },
   { label: "Pizza", id: "Pizza" },
   { label: "Burgers", id: "Burgers" },
   { label: "Tacos", id: "Tacos" },
   { label: "Plates", id: "Plates" },
+  { label: "Dessert", id: "Dessert" },
+  { label: "Drinks", id: "Drinks" },
 ];
 
 export default function RestaurantMenuPage() {
@@ -29,12 +32,20 @@ export default function RestaurantMenuPage() {
 
   // Filter or map items based on category selection
   const filteredItems =
-    selectedCategory === "Pizza"
+    selectedCategory === "All"
+      ? MENU_ITEMS
+      : selectedCategory === "Pizza"
       ? MENU_ITEMS.filter((item) => item.category === "Mains" || item.tags.some(t => t.toLowerCase().includes("pizza") || t.toLowerCase().includes("pasta")))
       : selectedCategory === "Burgers"
       ? MENU_ITEMS.filter((item) => item.category === "Chef Specials")
       : selectedCategory === "Tacos"
       ? MENU_ITEMS.filter((item) => item.category === "Starters")
+      : selectedCategory === "Plates"
+      ? MENU_ITEMS.filter((item) => item.category === "Mains")
+      : selectedCategory === "Dessert"
+      ? MENU_ITEMS.filter((item) => item.category === "Desserts")
+      : selectedCategory === "Drinks"
+      ? MENU_ITEMS.filter((item) => item.category === "Cocktails")
       : MENU_ITEMS;
 
   const handleOpenDish = (dish: MenuItem) => {

@@ -20,10 +20,13 @@ export interface VerticalSpotlightNavbarProps {
 
 export function VerticalSpotlightNavbar({
   items = [
+    { label: "All", id: "All" },
     { label: "Pizza", id: "Pizza" },
     { label: "Burgers", id: "Burgers" },
     { label: "Tacos", id: "Tacos" },
     { label: "Plates", id: "Plates" },
+    { label: "Dessert", id: "Dessert" },
+    { label: "Drinks", id: "Drinks" },
   ],
   className,
   onItemClick,
