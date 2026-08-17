@@ -9,8 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
-import { Star, Clock, Flame, Sparkles, Plus, Minus, Utensils, MessageSquare } from "lucide-react";
+import { Star, Clock, Flame, Sparkles, Plus, Minus, Utensils } from "lucide-react";
 import { SaharaButton } from "./SaharaButton";
 
 interface DishDetailModalProps {
@@ -27,14 +26,12 @@ export function DishDetailModal({
   onAddToCart,
 }: DishDetailModalProps) {
   const [quantity, setQuantity] = useState(1);
-  const [notes, setNotes] = useState("");
 
   if (!dish) return null;
 
   const handleAdd = () => {
-    onAddToCart(dish, quantity, notes.trim() || undefined);
+    onAddToCart(dish, quantity);
     setQuantity(1);
-    setNotes("");
     onClose();
   };
 
@@ -111,19 +108,6 @@ export function DishDetailModal({
                 #{tag}
               </span>
             ))}
-          </div>
-
-          <div className="space-y-1.5 pt-2">
-            <label className="text-xs font-medium text-orange-200/70 flex items-center gap-1.5">
-              <MessageSquare className="w-3.5 h-3.5 text-orange-400" />
-              Special Requests or Dietary Preferences:
-            </label>
-            <Textarea
-              placeholder="E.g. Sauce on the side, allergies, extra crispy..."
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              className="bg-neutral-900/80 border-orange-500/20 focus:border-orange-400 text-sm rounded-xl resize-none h-20 text-neutral-200"
-            />
           </div>
 
           {/* Action Footer */}
