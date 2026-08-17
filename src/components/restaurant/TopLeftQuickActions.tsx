@@ -24,13 +24,13 @@ export function TopLeftQuickActions() {
   };
 
   return (
-    <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-50 flex items-center gap-2 sm:gap-2.5">
+    <div className="fixed top-28 left-4 sm:left-6 z-50 flex flex-col items-center gap-3">
       {/* 1. Phone Button */}
       <button
         type="button"
         aria-label="Call Restaurant"
         onClick={handlePhoneClick}
-        className="group relative flex justify-center items-center p-2.5 rounded-xl drop-shadow-xl bg-gradient-to-tr from-[#16a34a] to-[#22c55e] text-white font-semibold hover:translate-y-1.5 transition-all duration-300 shadow-[0_4px_15px_rgba(34,197,94,0.4)] cursor-pointer hover:shadow-[0_8px_25px_rgba(34,197,94,0.7)]"
+        className="group relative flex justify-center items-center p-3 rounded-xl drop-shadow-xl bg-gradient-to-tr from-[#16a34a] to-[#22c55e] text-white font-semibold hover:scale-110 transition-all duration-300 shadow-[0_4px_15px_rgba(34,197,94,0.4)] cursor-pointer hover:shadow-[0_8px_25px_rgba(34,197,94,0.7)]"
       >
         <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-white stroke-[2.2]" />
       </button>
@@ -40,7 +40,7 @@ export function TopLeftQuickActions() {
         type="button"
         aria-label="Restaurant Location"
         onClick={handleLocationClick}
-        className="group relative flex justify-center items-center p-2.5 rounded-xl drop-shadow-xl bg-gradient-to-tr from-[#ea580c] to-[#f97316] text-white font-semibold hover:translate-y-1.5 transition-all duration-300 shadow-[0_4px_15px_rgba(249,115,22,0.4)] cursor-pointer hover:shadow-[0_8px_25px_rgba(249,115,22,0.7)]"
+        className="group relative flex justify-center items-center p-3 rounded-xl drop-shadow-xl bg-gradient-to-tr from-[#ea580c] to-[#f97316] text-white font-semibold hover:scale-110 transition-all duration-300 shadow-[0_4px_15px_rgba(249,115,22,0.4)] cursor-pointer hover:shadow-[0_8px_25px_rgba(249,115,22,0.7)]"
       >
         <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-white stroke-[2.2]" />
       </button>
@@ -50,7 +50,7 @@ export function TopLeftQuickActions() {
         type="button"
         aria-label="Instagram Profile"
         onClick={() => handleSocialClick("Instagram")}
-        className="group relative flex justify-center items-center p-2.5 rounded-xl drop-shadow-xl bg-gradient-to-tr from-[#f09433] via-[#e6683c] via-[#dc2743] via-[#cc2366] to-[#bc1888] text-white font-semibold hover:translate-y-1.5 transition-all duration-300 shadow-[0_4px_15px_rgba(220,39,67,0.4)] cursor-pointer hover:shadow-[0_8px_25px_rgba(220,39,67,0.7)]"
+        className="group relative flex justify-center items-center p-3 rounded-xl drop-shadow-xl bg-gradient-to-tr from-[#f09433] via-[#e6683c] via-[#dc2743] via-[#cc2366] to-[#bc1888] text-white font-semibold hover:scale-110 transition-all duration-300 shadow-[0_4px_15px_rgba(220,39,67,0.4)] cursor-pointer hover:shadow-[0_8px_25px_rgba(220,39,67,0.7)]"
       >
         <svg
           className="w-4 h-4 sm:w-5 sm:h-5"
@@ -67,7 +67,7 @@ export function TopLeftQuickActions() {
         type="button"
         aria-label="Facebook Page"
         onClick={() => handleSocialClick("Facebook")}
-        className="group relative flex justify-center items-center p-2.5 rounded-xl drop-shadow-xl bg-[#316FF6] text-white font-semibold hover:translate-y-1.5 transition-all duration-300 shadow-[0_4px_15px_rgba(49,111,246,0.4)] cursor-pointer hover:shadow-[0_8px_25px_rgba(49,111,246,0.7)]"
+        className="group relative flex justify-center items-center p-3 rounded-xl drop-shadow-xl bg-[#316FF6] text-white font-semibold hover:scale-110 transition-all duration-300 shadow-[0_4px_15px_rgba(49,111,246,0.4)] cursor-pointer hover:shadow-[0_8px_25px_rgba(49,111,246,0.7)]"
       >
         <svg
           className="w-4 h-4 sm:w-5 sm:h-5"
