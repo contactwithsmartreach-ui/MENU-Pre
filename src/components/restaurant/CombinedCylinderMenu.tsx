@@ -59,10 +59,10 @@ export function CombinedCylinderMenu({
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const cardWidth = isMobile ? 240 : 340;
+  const cardWidth = isMobile ? 220 : 320;
   const radius =
     Math.round(cardWidth / (2 * Math.tan(Math.PI / Math.max(N, 3)))) +
-    (isMobile ? 20 : 45);
+    (isMobile ? 18 : 40);
 
   // High-performance DOM transform without React state re-rendering
   const setTransform = useCallback(
@@ -123,7 +123,7 @@ export function CombinedCylinderMenu({
           velocityRef.current *= 0.94;
           setTransform(currentRotationRef.current);
         } else if (isAutoSpinningRef.current && hoveredIdx === null && !isSwitchingCategory) {
-          const ambientSpeed = 2.2;
+          const ambientSpeed = 2.4;
           currentRotationRef.current += ambientSpeed * dt;
           targetRotationRef.current = currentRotationRef.current;
           setTransform(currentRotationRef.current);
@@ -289,29 +289,29 @@ export function CombinedCylinderMenu({
     <div
       onWheel={handleWheel}
       className={cn(
-        "w-full flex flex-col items-center justify-start relative select-none gap-2 sm:gap-4 pb-8 overflow-hidden",
+        "w-full flex flex-col items-center justify-start relative select-none gap-2 sm:gap-4 pb-4 overflow-hidden",
         className
       )}
     >
-      {/* 1. FLUID 3D CYLINDER STAGE */}
+      {/* 1. FLUID 3D CYLINDER STAGE WITH CARD REFLECTIONS */}
       <div
-        className="relative w-full min-h-[520px] sm:min-h-[600px] lg:min-h-[640px] flex items-center justify-center overflow-visible touch-pan-y cursor-grab active:cursor-grabbing"
+        className="relative w-full min-h-[560px] sm:min-h-[640px] lg:min-h-[700px] flex items-center justify-center overflow-visible touch-pan-y cursor-grab active:cursor-grabbing pb-8"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
       >
-        {/* Optimized Static Atmosphere Glow (No heavy continuous CSS anims) */}
-        <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 w-[500px] sm:w-[700px] h-28 bg-gradient-to-r from-red-600/30 via-orange-500/35 to-amber-400/30 blur-2xl rounded-full opacity-70" />
+        {/* Floor Reflection Gradient & Lighting Pool */}
+        <div className="pointer-events-none absolute bottom-6 left-1/2 -translate-x-1/2 w-[420px] sm:w-[680px] h-24 bg-gradient-to-r from-red-600/25 via-orange-500/30 to-amber-400/25 blur-3xl rounded-full opacity-80" />
 
         {/* 3D Perspective Stage Container */}
         <div
           className={cn(
-            "relative w-full h-full flex items-center justify-center [perspective-origin:50%_50%] transition-opacity duration-200",
+            "relative w-full h-full flex items-center justify-center [perspective-origin:50%_45%] transition-opacity duration-200",
             isSwitchingCategory ? "opacity-40 scale-95" : "opacity-100 scale-100"
           )}
           style={{
-            perspective: isMobile ? "1100px" : "1500px",
+            perspective: isMobile ? "1050px" : "1450px",
           }}
         >
           {/* Rotating Cylinder Core */}
@@ -344,7 +344,7 @@ export function CombinedCylinderMenu({
                   }}
                   className={cn(
                     "group absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[28px] sm:rounded-[36px] overflow-hidden cursor-pointer",
-                    "border border-orange-500/35 bg-[#0d0706] shadow-2xl transition-[border-color,box-shadow] duration-200 transform-gpu",
+                    "border border-orange-500/35 bg-[#0d0706] shadow-2xl transition-[border-color,box-shadow,transform] duration-200 transform-gpu",
                     "hover:border-orange-400 hover:shadow-[0_20px_50px_rgba(249,115,22,0.45)] hover:ring-2 hover:ring-orange-400/80 active:scale-[0.98]",
                     isHovered && "z-30"
                   )}
@@ -354,6 +354,9 @@ export function CombinedCylinderMenu({
                     transform: `rotateY(${itemAngle}deg) translateZ(${radius}px)`,
                     backfaceVisibility: "hidden",
                     WebkitBackfaceVisibility: "hidden",
+                    // Smooth, elegant mirror reflection fading into the dark table surface
+                    WebkitBoxReflect:
+                      "below 10px linear-gradient(to bottom, transparent 65%, rgba(0, 0, 0, 0.15) 85%, rgba(249, 115, 22, 0.35) 100%)",
                   }}
                 >
                   {/* Dish Image Background */}
@@ -435,8 +438,8 @@ export function CombinedCylinderMenu({
         </div>
       </div>
 
-      {/* 2. FLOATING TEXT & BUTTON CONTROLS */}
-      <div className="relative z-40 w-full max-w-3xl px-4 flex flex-col items-center gap-4 mt-2 sm:mt-4">
+      {/* 2. FLOATING CONTROLS & DIRECT SELECTION */}
+      <div className="relative z-40 w-full max-w-3xl px-4 flex flex-col items-center gap-4 mt-1">
         <div className="relative w-full max-w-xl flex items-center justify-between px-2 sm:px-6">
           {/* Previous Floating Button */}
           <button

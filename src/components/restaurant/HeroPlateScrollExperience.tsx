@@ -63,6 +63,7 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
           <div className="w-10 h-2.5 bg-black/60 rounded-full blur-sm mt-1" />
         </div>
 
+        {/* Explore Menu Button with Sahara Dune Wave Animations */}
         <div className="relative drop-shadow-[0_12px_28px_rgba(0,0,0,0.85)]">
           <SaharaButton
             onClick={onScrollToMenu}
