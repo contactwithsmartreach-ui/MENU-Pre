@@ -8,6 +8,7 @@ import { DishDetailModal } from "@/components/restaurant/DishDetailModal";
 import { HeroPlateScrollExperience } from "@/components/restaurant/HeroPlateScrollExperience";
 import { VerticalSpotlightNavbar } from "@/components/restaurant/VerticalSpotlightNavbar";
 import { MenuSectionDivider } from "@/components/restaurant/MenuSectionDivider";
+import { SocialContactBar } from "@/components/restaurant/SocialContactBar";
 import { toast } from "sonner";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 
@@ -85,6 +86,9 @@ export default function RestaurantMenuPage() {
 
   return (
     <div className="relative min-h-screen w-full bg-[#0a0504] text-neutral-100 flex flex-col items-center justify-between select-none overflow-x-hidden">
+      {/* Floating Left Social & Contact Bar */}
+      <SocialContactBar />
+
       {/* Sahara Sunset Optimized Ambient Atmospheric Background (Hardware accelerated without heavy re-renders) */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden transform-gpu">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[450px] bg-gradient-to-tr from-red-600/20 via-orange-500/20 to-amber-500/10 rounded-full blur-3xl" />
