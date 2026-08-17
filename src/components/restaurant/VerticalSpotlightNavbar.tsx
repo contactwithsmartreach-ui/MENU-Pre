@@ -43,6 +43,7 @@ export function VerticalSpotlightNavbar({
     onItemClick?.(item, index);
   };
 
+  // Allow mouse wheel scrolling across categories for fast transitions
   const handleWheel = (e: React.WheelEvent) => {
     if (Math.abs(e.deltaY) > 20) {
       if (e.deltaY > 0 && activeIndex < items.length - 1) {
@@ -61,15 +62,15 @@ export function VerticalSpotlightNavbar({
         className
       )}
     >
-      {/* Background Soft Frosted Aura */}
+      {/* Background Radiant Glow centered behind the active element */}
       <div
-        className="pointer-events-none absolute left-0 w-56 h-56 -translate-x-10 bg-gradient-to-r from-orange-200/50 via-amber-200/60 to-rose-100/40 rounded-full blur-3xl transition-all duration-500 ease-out"
+        className="pointer-events-none absolute left-0 w-60 h-60 -translate-x-10 bg-gradient-to-r from-red-600/35 via-orange-500/40 to-amber-400/30 rounded-full blur-3xl transition-all duration-500 ease-out"
         style={{
           transform: `translateY(${activeIndex * 60 - 30}px)`,
         }}
       />
 
-      {/* Pure Floating Glassmorphic Typography List */}
+      {/* Pure Floating Typography List - Larger & Closer to the Cylinder */}
       <ul
         ref={listRef}
         className="relative flex flex-col items-center lg:items-start gap-3 sm:gap-5 z-10 [perspective:1200px]"
@@ -78,12 +79,13 @@ export function VerticalSpotlightNavbar({
           const distance = Math.abs(activeIndex - idx);
           const isActive = activeIndex === idx;
 
+          // Clear, bold depth scaling with elevated visibility
           let scale = 1;
           let opacity = 1;
           let translateZ = 0;
 
           if (isActive) {
-            scale = 1.2;
+            scale = 1.22;
             opacity = 1;
             translateZ = 25;
           } else if (distance === 1) {
@@ -119,11 +121,11 @@ export function VerticalSpotlightNavbar({
                   "hover:!opacity-100 hover:scale-105 active:scale-95"
                 )}
               >
-                {/* Leading Glass Pearl Bead */}
+                {/* Leading Radiant Ember Beacon */}
                 {isActive ? (
-                  <span className="w-3.5 h-3.5 rounded-full bg-gradient-to-r from-red-500 to-amber-500 shadow-[0_0_12px_rgba(249,115,22,0.8)] shrink-0 animate-pulse" />
+                  <span className="w-3.5 h-3.5 rounded-full bg-gradient-to-r from-red-500 to-amber-300 shadow-[0_0_18px_rgba(249,115,22,1),0_0_30px_rgba(239,68,68,0.9)] shrink-0 animate-pulse" />
                 ) : (
-                  <span className="w-2 h-2 rounded-full bg-neutral-300 group-hover:bg-amber-400 group-hover:shadow-[0_0_10px_rgba(251,191,36,0.8)] transition-all shrink-0" />
+                  <span className="w-2 h-2 rounded-full bg-orange-400/50 shadow-[0_0_10px_rgba(249,115,22,0.4)] group-hover:bg-amber-300 group-hover:shadow-[0_0_16px_rgba(251,191,36,0.9)] transition-all shrink-0" />
                 )}
 
                 {/* Bold Large Course Label */}
@@ -131,8 +133,8 @@ export function VerticalSpotlightNavbar({
                   className={cn(
                     "font-serif tracking-widest uppercase transition-all duration-300 whitespace-nowrap",
                     isActive
-                      ? "text-xl sm:text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-neutral-950 via-amber-900 to-neutral-900 drop-shadow-sm"
-                      : "text-base sm:text-lg md:text-xl font-bold text-neutral-600 group-hover:text-amber-800"
+                      ? "text-xl sm:text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-orange-300 to-amber-200 drop-shadow-[0_0_25px_rgba(249,115,22,0.85)]"
+                      : "text-base sm:text-lg md:text-xl font-bold text-orange-200/85 drop-shadow-[0_0_10px_rgba(249,115,22,0.2)] group-hover:text-amber-200 group-hover:drop-shadow-[0_0_20px_rgba(249,115,22,0.7)]"
                   )}
                 >
                   {item.label}
