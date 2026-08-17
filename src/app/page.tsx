@@ -111,15 +111,10 @@ export default function RestaurantMenuPage() {
     smoothScrollToMenu();
   };
 
-  const totalCartCount = cart.reduce((sum, i) => sum + i.quantity, 0);
-
   return (
     <div className="relative min-h-screen w-full bg-[#0a0504] text-neutral-100 flex flex-col items-center justify-between select-none overflow-x-hidden">
-      {/* Premium Animated Sidebar Nav */}
-      <SidebarNav
-        onOpenCart={() => setIsOrderDrawerOpen(true)}
-        cartCount={totalCartCount}
-      />
+      {/* Premium Animated Sidebar Nav (Icon Only) */}
+      <SidebarNav />
 
       {/* Order Drawer Sheet */}
       <OrderDrawer

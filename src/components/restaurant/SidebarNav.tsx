@@ -1,17 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { Phone, MapPin, Menu, X, ShoppingBag, Sparkles } from "lucide-react";
+import { Phone, MapPin, Menu, X, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-interface SidebarNavProps {
-  onOpenCart?: () => void;
-  cartCount?: number;
-}
-
-export function SidebarNav({ onOpenCart, cartCount = 0 }: SidebarNavProps) {
+export function SidebarNav() {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const handlePhoneClick = () => {
@@ -34,45 +29,25 @@ export function SidebarNav({ onOpenCart, cartCount = 0 }: SidebarNavProps) {
 
   return (
     <>
-      {/* Floating Toggle Pill Button */}
-      <div className="fixed top-6 left-6 z-50 flex items-center gap-3">
+      {/* Floating Toggle Icon Button in Top-Left Open Space */}
+      <div className="fixed top-6 left-6 z-50 flex items-center">
         <motion.button
-          whileHover={{ scale: 1.08 }}
+          whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setIsExpanded((prev) => !prev)}
+          aria-label="Toggle Menu & Info"
           className={cn(
-            "group relative flex items-center gap-2.5 px-4 py-2.5 rounded-full cursor-pointer transition-all duration-300",
+            "group relative w-12 h-12 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300",
             "bg-neutral-950/90 backdrop-blur-xl border text-white shadow-lg",
             isExpanded
               ? "border-orange-400 shadow-[0_0_25px_rgba(249,115,22,0.4)]"
               : "border-orange-500/30 hover:border-orange-400/80 shadow-[0_0_15px_rgba(0,0,0,0.5)]"
           )}
         >
-          <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-red-500 to-amber-500 flex items-center justify-center text-white shadow-md shadow-red-500/30">
-            {isExpanded ? <X className="w-3.5 h-3.5" /> : <Menu className="w-3.5 h-3.5" />}
+          <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-red-500 to-amber-500 flex items-center justify-center text-white shadow-md shadow-red-500/30">
+            {isExpanded ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
           </div>
-          <span className="text-xs font-serif font-bold tracking-widest uppercase text-orange-200 group-hover:text-white">
-            {isExpanded ? "Close" : "Menu & Info"}
-          </span>
         </motion.button>
-
-        {/* Quick Cart Trigger Pill */}
-        {onOpenCart && (
-          <motion.button
-            whileHover={{ scale: 1.08 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={onOpenCart}
-            className="relative flex items-center gap-2 px-4 py-2.5 rounded-full bg-gradient-to-r from-red-600 to-orange-500 text-white shadow-[0_0_20px_rgba(239,68,68,0.4)] hover:shadow-[0_0_30px_rgba(249,115,22,0.7)] cursor-pointer border border-orange-300/40"
-          >
-            <ShoppingBag className="w-4 h-4" />
-            <span className="text-xs font-serif font-bold tracking-wider">Order</span>
-            {cartCount > 0 && (
-              <span className="w-5 h-5 rounded-full bg-neutral-950 text-amber-300 text-[11px] font-bold flex items-center justify-center border border-amber-400/50">
-                {cartCount}
-              </span>
-            )}
-          </motion.button>
-        )}
       </div>
 
       {/* Premium Animated Sidebar Drawer */}
