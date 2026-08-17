@@ -12,7 +12,6 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Star, Clock, Flame, Sparkles, Plus, Minus, Utensils, MessageSquare } from "lucide-react";
 import { SaharaButton } from "./SaharaButton";
-import { playSoftClickSound } from "@/lib/audio";
 
 interface DishDetailModalProps {
   dish: MenuItem | null;
@@ -33,7 +32,6 @@ export function DishDetailModal({
   if (!dish) return null;
 
   const handleAdd = () => {
-    playSoftClickSound();
     onAddToCart(dish, quantity, notes.trim() || undefined);
     setQuantity(1);
     setNotes("");
@@ -128,14 +126,12 @@ export function DishDetailModal({
             />
           </div>
 
+          {/* Action Footer */}
           <div className="pt-3 border-t border-orange-500/20 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 bg-neutral-900/90 border border-orange-500/30 rounded-full px-3 py-1.5">
               <button
                 type="button"
-                onClick={() => {
-                  playSoftClickSound();
-                  setQuantity(Math.max(1, quantity - 1));
-                }}
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
                 className="p-1 text-orange-300/80 hover:text-white transition-colors"
                 disabled={quantity <= 1}
               >
@@ -144,10 +140,7 @@ export function DishDetailModal({
               <span className="font-semibold text-sm w-4 text-center text-white">{quantity}</span>
               <button
                 type="button"
-                onClick={() => {
-                  playSoftClickSound();
-                  setQuantity(quantity + 1);
-                }}
+                onClick={() => setQuantity(quantity + 1)}
                 className="p-1 text-orange-300/80 hover:text-white transition-colors"
               >
                 <Plus className="w-4 h-4" />

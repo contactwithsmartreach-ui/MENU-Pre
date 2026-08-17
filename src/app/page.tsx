@@ -10,7 +10,6 @@ import { VerticalSpotlightNavbar } from "@/components/restaurant/VerticalSpotlig
 import { MenuSectionDivider } from "@/components/restaurant/MenuSectionDivider";
 import { toast } from "sonner";
 import { MadeWithDyad } from "@/components/made-with-dyad";
-import { playSoftClickSound } from "@/lib/audio";
 
 const CATEGORY_ITEMS = [
   { label: "All Items", id: "All" },
@@ -36,13 +35,11 @@ export default function RestaurantMenuPage() {
       : MENU_ITEMS.filter((item) => item.category === selectedCategory);
 
   const handleOpenDish = (dish: MenuItem) => {
-    playSoftClickSound();
     setSelectedDish(dish);
     setIsModalOpen(true);
   };
 
   const handleAddToCart = (dish: MenuItem, quantity: number, notes?: string) => {
-    playSoftClickSound();
     toast.success(`Added ${quantity}x ${dish.name} to order`, {
       description: `$${(dish.price * quantity).toFixed(2)} • ${
         notes ? `"${notes}"` : `Ready in ~${dish.prepTime}`
@@ -51,8 +48,8 @@ export default function RestaurantMenuPage() {
   };
 
   const handleCategorySelect = (index: number) => {
-    playSoftClickSound();
     setActiveCategoryIdx(index);
+    // Smoothly focus directly onto the cards cylinder
     if (cylinderContainerRef.current) {
       cylinderContainerRef.current.scrollIntoView({
         behavior: "smooth",
@@ -62,17 +59,11 @@ export default function RestaurantMenuPage() {
   };
 
   const handleScrollToMenu = () => {
-    playSoftClickSound();
     menuSectionRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
-    <div
-      onClick={() => {
-        // Trigger subtle click sound on any button/interactive click globally
-      }}
-      className="relative min-h-screen w-full bg-[#0a0504] text-neutral-100 flex flex-col items-center justify-between select-none overflow-x-hidden"
-    >
+    <div className="relative min-h-screen w-full bg-[#0a0504] text-neutral-100 flex flex-col items-center justify-between select-none overflow-x-hidden">
       {/* Sahara Sunset Ambient Glowing Atmospheric Background */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         {/* Sahara Sunset Solar Core */}
@@ -152,7 +143,6 @@ export default function RestaurantMenuPage() {
           dish={selectedDish}
           isOpen={isModalOpen}
           onClose={() => {
-            playSoftClickSound();
             setIsModalOpen(false);
             setSelectedDish(null);
           }}
