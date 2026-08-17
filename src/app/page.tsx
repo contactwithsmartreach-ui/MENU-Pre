@@ -47,17 +47,21 @@ export default function RestaurantMenuPage() {
     });
   };
 
-  // Ultra-smooth zero-lag scrolling to the cylinder area
+  // Ultra-smooth zero-lag scrolling to center the cylinder cards right in front of user
   const smoothScrollToMenu = useCallback(() => {
-    if (!menuSectionRef.current) return;
-    const targetY = menuSectionRef.current.getBoundingClientRect().top + window.scrollY - 30;
+    if (!cylinderContainerRef.current && !menuSectionRef.current) return;
+    const targetElement = cylinderContainerRef.current || menuSectionRef.current;
     
-    // Only scroll if we are not already in the viewing window
-    if (Math.abs(window.scrollY - targetY) > 80) {
-      window.scrollTo({
-        top: targetY,
-        behavior: "smooth",
-      });
+    if (targetElement) {
+      const rect = targetElement.getBoundingClientRect();
+      const targetY = window.scrollY + rect.top - 12;
+
+      if (Math.abs(window.scrollY - targetY) > 50) {
+        window.scrollTo({
+          top: targetY,
+          behavior: "smooth",
+        });
+      }
     }
   }, []);
 
@@ -116,11 +120,11 @@ export default function RestaurantMenuPage() {
       <section
         ref={menuSectionRef}
         id="cylinder-menu"
-        className="relative z-10 w-full min-h-screen flex flex-col items-center justify-between pt-4 pb-12 px-2 sm:px-6"
+        className="relative z-10 w-full flex flex-col items-center justify-start pt-1 pb-8 px-2 sm:px-6"
       >
         {/* Main Presentation Area: Vertical Spotlight Navbar Tightly Coupled with 3D Cylinder */}
-        <div className="relative z-10 w-full flex-1 flex flex-col lg:flex-row items-center lg:items-center justify-center gap-4 lg:gap-2 max-w-7xl mx-auto py-2">
-          {/* Vertical Spotlight Navbar (Larger, prominent and positioned right beside the cylinder) */}
+        <div className="relative z-10 w-full flex flex-col lg:flex-row items-center lg:items-center justify-center gap-3 lg:gap-2 max-w-7xl mx-auto py-1">
+          {/* Vertical Spotlight Navbar (Positioned right beside the cylinder) */}
           <div className="shrink-0 flex items-center justify-center lg:pr-2 z-30">
             <VerticalSpotlightNavbar
               items={CATEGORY_ITEMS}
@@ -129,10 +133,10 @@ export default function RestaurantMenuPage() {
             />
           </div>
 
-          {/* Dedicated 3D Cylinder Menu (Maintained persistently for smooth transitions) */}
+          {/* Dedicated 3D Cylinder Menu */}
           <div
             ref={cylinderContainerRef}
-            className="flex-1 w-full flex items-center justify-center overflow-visible scroll-mt-20"
+            className="flex-1 w-full flex items-center justify-center overflow-visible scroll-mt-6"
           >
             <CombinedCylinderMenu
               items={filteredItems}
@@ -153,7 +157,7 @@ export default function RestaurantMenuPage() {
         />
 
         {/* Footer */}
-        <footer className="relative z-10 w-full py-4 mt-8">
+        <footer className="relative z-10 w-full py-3 mt-4">
           <MadeWithDyad />
         </footer>
       </section>

@@ -4,7 +4,7 @@ import React from "react";
 
 export function MenuSectionDivider() {
   return (
-    <div className="relative z-10 w-full max-w-4xl mx-auto py-6 sm:py-8 px-4 flex items-center justify-center">
+    <div className="relative z-10 w-full max-w-4xl mx-auto py-2 sm:py-3 px-4 flex items-center justify-center">
       {/* Sleek Minimal Ember Line with Center Glowing Core */}
       <div className="w-full flex items-center justify-center">
         <div className="flex-1 h-px bg-gradient-to-r from-transparent via-orange-500/30 to-amber-500/60" />
