@@ -37,21 +37,18 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
   }, []);
 
   return (
-    <section className="relative w-full min-h-[56vh] sm:min-h-[64vh] flex flex-col items-center justify-center px-4 pt-12 pb-8 text-center select-none overflow-hidden [contain:layout_style]">
-      {/* High-End Premium Transparent Abstract White Background with Seamless Multi-Side Edge Fading */}
+    <section className="relative w-full min-h-[50vh] sm:min-h-[58vh] flex flex-col items-center justify-center px-4 pt-10 pb-6 text-center select-none overflow-hidden [contain:layout_style]">
+      {/* Transparent Background Image with Radial Fade Vignette */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-        {/* Luxury architectural/minimalist white geometric structure image with inversion & soft transparency */}
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-20 mix-blend-screen scale-105 filter blur-[2px] contrast-125"
+          className="absolute inset-0 bg-cover bg-center opacity-30 mix-blend-luminosity scale-105 filter blur-[1px]"
           style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1600&auto=format&fit=crop')`,
+            backgroundImage: `url('https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1600&auto=format&fit=crop')`,
           }}
         />
-
-        {/* Multi-directional smooth edge fade gradients blending seamlessly into the dark page body */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0504] via-[#0a0504]/50 to-[#0a0504]" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0504] via-transparent to-[#0a0504] opacity-80" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_15%,#0a0504_85%)]" />
+        {/* Radial and edge gradient fade for seamless blending on all sides */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0504]/90 via-[#0a0504]/40 to-[#0a0504]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,#0a0504_90%)]" />
       </div>
 
       {/* Hero Headline */}
