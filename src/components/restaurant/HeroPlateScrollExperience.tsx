@@ -3,6 +3,7 @@
 import React, { useEffect, useRef } from "react";
 import { SaharaButton } from "./SaharaButton";
 import { ChevronDown, ChefHat } from "lucide-react";
+import { SocialContactBar } from "./SocialContactBar";
 
 interface HeroPlateScrollExperienceProps {
   onScrollToMenu: () => void;
@@ -38,6 +39,9 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
 
   return (
     <section className="relative w-full min-h-[48vh] sm:min-h-[54vh] flex flex-col items-center justify-center px-4 pt-8 pb-4 text-center select-none overflow-hidden [contain:layout_style]">
+      {/* Vertical Social Contact Bar on the left corner */}
+      <SocialContactBar />
+
       {/* Hero Headline */}
       <div className="relative z-10 max-w-2xl space-y-1 mt-1">
         <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-[0.18em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300 drop-shadow-[0_10px_25px_rgba(249,115,22,0.3)]">
