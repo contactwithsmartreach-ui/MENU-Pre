@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { SaharaButton } from "./SaharaButton";
 import { ChevronDown, ChefHat } from "lucide-react";
 
@@ -9,24 +9,35 @@ interface HeroPlateScrollExperienceProps {
 }
 
 export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExperienceProps) {
-  const [scrollY, setScrollY] = useState(0);
+  const hatRef = useRef<HTMLDivElement>(null);
+  const tickingRef = useRef(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrollY(window.scrollY);
+      if (!tickingRef.current) {
+        window.requestAnimationFrame(() => {
+          if (hatRef.current) {
+            const scrollY = window.scrollY;
+            const translateY = Math.min(scrollY * 0.3, 140);
+            const scale = Math.max(0.8, 1 - scrollY * 0.0008);
+            const opacity = Math.max(0.15, 1 - scrollY * 0.0025);
+            const rotate = (scrollY * 0.12) % 360;
+
+            hatRef.current.style.transform = `translate3d(0, ${translateY}px, 0) scale(${scale}) rotate(${rotate}deg)`;
+            hatRef.current.style.opacity = `${opacity}`;
+          }
+          tickingRef.current = false;
+        });
+        tickingRef.current = true;
+      }
     };
+
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Parallax and smooth scale/rotate effect based on scroll position
-  const translateY = scrollY * 0.35;
-  const scale = Math.max(0.75, 1 - scrollY * 0.001);
-  const opacity = Math.max(0, 1 - scrollY * 0.003);
-  const rotate = scrollY * 0.15;
-
   return (
-    <section className="relative w-full min-h-[48vh] sm:min-h-[56vh] flex flex-col items-center justify-center px-4 pt-6 pb-2 text-center select-none overflow-hidden [contain:layout_style]">
+    <section className="relative w-full min-h-[46vh] sm:min-h-[52vh] flex flex-col items-center justify-center px-4 pt-6 pb-2 text-center select-none overflow-hidden [contain:layout_style]">
       {/* Hero Headline */}
       <div className="relative z-10 max-w-2xl space-y-1 mt-1">
         <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-[0.18em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300 drop-shadow-[0_10px_25px_rgba(249,115,22,0.3)]">
@@ -39,29 +50,20 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
 
       {/* CTA Button & Scroll-Following Chef Hat */}
       <div className="relative z-30 flex flex-col items-center gap-4 pt-4 pb-1">
-        {/* Animated Scrolling Chef Hat */}
+        {/* Hardware-accelerated Scrolling Chef Hat */}
         <div
-          className="relative flex flex-col items-center group cursor-pointer will-change-transform transition-transform duration-75 ease-out"
-          style={{
-            transform: `translateY(${translateY}px) scale(${scale}) rotate(${rotate}deg)`,
-            opacity,
-          }}
+          ref={hatRef}
+          className="relative flex flex-col items-center group cursor-pointer will-change-transform transform-gpu"
           onClick={onScrollToMenu}
         >
-          <div className="absolute -inset-3 bg-orange-500/20 rounded-full blur-xl group-hover:bg-orange-500/35 transition-all duration-300 pointer-events-none animate-pulse" />
-          <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-b from-neutral-100 via-neutral-200 to-neutral-300 border-2 border-orange-400/50 shadow-[0_15px_35px_rgba(0,0,0,0.6),0_0_25px_rgba(249,115,22,0.5)] flex items-center justify-center text-neutral-900 transform group-hover:scale-110 transition-transform duration-300">
+          <div className="absolute -inset-3 bg-orange-500/20 rounded-full blur-lg group-hover:bg-orange-500/35 transition-opacity duration-300 pointer-events-none" />
+          <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-b from-neutral-100 via-neutral-200 to-neutral-300 border-2 border-orange-400/50 shadow-[0_15px_35px_rgba(0,0,0,0.6),0_0_25px_rgba(249,115,22,0.5)] flex items-center justify-center text-neutral-900 transform group-hover:scale-105 transition-transform duration-200">
             <ChefHat className="w-10 h-10 sm:w-12 sm:h-12 text-neutral-900 stroke-[1.5]" />
           </div>
-          <div className="w-10 h-2.5 bg-black/60 rounded-full blur-md mt-1" />
+          <div className="w-10 h-2.5 bg-black/60 rounded-full blur-sm mt-1" />
         </div>
 
-        <div
-          className="relative drop-shadow-[0_12px_28px_rgba(0,0,0,0.85)]"
-          style={{
-            WebkitBoxReflect:
-              "below 6px linear-gradient(to bottom, transparent 40%, rgba(249, 115, 22, 0.45) 100%)",
-          }}
-        >
+        <div className="relative drop-shadow-[0_12px_28px_rgba(0,0,0,0.85)]">
           <SaharaButton
             onClick={onScrollToMenu}
             primaryText="EXPLORE MENU"
