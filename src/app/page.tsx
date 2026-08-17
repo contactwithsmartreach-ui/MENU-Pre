@@ -49,7 +49,6 @@ export default function RestaurantMenuPage() {
 
   // Ultra-smooth zero-lag scrolling to center the cylinder cards right in front of user
   const smoothScrollToMenu = useCallback(() => {
-    if (!cylinderContainerRef.current && !menuSectionRef.current) return;
     const targetElement = cylinderContainerRef.current || menuSectionRef.current;
     
     if (targetElement) {
@@ -72,16 +71,14 @@ export default function RestaurantMenuPage() {
 
   return (
     <div className="relative min-h-screen w-full bg-[#0a0504] text-neutral-100 flex flex-col items-center justify-between select-none overflow-x-hidden">
-      {/* Sahara Sunset Ambient Glowing Atmospheric Background */}
-      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        {/* Sahara Sunset Solar Core */}
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[550px] bg-gradient-to-tr from-red-600/25 via-orange-500/25 to-pink-600/15 rounded-full blur-[180px] animate-pulse duration-1000" />
-        <div className="absolute top-1/4 left-1/4 -translate-x-1/2 w-[550px] h-[550px] bg-amber-500/20 rounded-full blur-[160px]" />
-        <div className="absolute bottom-10 right-1/4 translate-x-1/2 w-[600px] h-[450px] bg-red-700/20 rounded-full blur-[170px]" />
+      {/* Sahara Sunset Optimized Ambient Atmospheric Background (Hardware accelerated without heavy re-renders) */}
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden transform-gpu">
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[450px] bg-gradient-to-tr from-red-600/20 via-orange-500/20 to-amber-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 right-1/4 translate-x-1/2 w-[500px] h-[350px] bg-red-700/15 rounded-full blur-3xl" />
 
         {/* Topographic Dune Wave Lines */}
         <svg
-          className="absolute inset-x-0 bottom-0 w-full h-[55%] opacity-15 pointer-events-none"
+          className="absolute inset-x-0 bottom-0 w-full h-[45%] opacity-15 pointer-events-none"
           viewBox="0 0 1440 320"
           preserveAspectRatio="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -101,7 +98,7 @@ export default function RestaurantMenuPage() {
 
         {/* Subtle Stardust Texture */}
         <div
-          className="absolute inset-0 opacity-[0.035]"
+          className="absolute inset-0 opacity-[0.03]"
           style={{
             backgroundImage:
               "radial-gradient(rgba(249, 115, 22, 0.8) 1px, transparent 1px)",
@@ -124,7 +121,7 @@ export default function RestaurantMenuPage() {
       >
         {/* Main Presentation Area: Vertical Spotlight Navbar Tightly Coupled with 3D Cylinder */}
         <div className="relative z-10 w-full flex flex-col lg:flex-row items-center lg:items-center justify-center gap-3 lg:gap-2 max-w-7xl mx-auto py-1">
-          {/* Vertical Spotlight Navbar (Positioned right beside the cylinder) */}
+          {/* Vertical Spotlight Navbar */}
           <div className="shrink-0 flex items-center justify-center lg:pr-2 z-30">
             <VerticalSpotlightNavbar
               items={CATEGORY_ITEMS}

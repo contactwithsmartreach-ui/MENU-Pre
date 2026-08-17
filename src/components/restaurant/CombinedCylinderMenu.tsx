@@ -29,10 +29,10 @@ export function CombinedCylinderMenu({
 
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
-  const [selectedDishIndex, setSelectedDishIndex] = useState<number>(0);
+  const [activeFrontIndex, setActiveFrontIndex] = useState<number>(0);
   const [isSwitchingCategory, setIsSwitchingCategory] = useState(false);
 
-  // High-performance DOM transform & smooth physics tracking
+  // Performance optimized DOM references
   const cylinderRef = useRef<HTMLDivElement>(null);
   const currentRotationRef = useRef(0);
   const targetRotationRef = useRef(0);
@@ -49,7 +49,7 @@ export function CombinedCylinderMenu({
   const autoResumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const animFrameRef = useRef<number | null>(null);
 
-  // Responsive geometry: larger cards with calibrated perspective
+  // Responsive geometry
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 640);
@@ -59,31 +59,29 @@ export function CombinedCylinderMenu({
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Generously sized card dimensions
-  const cardWidth = isMobile ? 250 : 360;
-  // Natural cylinder radius to keep cards equidistant and perfectly spaced without collisions
+  const cardWidth = isMobile ? 240 : 340;
   const radius =
     Math.round(cardWidth / (2 * Math.tan(Math.PI / Math.max(N, 3)))) +
-    (isMobile ? 25 : 50);
+    (isMobile ? 20 : 45);
 
-  // Apply smooth transform directly to the DOM for 60fps+ fluid rendering
+  // High-performance DOM transform without React state re-rendering
   const setTransform = useCallback(
     (deg: number) => {
       currentRotationRef.current = deg;
       if (cylinderRef.current) {
-        cylinderRef.current.style.transform = `translateZ(-${radius}px) rotateY(${deg}deg)`;
+        cylinderRef.current.style.transform = `translate3d(0, 0, -${radius}px) rotateY(${deg}deg)`;
       }
     },
     [radius]
   );
 
-  // Smooth Category Switch Effect without unmounting or overlap glitching
+  // Smooth Category Switch Effect
   const prevItemsRef = useRef(items);
   useEffect(() => {
     if (prevItemsRef.current !== items) {
       prevItemsRef.current = items;
       setIsSwitchingCategory(true);
-      setSelectedDishIndex(0);
+      setActiveFrontIndex(0);
       currentRotationRef.current = 0;
       targetRotationRef.current = 0;
       velocityRef.current = 0;
@@ -92,14 +90,15 @@ export function CombinedCylinderMenu({
 
       const timer = setTimeout(() => {
         setIsSwitchingCategory(false);
-      }, 260);
+      }, 200);
       return () => clearTimeout(timer);
     }
   }, [items, setTransform]);
 
-  // Silky Smooth Physics Animation Loop
+  // Smooth Physics Animation Loop
   useEffect(() => {
     let lastTime = performance.now();
+    let lastCalculatedFront = 0;
 
     const renderLoop = (time: number) => {
       const dt = Math.min((time - lastTime) / 1000, 0.033);
@@ -110,7 +109,7 @@ export function CombinedCylinderMenu({
       } else if (isTransitioningToTargetRef.current) {
         const diff = targetRotationRef.current - currentRotationRef.current;
         if (Math.abs(diff) > 0.05) {
-          currentRotationRef.current += diff * Math.min(6.5 * dt, 0.2);
+          currentRotationRef.current += diff * Math.min(8.0 * dt, 0.25);
           setTransform(currentRotationRef.current);
         } else {
           currentRotationRef.current = targetRotationRef.current;
@@ -121,14 +120,22 @@ export function CombinedCylinderMenu({
         if (Math.abs(velocityRef.current) > 0.01) {
           currentRotationRef.current += velocityRef.current;
           targetRotationRef.current = currentRotationRef.current;
-          velocityRef.current *= 0.95;
+          velocityRef.current *= 0.94;
           setTransform(currentRotationRef.current);
         } else if (isAutoSpinningRef.current && hoveredIdx === null && !isSwitchingCategory) {
-          const ambientSpeed = 2.4;
+          const ambientSpeed = 2.2;
           currentRotationRef.current += ambientSpeed * dt;
           targetRotationRef.current = currentRotationRef.current;
           setTransform(currentRotationRef.current);
         }
+      }
+
+      // Throttled front dish index calculation
+      const normalizedRot = ((-currentRotationRef.current % 360) + 360) % 360;
+      const currentFront = Math.round(normalizedRot / angleStep) % N;
+      if (currentFront !== lastCalculatedFront) {
+        lastCalculatedFront = currentFront;
+        setActiveFrontIndex(currentFront);
       }
 
       animFrameRef.current = requestAnimationFrame(renderLoop);
@@ -138,7 +145,7 @@ export function CombinedCylinderMenu({
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
-  }, [hoveredIdx, isSwitchingCategory, setTransform]);
+  }, [hoveredIdx, isSwitchingCategory, setTransform, angleStep, N]);
 
   // Smooth cinematic glide to specific dish index
   const rotateToIndex = useCallback(
@@ -148,7 +155,7 @@ export function CombinedCylinderMenu({
       velocityRef.current = 0;
       isTransitioningToTargetRef.current = true;
 
-      setSelectedDishIndex(index);
+      setActiveFrontIndex(index);
 
       const targetAngle = -index * angleStep;
       const current = currentRotationRef.current;
@@ -161,7 +168,7 @@ export function CombinedCylinderMenu({
 
       autoResumeTimeoutRef.current = setTimeout(() => {
         isAutoSpinningRef.current = true;
-      }, 5000);
+      }, 4500);
     },
     [angleStep, onSelectItem]
   );
@@ -170,15 +177,15 @@ export function CombinedCylinderMenu({
     (direction: "prev" | "next") => {
       const newActive =
         direction === "next"
-          ? (selectedDishIndex + 1) % N
-          : (selectedDishIndex - 1 + N) % N;
+          ? (activeFrontIndex + 1) % N
+          : (activeFrontIndex - 1 + N) % N;
 
       rotateToIndex(newActive, false, items[newActive]);
     },
-    [selectedDishIndex, N, rotateToIndex, items]
+    [activeFrontIndex, N, rotateToIndex, items]
   );
 
-  // Pointer & Drag Handlers
+  // Pointer & Drag Handlers with pointer capture
   const handlePointerDown = (e: React.PointerEvent) => {
     if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
     isDraggingRef.current = true;
@@ -199,11 +206,11 @@ export function CombinedCylinderMenu({
     const deltaY = e.clientY - startYRef.current;
 
     if (!isHorizontalDragRef.current) {
-      if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 6) {
+      if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 8) {
         isDraggingRef.current = false;
         return;
       }
-      if (Math.abs(deltaX) > 6 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      if (Math.abs(deltaX) > 8 && Math.abs(deltaX) > Math.abs(deltaY)) {
         isHorizontalDragRef.current = true;
         isAutoSpinningRef.current = false;
       }
@@ -215,14 +222,14 @@ export function CombinedCylinderMenu({
 
       const now = performance.now();
       const dt = Math.max(now - lastPointerTimeRef.current, 10);
-      const instantVelocity = (stepX / dt) * 10;
+      const instantVelocity = (stepX / dt) * 8;
 
       const sensitivity = isMobile ? 0.22 : 0.16;
       currentRotationRef.current -= stepX * sensitivity;
       targetRotationRef.current = currentRotationRef.current;
 
       velocityRef.current =
-        velocityRef.current * 0.4 - instantVelocity * 0.6 * sensitivity;
+        velocityRef.current * 0.3 - instantVelocity * 0.7 * sensitivity;
 
       lastPointerXRef.current = e.clientX;
       lastPointerTimeRef.current = now;
@@ -234,21 +241,21 @@ export function CombinedCylinderMenu({
     isDraggingRef.current = false;
     isHorizontalDragRef.current = false;
 
-    velocityRef.current = Math.max(Math.min(velocityRef.current, 2.2), -2.2);
+    velocityRef.current = Math.max(Math.min(velocityRef.current, 2.0), -2.0);
 
     autoResumeTimeoutRef.current = setTimeout(() => {
       isAutoSpinningRef.current = true;
     }, 4000);
   };
 
-  // Horizontal wheel / trackpad
+  // Horizontal wheel
   const handleWheel = (e: React.WheelEvent) => {
     if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 4) {
       if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
       isAutoSpinningRef.current = false;
       isTransitioningToTargetRef.current = false;
 
-      const impulse = (e.deltaX > 0 ? -1 : 1) * Math.min(Math.abs(e.deltaX) * 0.012, 0.4);
+      const impulse = (e.deltaX > 0 ? -1 : 1) * Math.min(Math.abs(e.deltaX) * 0.012, 0.35);
       velocityRef.current += impulse;
 
       autoResumeTimeoutRef.current = setTimeout(() => {
@@ -272,14 +279,11 @@ export function CombinedCylinderMenu({
 
   const handleCardClick = (dish: MenuItem, index: number) => {
     if (dragDistanceRef.current > 8) return;
-    setSelectedDishIndex(index);
     rotateToIndex(index, false);
     onSelectItem(dish);
   };
 
-  const normalizedRot = ((-currentRotationRef.current % 360) + 360) % 360;
-  const frontIndex = Math.round(normalizedRot / angleStep) % N;
-  const currentFrontDish = items[frontIndex] || items[0];
+  const currentFrontDish = items[activeFrontIndex] || items[0];
 
   return (
     <div
@@ -289,25 +293,25 @@ export function CombinedCylinderMenu({
         className
       )}
     >
-      {/* 1. FLUID 3D CYLINDER STAGE (Moved up with tighter height) */}
+      {/* 1. FLUID 3D CYLINDER STAGE */}
       <div
-        className="relative w-full min-h-[540px] sm:min-h-[620px] lg:min-h-[660px] flex items-center justify-center overflow-visible touch-pan-y cursor-grab active:cursor-grabbing"
+        className="relative w-full min-h-[520px] sm:min-h-[600px] lg:min-h-[640px] flex items-center justify-center overflow-visible touch-pan-y cursor-grab active:cursor-grabbing"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
       >
-        {/* Sahara Radiant Floor Glow */}
-        <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 w-[550px] sm:w-[800px] h-32 bg-gradient-to-r from-red-600/35 via-orange-500/40 to-amber-400/35 blur-3xl rounded-full opacity-80" />
+        {/* Optimized Static Atmosphere Glow (No heavy continuous CSS anims) */}
+        <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 w-[500px] sm:w-[700px] h-28 bg-gradient-to-r from-red-600/30 via-orange-500/35 to-amber-400/30 blur-2xl rounded-full opacity-70" />
 
         {/* 3D Perspective Stage Container */}
         <div
           className={cn(
-            "relative w-full h-full flex items-center justify-center [perspective-origin:50%_50%] transition-opacity duration-300",
+            "relative w-full h-full flex items-center justify-center [perspective-origin:50%_50%] transition-opacity duration-200",
             isSwitchingCategory ? "opacity-40 scale-95" : "opacity-100 scale-100"
           )}
           style={{
-            perspective: isMobile ? "1100px" : "1550px",
+            perspective: isMobile ? "1100px" : "1500px",
           }}
         >
           {/* Rotating Cylinder Core */}
@@ -315,7 +319,7 @@ export function CombinedCylinderMenu({
             ref={cylinderRef}
             className="relative w-0 h-0 [transform-style:preserve-3d] will-change-transform transform-gpu"
             style={{
-              transform: `translateZ(-${radius}px) rotateY(${currentRotationRef.current}deg)`,
+              transform: `translate3d(0, 0, -${radius}px) rotateY(${currentRotationRef.current}deg)`,
             }}
           >
             {items.map((dish, i) => {
@@ -340,8 +344,8 @@ export function CombinedCylinderMenu({
                   }}
                   className={cn(
                     "group absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[28px] sm:rounded-[36px] overflow-hidden cursor-pointer",
-                    "border border-orange-500/35 bg-[#0d0706] shadow-2xl transition-[border-color,box-shadow,opacity] duration-200",
-                    "hover:border-orange-400 hover:shadow-[0_25px_60px_rgba(249,115,22,0.45)] hover:ring-2 hover:ring-orange-400/80 active:scale-[0.98]",
+                    "border border-orange-500/35 bg-[#0d0706] shadow-2xl transition-[border-color,box-shadow] duration-200 transform-gpu",
+                    "hover:border-orange-400 hover:shadow-[0_20px_50px_rgba(249,115,22,0.45)] hover:ring-2 hover:ring-orange-400/80 active:scale-[0.98]",
                     isHovered && "z-30"
                   )}
                   style={{
@@ -350,8 +354,6 @@ export function CombinedCylinderMenu({
                     transform: `rotateY(${itemAngle}deg) translateZ(${radius}px)`,
                     backfaceVisibility: "hidden",
                     WebkitBackfaceVisibility: "hidden",
-                    WebkitBoxReflect:
-                      "below 14px linear-gradient(to bottom, transparent 68%, rgba(249, 115, 22, 0.28) 100%)",
                   }}
                 >
                   {/* Dish Image Background */}
@@ -359,19 +361,19 @@ export function CombinedCylinderMenu({
                     <img
                       src={dish.image}
                       alt={dish.name}
-                      className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                      className="w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
                       loading="lazy"
                       draggable={false}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#0a0504] via-[#0a0504]/40 to-transparent" />
-                    <div className="absolute inset-0 bg-gradient-to-tr from-red-600/30 via-orange-500/20 to-transparent mix-blend-color-dodge opacity-80 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute inset-0 bg-gradient-to-tr from-red-600/30 via-orange-500/20 to-transparent mix-blend-color-dodge opacity-80" />
                   </div>
 
                   {/* Top Bar Badges */}
                   <div className="relative z-10 p-4 sm:p-5 flex items-center justify-between w-full pointer-events-none">
                     {dish.isSignature ? (
-                      <Badge className="bg-gradient-to-r from-red-500 to-orange-500 text-white font-serif tracking-wider uppercase px-3 py-1 rounded-full text-xs shadow-lg shadow-red-500/50 border-0 flex items-center gap-1.5">
-                        <Sparkles className="w-3.5 h-3.5 text-amber-200 fill-amber-200 animate-pulse" />
+                      <Badge className="bg-gradient-to-r from-red-500 to-orange-500 text-white font-serif tracking-wider uppercase px-3 py-1 rounded-full text-xs shadow-md border-0 flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5 text-amber-200 fill-amber-200" />
                         Signature
                       </Badge>
                     ) : (
@@ -393,7 +395,7 @@ export function CombinedCylinderMenu({
                       isHovered ? "opacity-100 scale-100" : "opacity-0 scale-95"
                     )}
                   >
-                    <span className="bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white font-serif tracking-widest uppercase px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold shadow-2xl shadow-red-600/60 border border-orange-200/60 flex items-center gap-2">
+                    <span className="bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white font-serif tracking-widest uppercase px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold shadow-xl shadow-red-600/50 border border-orange-200/60 flex items-center gap-2">
                       <Eye className="w-4 h-4" />
                       <span>CLICK TO ORDER</span>
                     </span>
@@ -433,9 +435,8 @@ export function CombinedCylinderMenu({
         </div>
       </div>
 
-      {/* 2. FLOATING TEXT & BUTTON CONTROLS (Tightly spaced) */}
+      {/* 2. FLOATING TEXT & BUTTON CONTROLS */}
       <div className="relative z-40 w-full max-w-3xl px-4 flex flex-col items-center gap-4 mt-2 sm:mt-4">
-        {/* Frameless Floating Control Cluster */}
         <div className="relative w-full max-w-xl flex items-center justify-between px-2 sm:px-6">
           {/* Previous Floating Button */}
           <button
@@ -443,15 +444,15 @@ export function CombinedCylinderMenu({
             aria-label="Rotate Previous Dish"
             onClick={() => stepRotate("prev")}
             className={cn(
-              "group relative w-11 h-11 sm:w-13 sm:h-13 rounded-full shrink-0 flex items-center justify-center transition-all duration-300 cursor-pointer",
+              "group relative w-11 h-11 sm:w-13 sm:h-13 rounded-full shrink-0 flex items-center justify-center transition-transform duration-200 cursor-pointer",
               "bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 text-neutral-950 font-black",
-              "border-2 border-amber-300/80 shadow-[0_0_25px_rgba(249,115,22,0.65)] active:scale-90 hover:scale-110"
+              "border-2 border-amber-300/80 shadow-[0_0_20px_rgba(249,115,22,0.6)] active:scale-90 hover:scale-105"
             )}
           >
             <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-neutral-950 stroke-[3] group-hover:-translate-x-0.5 transition-transform" />
           </button>
 
-          {/* Frameless Floating Center Dish Text */}
+          {/* Center Front Dish Display */}
           {currentFrontDish && (
             <button
               type="button"
@@ -475,9 +476,9 @@ export function CombinedCylinderMenu({
             aria-label="Rotate Next Dish"
             onClick={() => stepRotate("next")}
             className={cn(
-              "group relative w-11 h-11 sm:w-13 sm:h-13 rounded-full shrink-0 flex items-center justify-center transition-all duration-300 cursor-pointer",
+              "group relative w-11 h-11 sm:w-13 sm:h-13 rounded-full shrink-0 flex items-center justify-center transition-transform duration-200 cursor-pointer",
               "bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 text-neutral-950 font-black",
-              "border-2 border-amber-300/80 shadow-[0_0_25px_rgba(249,115,22,0.65)] active:scale-90 hover:scale-110"
+              "border-2 border-amber-300/80 shadow-[0_0_20px_rgba(249,115,22,0.6)] active:scale-90 hover:scale-105"
             )}
           >
             <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-neutral-950 stroke-[3] group-hover:translate-x-0.5 transition-transform" />
