@@ -49,11 +49,11 @@ export default function RestaurantMenuPage() {
 
   const handleCategorySelect = (index: number) => {
     setActiveCategoryIdx(index);
-    // Smoothly focus directly onto the cards cylinder
-    if (cylinderContainerRef.current) {
-      cylinderContainerRef.current.scrollIntoView({
+    // Smoothly glide into view without lag
+    if (menuSectionRef.current) {
+      menuSectionRef.current.scrollIntoView({
         behavior: "smooth",
-        block: "center",
+        block: "start",
       });
     }
   };

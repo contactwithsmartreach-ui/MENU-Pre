@@ -89,7 +89,7 @@ export function CombinedCylinderMenu({
       } else if (isTransitioningToTargetRef.current) {
         const diff = targetRotationRef.current - currentRotationRef.current;
         if (Math.abs(diff) > 0.05) {
-          currentRotationRef.current += diff * Math.min(5.5 * dt, 0.18);
+          currentRotationRef.current += diff * Math.min(8.0 * dt, 0.25);
           setTransform(currentRotationRef.current);
         } else {
           currentRotationRef.current = targetRotationRef.current;
@@ -100,10 +100,10 @@ export function CombinedCylinderMenu({
         if (Math.abs(velocityRef.current) > 0.01) {
           currentRotationRef.current += velocityRef.current;
           targetRotationRef.current = currentRotationRef.current;
-          velocityRef.current *= 0.965;
+          velocityRef.current *= 0.95;
           setTransform(currentRotationRef.current);
         } else if (isAutoSpinningRef.current && hoveredIdx === null) {
-          const ambientSpeed = 2.4;
+          const ambientSpeed = 2.0;
           currentRotationRef.current += ambientSpeed * dt;
           targetRotationRef.current = currentRotationRef.current;
           setTransform(currentRotationRef.current);
@@ -220,7 +220,6 @@ export function CombinedCylinderMenu({
     }, 4500);
   };
 
-  // Horizontal wheel / trackpad
   const handleWheel = (e: React.WheelEvent) => {
     if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 4) {
       if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
@@ -235,19 +234,6 @@ export function CombinedCylinderMenu({
       }, 4000);
     }
   };
-
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") {
-        stepRotate("prev");
-      } else if (e.key === "ArrowRight") {
-        stepRotate("next");
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [stepRotate]);
 
   const handleCardClick = (dish: MenuItem, index: number) => {
     if (dragDistanceRef.current > 8) return;
