@@ -2,13 +2,14 @@
 
 import React, { useState, useRef, useCallback } from "react";
 import { MENU_ITEMS } from "@/data/menu-data";
-import { MenuItem } from "@/types/restaurant";
+import { MenuItem, CartItem } from "@/types/restaurant";
 import { CombinedCylinderMenu } from "@/components/restaurant/CombinedCylinderMenu";
 import { DishDetailModal } from "@/components/restaurant/DishDetailModal";
 import { HeroPlateScrollExperience } from "@/components/restaurant/HeroPlateScrollExperience";
 import { VerticalSpotlightNavbar } from "@/components/restaurant/VerticalSpotlightNavbar";
 import { MenuSectionDivider } from "@/components/restaurant/MenuSectionDivider";
-import { TopLeftQuickActions } from "@/components/restaurant/TopLeftQuickActions";
+import { SidebarNav } from "@/components/restaurant/SidebarNav";
+import { OrderDrawer } from "@/components/restaurant/OrderDrawer";
 import { toast } from "sonner";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 
@@ -26,12 +27,14 @@ export default function RestaurantMenuPage() {
   const [selectedDish, setSelectedDish] = useState<MenuItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeCategoryIdx, setActiveCategoryIdx] = useState<number>(0);
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [isOrderDrawerOpen, setIsOrderDrawerOpen] = useState(false);
 
   const selectedCategory = CATEGORY_ITEMS[activeCategoryIdx].id;
   const menuSectionRef = useRef<HTMLDivElement>(null);
   const cylinderContainerRef = useRef<HTMLDivElement>(null);
 
-  // Filter or map items based on category selection
+  // Filter items based on category selection
   const filteredItems =
     selectedCategory === "All"
       ? MENU_ITEMS
@@ -55,14 +58,38 @@ export default function RestaurantMenuPage() {
   };
 
   const handleAddToCart = (dish: MenuItem, quantity: number, notes?: string) => {
+    setCart((prevCart) => {
+      const existing = prevCart.find((item) => item.dish.id === dish.id);
+      if (existing) {
+        return prevCart.map((item) =>
+          item.dish.id === dish.id
+            ? { ...item, quantity: item.quantity + quantity }
+            : item
+        );
+      }
+      return [...prevCart, { dish, quantity, specialInstructions: notes }];
+    });
+
     toast.success(`Added ${quantity}x ${dish.name} to order`, {
-      description: `$${(dish.price * quantity).toFixed(2)} • ${
-        notes ? `"${notes}"` : `Ready in ~${dish.prepTime}`
-      }`,
+      description: `$${(dish.price * quantity).toFixed(2)} • Ready in ~${dish.prepTime}`,
     });
   };
 
-  // Ultra-smooth zero-lag scrolling to center the cylinder cards right in front of user
+  const handleUpdateQuantity = (dishId: string, quantity: number) => {
+    setCart((prev) =>
+      prev.map((item) => (item.dish.id === dishId ? { ...item, quantity } : item))
+    );
+  };
+
+  const handleRemoveItem = (dishId: string) => {
+    setCart((prev) => prev.filter((item) => item.dish.id !== dishId));
+  };
+
+  const handleClearCart = () => {
+    setCart([]);
+  };
+
+  // Smooth scrolling to center the cylinder cards
   const smoothScrollToMenu = useCallback(() => {
     const targetElement = cylinderContainerRef.current || menuSectionRef.current;
     
@@ -84,10 +111,25 @@ export default function RestaurantMenuPage() {
     smoothScrollToMenu();
   };
 
+  const totalCartCount = cart.reduce((sum, i) => sum + i.quantity, 0);
+
   return (
     <div className="relative min-h-screen w-full bg-[#0a0504] text-neutral-100 flex flex-col items-center justify-between select-none overflow-x-hidden">
-      {/* Top Left Quick Actions: Phone, Location, Instagram, Facebook */}
-      <TopLeftQuickActions />
+      {/* Premium Animated Sidebar Nav */}
+      <SidebarNav
+        onOpenCart={() => setIsOrderDrawerOpen(true)}
+        cartCount={totalCartCount}
+      />
+
+      {/* Order Drawer Sheet */}
+      <OrderDrawer
+        isOpen={isOrderDrawerOpen}
+        onClose={() => setIsOrderDrawerOpen(false)}
+        cart={cart}
+        onUpdateQuantity={handleUpdateQuantity}
+        onRemoveItem={handleRemoveItem}
+        onClearCart={handleClearCart}
+      />
 
       {/* Sahara Sunset Ambient Atmospheric Background */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden transform-gpu">
