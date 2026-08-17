@@ -40,12 +40,12 @@ export function SaharaButton({
     >
       {primaryText}
       <p
-        className="absolute z-40 font-semibold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent top-1/2 left-1/2 -translate-x-1/2 group-hover:-translate-y-full h-full w-full transition-all duration-300 -translate-y-[42%] tracking-widest flex items-center justify-center"
+        className="absolute z-40 font-semibold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent top-1/2 left-1/2 -translate-x-1/2 group-hover:-translate-y-full h-full w-full transition-all duration-300 -translate-y-[62%] tracking-widest flex items-center justify-center"
       >
         {primaryText}
       </p>
       <p
-        className="absolute z-40 top-1/2 left-1/2 bg-gradient-to-r from-red-700 to-orange-700 bg-clip-text text-transparent -translate-x-1/2 translate-y-full h-full w-full transition-all duration-300 group-hover:-translate-y-[52%] tracking-widest font-extrabold flex items-center justify-center"
+        className="absolute z-40 top-1/2 left-1/2 bg-gradient-to-r from-red-700 to-orange-700 bg-clip-text text-transparent -translate-x-1/2 translate-y-full h-full w-full transition-all duration-300 group-hover:-translate-y-[62%] tracking-widest font-extrabold flex items-center justify-center"
       >
         {hoverText}
       </p>
