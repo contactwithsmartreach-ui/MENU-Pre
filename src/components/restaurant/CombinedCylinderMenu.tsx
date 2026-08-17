@@ -12,6 +12,97 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { SaharaButton } from "./SaharaButton";
+
+export interface CombinedCylinderMenuProps {
+  items: MenuItem[];
+  onSelectItem: (item: MenuItem) => void;
+  className?: string;
+}
+
+export function CombinedCylinderMenu({
+  items,
+  onSelectItem,
+  className,
+}: CombinedCylinderMenuProps) {
+  const N = Math.max(items.length, 1);
+  const angleStep = 360 / N;
+
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [activeFrontIndex, setActiveFrontIndex] = useState<number>(0);
+  const [isSwitchingCategory, setIsSwitchingCategory] = useState(false);
+  const [viewportWidth, setViewportWidth] = useState<number>(
+    typeof window !== "undefined" ? window.innerWidth : 390
+  );
+
+  // Performance optimized DOM references
+  const cylinderRef = useRef<HTMLDivElement>(null);
+  const currentRotationRef = useRef(0);
+  const targetRotationRef = useRef(0);
+  const isTransitioningToTargetRef = useRef(false);
+  const velocityRef = useRef(0);
+  const isDraggingRef = useRef(false);
+  const isAutoSpinningRef = useRef(true);
+  const isHorizontalDragRef = useRef(false);
+  const startXRef = useRef(0);
+  const startYRef = useRef(0);
+  const lastPointerXRef = useRef(0);
+  const lastPointerTimeRef = useRef(0);
+  const dragDistanceRef = useRef(0);
+  const autoResumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const animFrameRef = useRef<number | null>(null);
+
+  // Dynamic responsive sizing based on actual phone screen width
+  useEffect(() => {
+    const handleResize = () => {
+      const w = window.innerWidth;
+      setViewportWidth(w);
+      setIsMobile(w < 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Card size calculations: optimized for full vertical display on phones & desktops
+  const cardWidth = isMobile
+    ? Math.min(Math.round(viewportWidth * 0.72), 270)
+    : 300;
+
+  const cardHeight = Math.round(cardWidth * 1.38);
+
+  // Exact cylinder trigonometry for smooth circular spacing
+  const radius =
+    Math.round(cardWidth / (2 * Math.tan(Math.PI / Math.max(N, 3)))) +
+    (isMobile ? 20 : 36);
+
+  // High-performance DOM transform without React state re-rendering
+  const setTransform = useCallback(
+    (deg: number) => {
+      currentRotationRef.current = deg;
+      if (cylinderRef.current) {
+        cylinderRef.current.<dyad-problem-report summary="2 problems">
+<problem file="src/components/restaurant/CombinedCylinderMenu.tsx" line="43" column="35" code="1005">',' expected.</problem>
+<problem file="src/components/restaurant/CombinedCylinderMenu.tsx" line="43" column="9" code="7005">Variable 'isTransitioningToTargetRef' implicitly has an 'any' type.</problem>
+</dyad-problem-report>I will fix the ref initialization in `CombinedCylinderMenu.tsx` so that `isTransitioningToTargetRef` is declared properly using `useRef(false)`.
+
+<dyad-write path="src/components/restaurant/CombinedCylinderMenu.tsx" description="Fix declaration of isTransitioningToTargetRef to use useRef(false)">
+"use client";
+
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { MenuItem } from "@/types/restaurant";
+import { cn } from "@/lib/utils";
+import {
+  Star,
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  Plus,
+  Sparkles,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { SaharaButton } from "./SaharaButton";
 
 export interface CombinedCylinderMenuProps {
   items: MenuItem[];
@@ -438,7 +529,7 @@ export function CombinedCylinderMenu({
                           {dish.prepTime}
                         </span>
                         <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-orange-500/20 border border-orange-400/50 flex items-center justify-center text-orange-300 group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-neutral-950 transition-all shadow-md">
-                          <Plus className="w-3 h-3 stroke-[2.5]" />
+                          <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
                         </div>
                       </div>
                     </div>
@@ -450,53 +541,97 @@ export function CombinedCylinderMenu({
         </div>
       </div>
 
-      {/* 2. FLOATING CONTROLS & DIRECT SELECTION */}
+      {/* 2. FLOATING CONTROLS & DIRECT SELECTION WITH SAHARA STYLING */}
       <div className="relative z-40 w-full max-w-3xl px-4 flex flex-col items-center gap-3 sm:gap-4 mt-2">
         <div className="relative w-full max-w-xl flex items-center justify-between px-1 sm:px-6">
-          {/* Previous Floating Button */}
+          {/* Previous Sahara Navigation Button */}
           <button
             type="button"
             aria-label="Rotate Previous Dish"
             onClick={() => stepRotate("prev")}
+            style={{
+              WebkitBoxReflect:
+                "below 0px linear-gradient(to bottom, rgba(0,0,0,0.0), rgba(0,0,0,0.4))",
+            }}
             className={cn(
-              "group relative w-10 h-10 sm:w-12 sm:h-12 rounded-full shrink-0 flex items-center justify-center transition-transform duration-200 cursor-pointer",
-              "bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 text-neutral-950 font-black",
-              "border-2 border-amber-300/80 shadow-[0_0_20px_rgba(249,115,22,0.6)] active:scale-90 hover:scale-105"
+              "group relative w-12 h-12 sm:w-14 sm:h-14 rounded-full shrink-0 flex items-center justify-center transition-all duration-300 cursor-pointer overflow-hidden z-10 select-none",
+              "bg-gradient-to-r from-red-500 to-orange-500 shadow-xl group-hover:shadow-2xl shadow-red-600",
+              "after:absolute after:rounded-full after:bg-red-200 after:h-[85%] after:w-[85%] after:left-1/2 after:top-1/2 after:-translate-x-1/2 after:-translate-y-1/2",
+              "hover:saturate-[1.2] active:saturate-[1.5] active:scale-95"
             )}
           >
-            <ChevronLeft className="w-5 h-5 text-neutral-950 stroke-[3] group-hover:-translate-x-0.5 transition-transform" />
+            {/* Sahara Wave SVG */}
+            <svg
+              className="absolute w-full h-full scale-125 rotate-180 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 group-hover:animate-none animate-pulse group-hover:-translate-y-[45%] transition-all duration-300 pointer-events-none"
+              viewBox="0 0 2400 800"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <linearGradient id="prev-btn-grad" y2="100%" x2="50%" y1="0%" x1="50%">
+                  <stop offset="0%" stopOpacity="1" stopColor="hsl(37, 99%, 67%)" />
+                  <stop offset="100%" stopOpacity="1" stopColor="hsl(316, 73%, 52%)" />
+                </linearGradient>
+              </defs>
+              <g transform="matrix(1,0,0,1,0,-91.0877685546875)" fill="url(#prev-btn-grad)">
+                <path
+                  opacity="0.84"
+                  transform="matrix(1,0,0,1,0,210)"
+                  d="M 0 305.98 Q 227.6 450 600 302.1 Q 1010.7 450 1200 343.3 Q 1379.4 450 1800 320.3 Q 2153.5 450 2400 314.3 L 2400 800 L 0 800 L 0 340.3 Z"
+                />
+              </g>
+            </svg>
+            <ChevronLeft className="w-6 h-6 text-red-900 stroke-[3] relative z-40 group-hover:-translate-x-0.5 transition-transform" />
           </button>
 
-          {/* Center Front Dish Display */}
+          {/* Center Sahara Call-To-Action Button for Current Dish */}
           {currentFrontDish && (
-            <button
-              type="button"
-              onClick={() => onSelectItem(currentFrontDish)}
-              className="flex flex-col items-center justify-center text-center cursor-pointer group px-3 py-1 transition-transform hover:scale-105"
-            >
-              <span className="text-sm sm:text-base font-serif font-bold text-white tracking-wide group-hover:text-orange-300 transition-colors drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] truncate max-w-[190px] sm:max-w-xs">
-                {currentFrontDish.name}
-              </span>
-              <span className="text-xs text-amber-400 font-serif font-semibold mt-0.5 tracking-wider drop-shadow-md flex items-center gap-1.5">
-                <span>${currentFrontDish.price}</span>
-                <span className="text-orange-400/60">&bull;</span>
-                <span className="text-orange-300/90 underline underline-offset-4">Click to Order</span>
-              </span>
-            </button>
+            <div className="flex flex-col items-center">
+              <SaharaButton
+                onClick={() => onSelectItem(currentFrontDish)}
+                primaryText={`${currentFrontDish.name.slice(0, 16).toUpperCase()} • $${currentFrontDish.price}`}
+                hoverText="TAP TO ORDER"
+                size="md"
+              />
+            </div>
           )}
 
-          {/* Next Floating Button */}
+          {/* Next Sahara Navigation Button */}
           <button
             type="button"
             aria-label="Rotate Next Dish"
             onClick={() => stepRotate("next")}
+            style={{
+              WebkitBoxReflect:
+                "below 0px linear-gradient(to bottom, rgba(0,0,0,0.0), rgba(0,0,0,0.4))",
+            }}
             className={cn(
-              "group relative w-10 h-10 sm:w-12 sm:h-12 rounded-full shrink-0 flex items-center justify-center transition-transform duration-200 cursor-pointer",
-              "bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 text-neutral-950 font-black",
-              "border-2 border-amber-300/80 shadow-[0_0_20px_rgba(249,115,22,0.6)] active:scale-90 hover:scale-105"
+              "group relative w-12 h-12 sm:w-14 sm:h-14 rounded-full shrink-0 flex items-center justify-center transition-all duration-300 cursor-pointer overflow-hidden z-10 select-none",
+              "bg-gradient-to-r from-orange-500 to-red-500 shadow-xl group-hover:shadow-2xl shadow-red-600",
+              "after:absolute after:rounded-full after:bg-red-200 after:h-[85%] after:w-[85%] after:left-1/2 after:top-1/2 after:-translate-x-1/2 after:-translate-y-1/2",
+              "hover:saturate-[1.2] active:saturate-[1.5] active:scale-95"
             )}
           >
-            <ChevronRight className="w-5 h-5 text-neutral-950 stroke-[3] group-hover:translate-x-0.5 transition-transform" />
+            {/* Sahara Wave SVG */}
+            <svg
+              className="absolute w-full h-full scale-125 rotate-180 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 group-hover:animate-none animate-pulse group-hover:-translate-y-[45%] transition-all duration-300 pointer-events-none"
+              viewBox="0 0 2400 800"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <linearGradient id="next-btn-grad" y2="100%" x2="50%" y1="0%" x1="50%">
+                  <stop offset="0%" stopOpacity="1" stopColor="hsl(37, 99%, 67%)" />
+                  <stop offset="100%" stopOpacity="1" stopColor="hsl(316, 73%, 52%)" />
+                </linearGradient>
+              </defs>
+              <g transform="matrix(1,0,0,1,0,-91.0877685546875)" fill="url(#next-btn-grad)">
+                <path
+                  opacity="0.84"
+                  transform="matrix(1,0,0,1,0,210)"
+                  d="M 0 305.98 Q 227.6 450 600 302.1 Q 1010.7 450 1200 343.3 Q 1379.4 450 1800 320.3 Q 2153.5 450 2400 314.3 L 2400 800 L 0 800 L 0 340.3 Z"
+                />
+              </g>
+            </svg>
+            <ChevronRight className="w-6 h-6 text-red-900 stroke-[3] relative z-40 group-hover:translate-x-0.5 transition-transform" />
           </button>
         </div>
       </div>
