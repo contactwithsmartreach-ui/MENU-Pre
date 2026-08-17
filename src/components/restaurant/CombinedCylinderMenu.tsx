@@ -299,20 +299,20 @@ export function CombinedCylinderMenu({
     <div
       onWheel={handleWheel}
       className={cn(
-        "w-full flex flex-col items-center justify-start relative select-none gap-2 sm:gap-4 pb-2 overflow-visible",
+        "w-full flex flex-col items-center justify-start relative select-none gap-2 sm:gap-4 pb-6 overflow-visible",
         className
       )}
     >
       {/* 1. FLUID 3D CYLINDER STAGE WITH AMPLE VERTICAL CLEARANCE */}
       <div
-        className="relative w-full min-h-[580px] sm:min-h-[660px] md:min-h-[720px] flex items-center justify-center overflow-visible touch-pan-y cursor-grab active:cursor-grabbing pt-4 pb-28"
+        className="relative w-full min-h-[580px] sm:min-h-[660px] md:min-h-[720px] flex items-center justify-center overflow-visible touch-pan-y cursor-grab active:cursor-grabbing pt-4 pb-36"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
       >
         {/* Floor Reflection Gradient & Lighting Pool */}
-        <div className="pointer-events-none absolute bottom-12 left-1/2 -translate-x-1/2 w-[90%] max-w-[640px] h-24 bg-gradient-to-r from-red-600/20 via-orange-500/25 to-amber-400/20 blur-3xl rounded-full opacity-70" />
+        <div className="pointer-events-none absolute bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-[640px] h-28 bg-gradient-to-r from-red-600/25 via-orange-500/30 to-amber-400/25 blur-3xl rounded-full opacity-80" />
 
         {/* 3D Perspective Stage Container */}
         <div
@@ -448,8 +448,8 @@ export function CombinedCylinderMenu({
         </div>
       </div>
 
-      {/* 2. FLOATING CONTROLS & DIRECT SELECTION */}
-      <div className="relative z-40 w-full max-w-3xl px-4 flex flex-col items-center gap-3 sm:gap-4 mt-2">
+      {/* 2. FLOATING CONTROLS & DIRECT SELECTION - PLACED FURTHER DOWN */}
+      <div className="relative z-40 w-full max-w-3xl px-4 flex flex-col items-center gap-3 sm:gap-4 mt-6 sm:mt-10 pb-4">
         <div className="relative w-full max-w-xl flex items-center justify-between px-1 sm:px-6">
           {/* Previous Uiverse Sahara Button */}
           <button
