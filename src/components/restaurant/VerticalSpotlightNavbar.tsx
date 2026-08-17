@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef } from "react";
 import { cn } from "@/lib/utils";
 
 export interface NavItem {
@@ -32,37 +32,9 @@ export function VerticalSpotlightNavbar({
   defaultActiveIndex = 0,
   activeIndex: controlledActiveIndex,
 }: VerticalSpotlightNavbarProps) {
-  const [internalActiveIndex, setInternalActiveIndex] = useState(defaultActiveIndex);
+  const [internalActiveIndex, setInternalActiveIndex] = React.useState(defaultActiveIndex);
   const activeIndex = controlledActiveIndex !== undefined ? controlledActiveIndex : internalActiveIndex;
-  
-  // Track scroll direction for animated slide-in effect
-  const [scrollDir, setScrollDir] = useState<"down" | "up">("down");
-  const [slideOffset, setSlideOffset] = useState(0);
-  const lastScrollY = useRef(0);
   const listRef = useRef<HTMLUListElement>(null);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY > lastScrollY.current) {
-        setScrollDir("down");
-        setSlideOffset(Math.min((currentScrollY - lastScrollY.current) * 0.8, 40));
-      } else {
-        setScrollDir("up");
-        setSlideOffset(Math.max((currentScrollY - lastScrollY.current) * 0.8, -40));
-      }
-      lastScrollY.current = currentScrollY;
-
-      // Decay offset smoothly after scrolling stops
-      const timeout = setTimeout(() => {
-        setSlideOffset(0);
-      }, 150);
-      return () => clearTimeout(timeout);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   const handleItemClick = (item: NavItem, index: number) => {
     if (controlledActiveIndex === undefined) {
@@ -71,6 +43,7 @@ export function VerticalSpotlightNavbar({
     onItemClick?.(item, index);
   };
 
+  // Allow mouse wheel scrolling across categories for fast transitions
   const handleWheel = (e: React.WheelEvent) => {
     if (Math.abs(e.deltaY) > 20) {
       if (e.deltaY > 0 && activeIndex < items.length - 1) {
@@ -85,12 +58,9 @@ export function VerticalSpotlightNavbar({
     <div
       onWheel={handleWheel}
       className={cn(
-        "relative flex flex-col items-center lg:items-start select-none py-2 px-1 sm:px-3 z-30 transition-all duration-300",
+        "relative flex flex-col items-center lg:items-start select-none py-2 px-1 sm:px-3 z-30",
         className
       )}
-      style={{
-        transform: `translateX(${slideOffset}px)`,
-      }}
     >
       {/* Background Radiant Glow centered behind the active element */}
       <div
@@ -100,7 +70,7 @@ export function VerticalSpotlightNavbar({
         }}
       />
 
-      {/* Pure Floating Typography List with Pull-Out Stagger Effect */}
+      {/* Pure Floating Typography List - Larger & Closer to the Cylinder */}
       <ul
         ref={listRef}
         className="relative flex flex-col items-center lg:items-start gap-3 sm:gap-5 z-10 [perspective:1200px]"
@@ -109,6 +79,7 @@ export function VerticalSpotlightNavbar({
           const distance = Math.abs(activeIndex - idx);
           const isActive = activeIndex === idx;
 
+          // Clear, bold depth scaling with elevated visibility
           let scale = 1;
           let opacity = 1;
           let translateZ = 0;
@@ -131,15 +102,12 @@ export function VerticalSpotlightNavbar({
             translateZ = -45;
           }
 
-          // Staggered pull-out translation based on distance from active item & scroll direction
-          const staggerPull = (idx - activeIndex) * (scrollDir === "down" ? 6 : -6) + slideOffset * 0.5;
-
           return (
             <li
               key={idx}
-              className="relative flex items-center transition-all duration-300 ease-out will-change-transform"
+              className="relative flex items-center transition-transform duration-300 ease-out will-change-transform"
               style={{
-                transform: `scale(${scale}) translateZ(${translateZ}px) translateX(${staggerPull}px)`,
+                transform: `scale(${scale}) translateZ(${translateZ}px)`,
               }}
             >
               <button
