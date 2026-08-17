@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Star, Clock, Flame, Sparkles, Plus, Minus, Utensils } from "lucide-react";
+import { Star, Clock, Flame, Sparkles, Utensils } from "lucide-react";
 import { SaharaButton } from "./SaharaButton";
 
 interface DishDetailModalProps {
@@ -25,13 +25,10 @@ export function DishDetailModal({
   onClose,
   onAddToCart,
 }: DishDetailModalProps) {
-  const [quantity, setQuantity] = useState(1);
-
   if (!dish) return null;
 
   const handleAdd = () => {
-    onAddToCart(dish, quantity);
-    setQuantity(1);
+    onAddToCart(dish, 1);
     onClose();
   };
 
@@ -111,30 +108,11 @@ export function DishDetailModal({
           </div>
 
           {/* Action Footer */}
-          <div className="pt-3 border-t border-orange-500/20 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3 bg-neutral-900/90 border border-orange-500/30 rounded-full px-3 py-1.5">
-              <button
-                type="button"
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="p-1 text-orange-300/80 hover:text-white transition-colors"
-                disabled={quantity <= 1}
-              >
-                <Minus className="w-4 h-4" />
-              </button>
-              <span className="font-semibold text-sm w-4 text-center text-white">{quantity}</span>
-              <button
-                type="button"
-                onClick={() => setQuantity(quantity + 1)}
-                className="p-1 text-orange-300/80 hover:text-white transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-              </button>
-            </div>
-
+          <div className="pt-3 border-t border-orange-500/20 flex items-center justify-end gap-4">
             <div className="flex-1 flex justify-end pb-2">
               <SaharaButton
                 onClick={handleAdd}
-                primaryText={`ADD $${(dish.price * quantity).toFixed(2)}`}
+                primaryText={`ADD $${dish.price.toFixed(2)}`}
                 hoverText="CONFIRM"
                 size="md"
               />
