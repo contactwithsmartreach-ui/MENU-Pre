@@ -37,19 +37,30 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
   }, []);
 
   return (
-    <section className="relative w-full min-h-[48vh] sm:min-h-[54vh] flex flex-col items-center justify-center px-4 pt-8 pb-4 text-center select-none overflow-hidden [contain:layout_style]">
+    <section className="relative w-full min-h-[58vh] sm:min-h-[66vh] flex flex-col items-center justify-center px-4 pt-12 pb-8 text-center select-none overflow-hidden [contain:layout_style]">
+      {/* 3D Burger Shop Background Image with Deep Luxury Gradient Overlays */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <img
+          src="/images/burger-shop-3d.jpg"
+          alt="3D Burger Shop Background"
+          className="w-full h-full object-cover object-center scale-105 filter brightness-[0.45] contrast-110 blur-[1px]"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0504] via-[#0a0504]/70 to-[#0a0504]/50" />
+        <div className="absolute inset-0 bg-gradient-to-r from-red-950/40 via-transparent to-amber-950/40 mix-blend-color-dodge" />
+      </div>
+
       {/* Hero Headline */}
-      <div className="relative z-10 max-w-2xl space-y-1 mt-1">
-        <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-[0.18em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300 drop-shadow-[0_10px_25px_rgba(249,115,22,0.3)]">
+      <div className="relative z-10 max-w-2xl space-y-2 mt-2">
+        <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-[0.18em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300 drop-shadow-[0_10px_25px_rgba(249,115,22,0.5)]">
           L&apos;AURA SAHARA
         </h1>
-        <p className="text-xs sm:text-sm font-serif uppercase tracking-[0.3em] text-orange-200/80">
+        <p className="text-xs sm:text-sm font-serif uppercase tracking-[0.3em] text-orange-200/90 drop-shadow-md">
           Haute Gastronomy Experience
         </p>
       </div>
 
       {/* CTA Button & Scroll-Following Chef Hat */}
-      <div className="relative z-30 flex flex-col items-center gap-6 pt-5 pb-2">
+      <div className="relative z-30 flex flex-col items-center gap-6 pt-6 pb-4">
         {/* Hardware-accelerated Scrolling Chef Hat */}
         <div
           ref={hatRef}
@@ -76,7 +87,7 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
         <button
           type="button"
           onClick={onScrollToMenu}
-          className="flex items-center gap-1 text-[11px] font-serif uppercase tracking-widest text-orange-300/75 hover:text-orange-200 transition-colors mt-2 animate-bounce cursor-pointer"
+          className="flex items-center gap-1 text-[11px] font-serif uppercase tracking-widest text-orange-300 hover:text-orange-200 transition-colors mt-2 animate-bounce cursor-pointer drop-shadow-md"
         >
           <span>Explore Cylinder Menu</span>
           <ChevronDown className="w-3.5 h-3.5" />
