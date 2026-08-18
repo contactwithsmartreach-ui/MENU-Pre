@@ -38,16 +38,17 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
 
   return (
     <section className="relative w-full min-h-[58vh] sm:min-h-[66vh] flex flex-col items-center justify-center px-4 pt-12 pb-8 text-center select-none overflow-hidden [contain:layout_style]">
-      {/* 3D Burger Shop Background Image with White/Luminous Gradient Overlays & Faded Edges */}
+      {/* 3D Burger Shop Background Image with Luxurious Light Blue & White Bold Gradient Overlays */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <img
           src="/images/burger-shop-3d.jpg"
           alt="3D Burger Shop Background"
-          className="w-full h-full object-cover object-center scale-105 filter brightness-[0.75] contrast-105 saturate-[0.85]"
+          className="w-full h-full object-cover object-center scale-105 filter brightness-[0.85] contrast-110 saturate-[0.9]"
         />
-        {/* Soft luminous white/amber gradient overlay & radial vignette for faded edges */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0504] via-amber-50/10 to-white/30 mix-blend-overlay" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0504]/80 via-transparent to-[#0a0504]/80" />
+        {/* Luxurious Light Blue & White Bold Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-sky-300/35 via-cyan-100/25 to-white/40 mix-blend-overlay" />
+        {/* Radial Vignette & Faded Edges for Seamless Integration */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0504]/85 via-transparent to-[#0a0504]/85" />
         <div className="absolute inset-0 bg-gradient-to-b from-[#0a0504]/90 via-transparent to-[#0a0504]" />
       </div>
 
