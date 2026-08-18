@@ -38,25 +38,25 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
 
   return (
     <section className="relative w-full min-h-[58vh] sm:min-h-[66vh] flex flex-col items-center justify-center px-4 pt-12 pb-8 text-center select-none overflow-hidden [contain:layout_style]">
-      {/* 3D Burger Shop Background Image with White/Luminous Gradient Overlays & Faded Edges */}
+      {/* 3D Burger Shop Background Image with All-White Overlays & Faded Edges */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <img
           src="/images/burger-shop-3d.jpg"
           alt="3D Burger Shop Background"
-          className="w-full h-full object-cover object-center scale-105 filter brightness-[0.75] contrast-105 saturate-[0.85]"
+          className="w-full h-full object-cover object-center scale-105 filter brightness-[0.9] contrast-105 saturate-[0.8]"
         />
-        {/* Soft luminous white/amber gradient overlay & radial vignette for faded edges */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0504] via-amber-50/10 to-white/30 mix-blend-overlay" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0504]/80 via-transparent to-[#0a0504]/80" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0504]/90 via-transparent to-[#0a0504]" />
+        {/* Soft all-white luminous gradient overlays & faded edges */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0504] via-white/40 to-white/60 mix-blend-overlay" />
+        <div className="absolute inset-0 bg-gradient-to-r from-white/80 via-transparent to-white/80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-transparent to-[#0a0504]" />
       </div>
 
       {/* Hero Headline */}
       <div className="relative z-10 max-w-2xl space-y-2 mt-2">
-        <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-[0.18em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300 drop-shadow-[0_10px_25px_rgba(249,115,22,0.5)]">
+        <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-[0.18em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 drop-shadow-[0_10px_25px_rgba(249,115,22,0.3)]">
           L&apos;AURA SAHARA
         </h1>
-        <p className="text-xs sm:text-sm font-serif uppercase tracking-[0.3em] text-orange-200/90 drop-shadow-md">
+        <p className="text-xs sm:text-sm font-serif uppercase tracking-[0.3em] text-neutral-800 font-semibold drop-shadow-md">
           Haute Gastronomy Experience
         </p>
       </div>
@@ -89,7 +89,7 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
         <button
           type="button"
           onClick={onScrollToMenu}
-          className="flex items-center gap-1 text-[11px] font-serif uppercase tracking-widest text-orange-300 hover:text-orange-200 transition-colors mt-2 animate-bounce cursor-pointer drop-shadow-md"
+          className="flex items-center gap-1 text-[11px] font-serif uppercase tracking-widest text-neutral-800 hover:text-neutral-950 transition-colors mt-2 animate-bounce cursor-pointer font-bold drop-shadow-md"
         >
           <span>Explore Cylinder Menu</span>
           <ChevronDown className="w-3.5 h-3.5" />
