@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import { cn } from "@/lib/utils";
 
 interface PreloadScreenProps {
@@ -8,13 +8,18 @@ interface PreloadScreenProps {
 }
 
 export function PreloadScreen({ onComplete }: PreloadScreenProps) {
+  const [isReady, setIsReady] = useState(false);
   const [isFadingOut, setIsFadingOut] = useState(false);
+
+  useLayoutEffect(() => {
+    setIsReady(true);
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsFadingOut(true);
-      setTimeout(onComplete, 500);
-    }, 1800);
+      setTimeout(onComplete, 400);
+    }, 1500);
 
     return () => clearTimeout(timer);
   }, [onComplete]);
@@ -22,22 +27,24 @@ export function PreloadScreen({ onComplete }: PreloadScreenProps) {
   return (
     <div
       className={cn(
-        "fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#e3efed] transition-opacity duration-500 select-none",
+        "fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#e3efed] transition-opacity duration-300 select-none",
         isFadingOut ? "opacity-0 pointer-events-none" : "opacity-100"
       )}
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.08)_0%,transparent_70%)] pointer-events-none" />
 
-      <div className="relative z-10 flex items-center justify-center scale-150">
-        <div className="🤚">
-          <div className="🌴"></div>
-          <div className="👍"></div>
-          <div className="👉"></div>
-          <div className="👉"></div>
-          <div className="👉"></div>
-          <div className="👉"></div>
+      {isReady && (
+        <div className="relative z-10 flex items-center justify-center scale-150">
+          <div className="🤚">
+            <div className="🌴"></div>
+            <div className="👍"></div>
+            <div className="👉"></div>
+            <div className="👉"></div>
+            <div className="👉"></div>
+            <div className="👉"></div>
+          </div>
         </div>
-      </div>
+      )}
 
       <style jsx>{`
         .🤚 {
