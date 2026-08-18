@@ -126,14 +126,14 @@ export default function RestaurantMenuPage() {
         onClearCart={handleClearCart}
       />
 
-      {/* Sahara Sunset Ambient Atmospheric Background */}
-      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden transform-gpu">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[450px] bg-gradient-to-tr from-red-600/20 via-orange-500/20 to-amber-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 right-1/4 translate-x-1/2 w-[500px] h-[350px] bg-red-700/15 rounded-full blur-3xl" />
+      {/* Sahara Sunset Ambient Atmospheric Background matching hero tone */}
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden transform-gpu bg-[#0a0504]">
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[450px] bg-gradient-to-tr from-sky-500/10 via-orange-500/10 to-amber-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 right-1/4 translate-x-1/2 w-[500px] h-[350px] bg-sky-600/10 rounded-full blur-3xl" />
 
         {/* Topographic Dune Wave Lines */}
         <svg
-          className="absolute inset-x-0 bottom-0 w-full h-[45%] opacity-15 pointer-events-none"
+          className="absolute inset-x-0 bottom-0 w-full h-[45%] opacity-10 pointer-events-none"
           viewBox="0 0 1440 320"
           preserveAspectRatio="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -141,7 +141,7 @@ export default function RestaurantMenuPage() {
           <defs>
             <linearGradient id="bg-sahara-grad" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="hsl(37, 99%, 67%)" />
-              <stop offset="50%" stopColor="#ef4444" />
+              <stop offset="50%" stopColor="#38bdf8" />
               <stop offset="100%" stopColor="hsl(316, 73%, 52%)" />
             </linearGradient>
           </defs>
@@ -156,7 +156,7 @@ export default function RestaurantMenuPage() {
           className="absolute inset-0 opacity-[0.03]"
           style={{
             backgroundImage:
-              "radial-gradient(rgba(249, 115, 22, 0.8) 1px, transparent 1px)",
+              "radial-gradient(rgba(56, 189, 248, 0.8) 1px, transparent 1px)",
             backgroundSize: "28px 28px",
           }}
         />
@@ -165,14 +165,14 @@ export default function RestaurantMenuPage() {
       {/* Part 1: Top Hero Section with Floating Plate Experience */}
       <HeroPlateScrollExperience onScrollToMenu={smoothScrollToMenu} />
 
-      {/* Transitional Section Separation Divider (Overlaps fade for smooth integration) */}
+      {/* Transitional Section Separation Divider */}
       <MenuSectionDivider />
 
-      {/* Part 2: Interactive 3D Cylinder Gastronomy Menu with top dark gradient overlay */}
+      {/* Part 2: Interactive 3D Cylinder Gastronomy Menu */}
       <section
         ref={menuSectionRef}
         id="cylinder-menu"
-        className="relative z-10 w-full flex flex-col items-center justify-start pt-6 pb-8 px-2 sm:px-6 bg-gradient-to-b from-[#0a0504] via-[#0a0504] to-[#0a0504]"
+        className="relative z-10 w-full flex flex-col items-center justify-start pt-6 pb-8 px-2 sm:px-6 bg-[#0a0504]"
       >
         {/* Main Presentation Area: Vertical Spotlight Navbar Tightly Coupled with 3D Cylinder */}
         <div className="relative z-10 w-full flex flex-col lg:flex-row items-center lg:items-center justify-center gap-3 lg:gap-2 max-w-7xl mx-auto py-1">
