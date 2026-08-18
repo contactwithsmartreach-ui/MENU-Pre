@@ -165,14 +165,14 @@ export default function RestaurantMenuPage() {
       {/* Part 1: Top Hero Section with Floating Plate Experience */}
       <HeroPlateScrollExperience onScrollToMenu={smoothScrollToMenu} />
 
-      {/* Transitional Section Separation Divider */}
+      {/* Transitional Section Separation Divider (Overlaps fade for smooth integration) */}
       <MenuSectionDivider />
 
       {/* Part 2: Interactive 3D Cylinder Gastronomy Menu */}
       <section
         ref={menuSectionRef}
         id="cylinder-menu"
-        className="relative z-10 w-full flex flex-col items-center justify-start pt-1 pb-8 px-2 sm:px-6"
+        className="relative z-10 w-full flex flex-col items-center justify-start pt-2 pb-8 px-2 sm:px-6"
       >
         {/* Main Presentation Area: Vertical Spotlight Navbar Tightly Coupled with 3D Cylinder */}
         <div className="relative z-10 w-full flex flex-col lg:flex-row items-center lg:items-center justify-center gap-3 lg:gap-2 max-w-7xl mx-auto py-1">
