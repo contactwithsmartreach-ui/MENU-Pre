@@ -13,6 +13,7 @@ export function PreloadScreen({ onComplete }: PreloadScreenProps) {
   const [isFadingOut, setIsFadingOut] = useState(false);
 
   useEffect(() => {
+    // Smooth progress interval that increments gradually (takes about 1.8 seconds total)
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
@@ -23,9 +24,9 @@ export function PreloadScreen({ onComplete }: PreloadScreenProps) {
           }, 300);
           return 100;
         }
-        return prev + Math.floor(Math.random() * 25) + 15;
+        return prev + 3;
       });
-    }, 120);
+    }, 45);
 
     return () => clearInterval(interval);
   }, [onComplete]);
@@ -39,7 +40,8 @@ export function PreloadScreen({ onComplete }: PreloadScreenProps) {
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.1)_0%,transparent_70%)] pointer-events-none" />
 
-      <div className="relative z-10 flex flex-col items-center max-w-sm px-6 text-center space-y-8">
+      <div className="relative z-10 flex flex-col items-center max-w-sm px-6 text-center space-y-6">
+        {/* Hand Loader appearing instantly */}
         <div className="flex items-center justify-center scale-125 my-4">
           <div className="🤚">
             <div className="🌴"></div>
@@ -51,22 +53,20 @@ export function PreloadScreen({ onComplete }: PreloadScreenProps) {
           </div>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-1">
           <div className="flex items-center justify-center gap-1.5 text-orange-600">
             <Sparkles className="w-4 h-4 fill-orange-600" />
             <span className="text-[10px] uppercase font-serif tracking-[0.3em]">L&apos;Aura Sahara</span>
           </div>
-          <h2 className="text-2xl font-serif font-bold text-neutral-900 tracking-widest uppercase">
-            Preparing Feast
+          <h2 className="text-xl font-serif font-bold text-neutral-900 tracking-widest uppercase">
+            Loading Feast
           </h2>
-          <p className="text-xs text-neutral-600 font-light">
-            Loading immersive 3D gastronomy experience...
-          </p>
         </div>
 
+        {/* Smooth loading bar */}
         <div className="w-48 h-1.5 bg-neutral-300 rounded-full overflow-hidden border border-orange-500/30">
           <div
-            className="h-full bg-gradient-to-r from-red-500 via-orange-500 to-amber-400 transition-all duration-150 ease-out"
+            className="h-full bg-gradient-to-r from-red-500 via-orange-500 to-amber-400 transition-all duration-75 ease-linear"
             style={{ width: `${Math.min(progress, 100)}%` }}
           />
         </div>
