@@ -35,7 +35,7 @@ export function CombinedCylinderMenu({
     typeof window !== "undefined" ? window.innerWidth : 390
   );
 
-  // Performance optimized DOM references
+  // High-performance refs
   const cylinderRef = useRef<HTMLDivElement>(null);
   const currentRotationRef = useRef(0);
   const targetRotationRef = useRef(0);
@@ -52,7 +52,7 @@ export function CombinedCylinderMenu({
   const autoResumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const animFrameRef = useRef<number | null>(null);
 
-  // Dynamic responsive sizing based on actual phone screen width
+  // Responsive sizing
   useEffect(() => {
     const handleResize = () => {
       const w = window.innerWidth;
@@ -64,19 +64,17 @@ export function CombinedCylinderMenu({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Card size calculations: optimized for full vertical display on phones & desktops
   const cardWidth = isMobile
-    ? Math.min(Math.round(viewportWidth * 0.72), 270)
-    : 300;
+    ? Math.min(Math.round(viewportWidth * 0.70), 250)
+    : 280;
 
-  const cardHeight = Math.round(cardWidth * 1.38);
+  const cardHeight = Math.round(cardWidth * 1.35);
 
-  // Exact cylinder trigonometry for smooth circular spacing
   const radius =
     Math.round(cardWidth / (2 * Math.tan(Math.PI / Math.max(N, 3)))) +
-    (isMobile ? 20 : 36);
+    (isMobile ? 15 : 30);
 
-  // High-performance DOM transform without React state re-rendering
+  // Direct transform setter using will-change and translate3d for GPU acceleration
   const setTransform = useCallback(
     (deg: number) => {
       currentRotationRef.current = deg;
@@ -102,12 +100,12 @@ export function CombinedCylinderMenu({
 
       const timer = setTimeout(() => {
         setIsSwitchingCategory(false);
-      }, 200);
+      }, 150);
       return () => clearTimeout(timer);
     }
   }, [items, setTransform]);
 
-  // Smooth Physics Animation Loop
+  // RequestAnimationFrame animation loop with throttled calculations
   useEffect(() => {
     let lastTime = performance.now();
     let lastCalculatedFront = 0;
@@ -121,7 +119,7 @@ export function CombinedCylinderMenu({
       } else if (isTransitioningToTargetRef.current) {
         const diff = targetRotationRef.current - currentRotationRef.current;
         if (Math.abs(diff) > 0.05) {
-          currentRotationRef.current += diff * Math.min(8.0 * dt, 0.25);
+          currentRotationRef.current += diff * Math.min(10.0 * dt, 0.3);
           setTransform(currentRotationRef.current);
         } else {
           currentRotationRef.current = targetRotationRef.current;
@@ -132,17 +130,16 @@ export function CombinedCylinderMenu({
         if (Math.abs(velocityRef.current) > 0.01) {
           currentRotationRef.current += velocityRef.current;
           targetRotationRef.current = currentRotationRef.current;
-          velocityRef.current *= 0.94;
+          velocityRef.current *= 0.92;
           setTransform(currentRotationRef.current);
         } else if (isAutoSpinningRef.current && hoveredIdx === null && !isSwitchingCategory) {
-          const ambientSpeed = 2.4;
+          const ambientSpeed = 2.0;
           currentRotationRef.current += ambientSpeed * dt;
           targetRotationRef.current = currentRotationRef.current;
           setTransform(currentRotationRef.current);
         }
       }
 
-      // Throttled front dish index calculation
       const normalizedRot = ((-currentRotationRef.current % 360) + 360) % 360;
       const currentFront = Math.round(normalizedRot / angleStep) % N;
       if (currentFront !== lastCalculatedFront) {
@@ -159,7 +156,6 @@ export function CombinedCylinderMenu({
     };
   }, [hoveredIdx, isSwitchingCategory, setTransform, angleStep, N]);
 
-  // Smooth cinematic glide to specific dish index
   const rotateToIndex = useCallback(
     (index: number, openModal = false, item?: MenuItem) => {
       if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
@@ -180,7 +176,7 @@ export function CombinedCylinderMenu({
 
       autoResumeTimeoutRef.current = setTimeout(() => {
         isAutoSpinningRef.current = true;
-      }, 4500);
+      }, 4000);
     },
     [angleStep, onSelectItem]
   );
@@ -197,7 +193,6 @@ export function CombinedCylinderMenu({
     [activeFrontIndex, N, rotateToIndex, items]
   );
 
-  // Pointer & Drag Handlers with pointer capture
   const handlePointerDown = (e: React.PointerEvent) => {
     if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
     isDraggingRef.current = true;
@@ -218,11 +213,11 @@ export function CombinedCylinderMenu({
     const deltaY = e.clientY - startYRef.current;
 
     if (!isHorizontalDragRef.current) {
-      if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 8) {
+      if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 6) {
         isDraggingRef.current = false;
         return;
       }
-      if (Math.abs(deltaX) > 8 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      if (Math.abs(deltaX) > 6 && Math.abs(deltaX) > Math.abs(deltaY)) {
         isHorizontalDragRef.current = true;
         isAutoSpinningRef.current = false;
       }
@@ -233,10 +228,10 @@ export function CombinedCylinderMenu({
       dragDistanceRef.current += Math.abs(stepX);
 
       const now = performance.now();
-      const dt = Math.max(now - lastPointerTimeRef.current, 10);
+      const dt = Math.max(now - lastPointerTimeRef.current, 8);
       const instantVelocity = (stepX / dt) * 8;
 
-      const sensitivity = isMobile ? 0.25 : 0.16;
+      const sensitivity = isMobile ? 0.22 : 0.14;
       currentRotationRef.current -= stepX * sensitivity;
       targetRotationRef.current = currentRotationRef.current;
 
@@ -253,41 +248,27 @@ export function CombinedCylinderMenu({
     isDraggingRef.current = false;
     isHorizontalDragRef.current = false;
 
-    velocityRef.current = Math.max(Math.min(velocityRef.current, 2.0), -2.0);
+    velocityRef.current = Math.max(Math.min(velocityRef.current, 1.8), -1.8);
 
     autoResumeTimeoutRef.current = setTimeout(() => {
       isAutoSpinningRef.current = true;
-    }, 4000);
+    }, 3500);
   };
 
-  // Horizontal wheel
   const handleWheel = (e: React.WheelEvent) => {
     if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 4) {
       if (autoResumeTimeoutRef.current) clearTimeout(autoResumeTimeoutRef.current);
       isAutoSpinningRef.current = false;
       isTransitioningToTargetRef.current = false;
 
-      const impulse = (e.deltaX > 0 ? -1 : 1) * Math.min(Math.abs(e.deltaX) * 0.012, 0.35);
+      const impulse = (e.deltaX > 0 ? -1 : 1) * Math.min(Math.abs(e.deltaX) * 0.01, 0.3);
       velocityRef.current += impulse;
 
       autoResumeTimeoutRef.current = setTimeout(() => {
         isAutoSpinningRef.current = true;
-      }, 4000);
+      }, 3500);
     }
   };
-
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") {
-        stepRotate("prev");
-      } else if (e.key === "ArrowRight") {
-        stepRotate("next");
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [stepRotate]);
 
   const handleCardClick = (dish: MenuItem, index: number) => {
     if (dragDistanceRef.current > 8) return;
@@ -305,28 +286,27 @@ export function CombinedCylinderMenu({
         className
       )}
     >
-      {/* 1. FLUID 3D CYLINDER STAGE WITH AMPLE VERTICAL CLEARANCE */}
+      {/* 3D Cylinder Stage */}
       <div
-        className="relative w-full min-h-[580px] sm:min-h-[660px] md:min-h-[720px] flex items-center justify-center overflow-visible touch-pan-y cursor-grab active:cursor-grabbing pt-4 pb-36"
+        className="relative w-full min-h-[540px] sm:min-h-[620px] md:min-h-[680px] flex items-center justify-center overflow-visible touch-pan-y cursor-grab active:cursor-grabbing pt-4 pb-32"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
       >
-        {/* Floor Reflection Gradient & Lighting Pool */}
-        <div className="pointer-events-none absolute bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-[640px] h-28 bg-gradient-to-r from-red-600/25 via-orange-500/30 to-amber-400/25 blur-3xl rounded-full opacity-80" />
+        {/* Floor Reflection Gradient Pool */}
+        <div className="pointer-events-none absolute bottom-6 left-1/2 -translate-x-1/2 w-[85%] max-w-[600px] h-24 bg-gradient-to-r from-red-600/20 via-orange-500/25 to-amber-400/20 blur-2xl rounded-full opacity-70" />
 
-        {/* 3D Perspective Stage Container */}
         <div
           className={cn(
-            "relative w-full h-full flex items-center justify-center [perspective-origin:50%_40%] transition-opacity duration-200 overflow-visible",
-            isSwitchingCategory ? "opacity-40 scale-95" : "opacity-100 scale-100"
+            "relative w-full h-full flex items-center justify-center [perspective-origin:50%_40%] transition-opacity duration-150 overflow-visible",
+            isSwitchingCategory ? "opacity-30 scale-95" : "opacity-100 scale-100"
           )}
           style={{
-            perspective: isMobile ? "1000px" : "1400px",
+            perspective: isMobile ? "900px" : "1300px",
           }}
         >
-          {/* Rotating Cylinder Core */}
+          {/* Rotating Cylinder Core with will-change-transform */}
           <div
             ref={cylinderRef}
             className="relative w-0 h-0 [transform-style:preserve-3d] will-change-transform transform-gpu overflow-visible"
@@ -355,9 +335,9 @@ export function CombinedCylinderMenu({
                     }
                   }}
                   className={cn(
-                    "group absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[24px] sm:rounded-[32px] overflow-hidden cursor-pointer",
-                    "border border-orange-500/35 bg-[#0d0706] shadow-2xl transition-[border-color,box-shadow,transform] duration-200 transform-gpu",
-                    "hover:border-orange-400 hover:shadow-[0_20px_50px_rgba(249,115,22,0.45)] hover:ring-2 hover:ring-orange-400/80 active:scale-[0.98]",
+                    "group absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[22px] sm:rounded-[28px] overflow-hidden cursor-pointer",
+                    "border border-orange-500/30 bg-[#0d0706] shadow-xl transition-colors duration-150 transform-gpu",
+                    "hover:border-orange-400 hover:shadow-[0_15px_40px_rgba(249,115,22,0.4)] active:scale-[0.98]",
                     isHovered && "z-30"
                   )}
                   style={{
@@ -366,9 +346,9 @@ export function CombinedCylinderMenu({
                     transform: `rotateY(${itemAngle}deg) translateZ(${radius}px)`,
                     backfaceVisibility: "hidden",
                     WebkitBackfaceVisibility: "hidden",
-                    // Smooth reflection fading nicely downward
+                    // Preserved smooth high-end reflection
                     WebkitBoxReflect:
-                      "below 8px linear-gradient(to bottom, transparent 65%, rgba(0, 0, 0, 0.25) 85%, rgba(249, 115, 22, 0.4) 100%)",
+                      "below 6px linear-gradient(to bottom, transparent 60%, rgba(0, 0, 0, 0.2) 80%, rgba(249, 115, 22, 0.35) 100%)",
                   }}
                 >
                   {/* Dish Image Background */}
@@ -378,47 +358,48 @@ export function CombinedCylinderMenu({
                       alt={dish.name}
                       className="w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
                       loading="lazy"
+                      decoding="async"
                       draggable={false}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#0a0504] via-[#0a0504]/40 to-transparent" />
-                    <div className="absolute inset-0 bg-gradient-to-tr from-red-600/30 via-orange-500/20 to-transparent mix-blend-color-dodge opacity-80" />
+                    <div className="absolute inset-0 bg-gradient-to-tr from-red-600/25 via-orange-500/15 to-transparent mix-blend-color-dodge opacity-80" />
                   </div>
 
                   {/* Top Bar Badges */}
-                  <div className="relative z-10 p-3 sm:p-4 flex items-center justify-between w-full pointer-events-none">
+                  <div className="relative z-10 p-3 sm:p-3.5 flex items-center justify-between w-full pointer-events-none">
                     {dish.isSignature ? (
-                      <Badge className="bg-gradient-to-r from-red-500 to-orange-500 text-white font-serif tracking-wider uppercase px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs shadow-md border-0 flex items-center gap-1.5">
+                      <Badge className="bg-gradient-to-r from-red-500 to-orange-500 text-white font-serif tracking-wider uppercase px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full text-[10px] shadow-sm border-0 flex items-center gap-1">
                         <Sparkles className="w-3 h-3 text-amber-200 fill-amber-200" />
                         Signature
                       </Badge>
                     ) : (
-                      <span className="text-[10px] sm:text-xs font-serif uppercase tracking-widest text-orange-200 bg-neutral-950/85 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-orange-500/30 backdrop-blur-md">
+                      <span className="text-[10px] font-serif uppercase tracking-widest text-orange-200 bg-neutral-950/85 px-2.5 py-0.5 rounded-full border border-orange-500/30 backdrop-blur-md">
                         {dish.category}
                       </span>
                     )}
 
-                    <div className="flex items-center gap-1 bg-neutral-950/90 backdrop-blur-md px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full border border-orange-500/30 text-amber-300 text-[11px] sm:text-xs font-bold shadow-md">
+                    <div className="flex items-center gap-1 bg-neutral-950/90 backdrop-blur-md px-2 py-0.5 rounded-full border border-orange-500/30 text-amber-300 text-[11px] font-bold shadow-sm">
                       <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
                       <span>{dish.rating}</span>
                     </div>
                   </div>
 
-                  {/* Floating Action Badge on Hover */}
+                  {/* Hover Badge */}
                   <div
                     className={cn(
-                      "absolute inset-0 flex items-center justify-center z-20 pointer-events-none transition-all duration-200",
-                      isHovered ? "opacity-100 scale-100" : "opacity-0 scale-95"
+                      "absolute inset-0 flex items-center justify-center z-20 pointer-events-none transition-opacity duration-150",
+                      isHovered ? "opacity-100" : "opacity-0"
                     )}
                   >
-                    <span className="bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white font-serif tracking-widest uppercase px-4 py-2 rounded-full text-xs font-bold shadow-xl shadow-red-600/50 border border-orange-200/60 flex items-center gap-2">
+                    <span className="bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white font-serif tracking-widest uppercase px-3.5 py-1.5 rounded-full text-xs font-bold shadow-lg border border-orange-200/50 flex items-center gap-1.5">
                       <Eye className="w-3.5 h-3.5" />
-                      <span>CLICK TO ORDER</span>
+                      <span>ORDER</span>
                     </span>
                   </div>
 
                   {/* Bottom Dish Information */}
-                  <div className="absolute bottom-0 inset-x-0 z-10 p-3 sm:p-5 pt-8 bg-gradient-to-t from-[#0a0504] via-[#0a0504]/95 to-transparent flex flex-col justify-end pointer-events-none">
-                    <h3 className="text-sm sm:text-lg font-serif font-bold text-white tracking-wide truncate group-hover:text-orange-300 transition-colors">
+                  <div className="absolute bottom-0 inset-x-0 z-10 p-3 sm:p-4 pt-6 bg-gradient-to-t from-[#0a0504] via-[#0a0504]/95 to-transparent flex flex-col justify-end pointer-events-none">
+                    <h3 className="text-sm sm:text-base font-serif font-bold text-white tracking-wide truncate group-hover:text-orange-300 transition-colors">
                       {dish.name}
                     </h3>
                     <p className="text-[11px] sm:text-xs text-neutral-300 line-clamp-2 mt-0.5 font-light leading-relaxed">
@@ -427,8 +408,8 @@ export function CombinedCylinderMenu({
 
                     <div className="mt-2 pt-2 border-t border-orange-500/25 flex items-center justify-between">
                       <div className="flex items-baseline gap-0.5">
-                        <span className="text-[10px] sm:text-xs font-serif text-orange-400 font-bold">$</span>
-                        <span className="text-lg sm:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300 font-serif">
+                        <span className="text-[10px] font-serif text-orange-400 font-bold">$</span>
+                        <span className="text-base sm:text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300 font-serif">
                           {dish.price}
                         </span>
                       </div>
@@ -437,7 +418,7 @@ export function CombinedCylinderMenu({
                         <span className="text-[10px] sm:text-xs text-orange-200/70 font-mono">
                           {dish.prepTime}
                         </span>
-                        <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-orange-500/20 border border-orange-400/50 flex items-center justify-center text-orange-300 group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-neutral-950 transition-all shadow-md">
+                        <div className="w-6 h-6 rounded-full bg-orange-500/20 border border-orange-400/50 flex items-center justify-center text-orange-300 group-hover:bg-orange-500 group-hover:text-neutral-950 transition-colors shadow-sm">
                           <Plus className="w-3 h-3 stroke-[2.5]" />
                         </div>
                       </div>
@@ -450,21 +431,21 @@ export function CombinedCylinderMenu({
         </div>
       </div>
 
-      {/* 2. FLOATING CONTROLS & DIRECT SELECTION - PLACED FURTHER DOWN */}
-      <div className="relative z-40 w-full max-w-3xl px-4 flex flex-col items-center gap-3 sm:gap-4 mt-6 sm:mt-10 pb-4">
+      {/* Floating Controls */}
+      <div className="relative z-40 w-full max-w-3xl px-4 flex flex-col items-center gap-3 sm:gap-4 mt-4 sm:mt-6 pb-4">
         <div className="relative w-full max-w-xl flex items-center justify-between px-1 sm:px-6">
-          {/* Previous Uiverse Sahara Compact Icon Button */}
+          {/* Previous Button */}
           <button
             type="button"
             aria-label="Rotate Previous Dish"
             onClick={() => stepRotate("prev")}
             style={{
               WebkitBoxReflect:
-                "below 0px linear-gradient(to bottom, rgba(0,0,0,0.0), rgba(0,0,0,0.4))",
+                "below 0px linear-gradient(to bottom, rgba(0,0,0,0.0), rgba(0,0,0,0.3))",
             }}
-            className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center bg-gradient-to-r from-red-500 to-orange-500 rounded-full shadow-xl group-hover:shadow-2xl group-hover:shadow-red-600 shadow-red-600 relative overflow-hidden group text-transparent cursor-pointer z-10 after:absolute after:rounded-full after:bg-red-200 after:h-[85%] after:w-[95%] after:left-1/2 after:top-1/2 after:-translate-x-1/2 after:-translate-y-1/2 hover:saturate-[1.15] active:saturate-[1.4]"
+            className="w-12 h-12 sm:w-13 sm:h-13 flex items-center justify-center bg-gradient-to-r from-red-500 to-orange-500 rounded-full shadow-lg group-hover:shadow-xl shadow-red-600 relative overflow-hidden group text-transparent cursor-pointer z-10 after:absolute after:rounded-full after:bg-red-200 after:h-[85%] after:w-[95%] after:left-1/2 after:top-1/2 after:-translate-x-1/2 after:-translate-y-1/2 hover:saturate-[1.15] active:saturate-[1.4]"
           >
-            <ChevronLeft className="absolute z-40 w-6 h-6 text-neutral-950 stroke-[3] transition-transform duration-300 group-hover:scale-110" />
+            <ChevronLeft className="absolute z-40 w-5 h-5 text-neutral-950 stroke-[3] transition-transform duration-200 group-hover:scale-110" />
             <svg
               className="absolute w-full h-full scale-x-125 rotate-180 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 group-hover:animate-none animate-pulse group-hover:-translate-y-[45%] transition-all duration-300 pointer-events-none"
               viewBox="0 0 2400 800"
@@ -504,18 +485,18 @@ export function CombinedCylinderMenu({
             </button>
           )}
 
-          {/* Next Uiverse Sahara Compact Icon Button */}
+          {/* Next Button */}
           <button
             type="button"
             aria-label="Rotate Next Dish"
             onClick={() => stepRotate("next")}
             style={{
               WebkitBoxReflect:
-                "below 0px linear-gradient(to bottom, rgba(0,0,0,0.0), rgba(0,0,0,0.4))",
+                "below 0px linear-gradient(to bottom, rgba(0,0,0,0.0), rgba(0,0,0,0.3))",
             }}
-            className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center bg-gradient-to-r from-red-500 to-orange-500 rounded-full shadow-xl group-hover:shadow-2xl group-hover:shadow-red-600 shadow-red-600 relative overflow-hidden group text-transparent cursor-pointer z-10 after:absolute after:rounded-full after:bg-red-200 after:h-[85%] after:w-[95%] after:left-1/2 after:top-1/2 after:-translate-x-1/2 after:-translate-y-1/2 hover:saturate-[1.15] active:saturate-[1.4]"
+            className="w-12 h-12 sm:w-13 sm:h-13 flex items-center justify-center bg-gradient-to-r from-red-500 to-orange-500 rounded-full shadow-lg group-hover:shadow-xl shadow-red-600 relative overflow-hidden group text-transparent cursor-pointer z-10 after:absolute after:rounded-full after:bg-red-200 after:h-[85%] after:w-[95%] after:left-1/2 after:top-1/2 after:-translate-x-1/2 after:-translate-y-1/2 hover:saturate-[1.15] active:saturate-[1.4]"
           >
-            <ChevronRight className="absolute z-40 w-6 h-6 text-neutral-950 stroke-[3] transition-transform duration-300 group-hover:scale-110" />
+            <ChevronRight className="absolute z-40 w-5 h-5 text-neutral-950 stroke-[3] transition-transform duration-200 group-hover:scale-110" />
             <svg
               className="absolute w-full h-full scale-x-125 rotate-180 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 group-hover:animate-none animate-pulse group-hover:-translate-y-[45%] transition-all duration-300 pointer-events-none"
               viewBox="0 0 2400 800"
