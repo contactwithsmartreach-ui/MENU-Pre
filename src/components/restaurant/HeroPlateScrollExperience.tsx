@@ -38,18 +38,16 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
 
   return (
     <section className="relative w-full min-h-[58vh] sm:min-h-[66vh] flex flex-col items-center justify-center px-4 pt-12 pb-8 text-center select-none overflow-hidden [contain:layout_style]">
-      {/* 3D Burger Shop Background Image with Luxurious Light Blue & White Bold Gradient Overlays */}
+      {/* 3D Burger Shop Background Image with Luxurious Light Blue & White Bold Gradient Overlays (No Dark Edge Fading) */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <img
           src="/images/burger-shop-3d.jpg"
           alt="3D Burger Shop Background"
-          className="w-full h-full object-cover object-center scale-105 filter brightness-[0.85] contrast-110 saturate-[0.9]"
+          className="w-full h-full object-cover object-center scale-105 filter brightness-[0.9] contrast-110 saturate-[0.95]"
         />
-        {/* Luxurious Light Blue & White Bold Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-sky-300/35 via-cyan-100/25 to-white/40 mix-blend-overlay" />
-        {/* Radial Vignette & Faded Edges for Seamless Integration */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0504]/85 via-transparent to-[#0a0504]/85" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0504]/90 via-transparent to-[#0a0504]" />
+        {/* Luxurious Light Blue & White Bold Gradient Overlay across the full section */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-sky-300/40 via-cyan-100/30 to-white/50 mix-blend-overlay" />
+        <div className="absolute inset-0 bg-gradient-to-b from-sky-950/15 via-transparent to-[#0a0504]/60" />
       </div>
 
       {/* Hero Headline */}
