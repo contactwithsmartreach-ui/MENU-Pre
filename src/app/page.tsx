@@ -31,7 +31,7 @@ const CATEGORY_ITEMS = [
 ];
 
 export default function RestaurantMenuPage() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [showPreloader, setShowPreloader] = useState(false);
   const [selectedDish, setSelectedDish] = useState<MenuItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeCategoryIdx, setActiveCategoryIdx] = useState<number>(0);
@@ -97,10 +97,11 @@ export default function RestaurantMenuPage() {
     setCart([]);
   };
 
-  // Smooth scrolling to center the cylinder cards
+  // Smooth scrolling to center the cylinder cards & trigger hand preloader on user action
   const smoothScrollToMenu = useCallback(() => {
+    setShowPreloader(true);
+
     const targetElement = cylinderContainerRef.current || menuSectionRef.current;
-    
     if (targetElement) {
       const rect = targetElement.getBoundingClientRect();
       const targetY = window.scrollY + rect.top - 12;
@@ -121,7 +122,7 @@ export default function RestaurantMenuPage() {
 
   return (
     <div className="relative min-h-screen w-full bg-[#e3efed] text-neutral-900 flex flex-col items-center justify-between select-none overflow-x-hidden">
-      {isLoading && <PreloadScreen onComplete={() => setIsLoading(false)} />}
+      {showPreloader && <PreloadScreen onComplete={() => setShowPreloader(false)} />}
 
       {/* Premium Animated Sidebar Nav */}
       <SidebarNav />
