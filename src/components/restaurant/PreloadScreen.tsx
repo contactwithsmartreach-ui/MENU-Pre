@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Sparkles } from "lucide-react";
+import { Sparkles, ChefHat } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface PreloadScreenProps {
@@ -13,13 +13,14 @@ export function PreloadScreen({ onComplete }: PreloadScreenProps) {
   const [isFadingOut, setIsFadingOut] = useState(false);
 
   useEffect(() => {
+    // Fast simulated preload progress
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
           setTimeout(() => {
             setIsFadingOut(true);
-            setTimeout(onComplete, 500);
+            setTimeout(onComplete, 500); // Wait for fade out transition
           }, 300);
           return 100;
         }
@@ -37,18 +38,13 @@ export function PreloadScreen({ onComplete }: PreloadScreenProps) {
         isFadingOut ? "opacity-0 pointer-events-none" : "opacity-100"
       )}
     >
+      {/* Background radial atmosphere matching page tone */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.1)_0%,transparent_70%)] pointer-events-none" />
 
-      <div className="relative z-10 flex flex-col items-center max-w-sm px-6 text-center space-y-8">
-        {/* Uiverse Hand Loader Animation */}
-        <div className="scale-90 sm:scale-100 my-4">
-          <div className="🤚">
-            <div className="🌴"></div>
-            <div className="👍"></div>
-            <div className="👉"></div>
-            <div className="👉"></div>
-            <div className="👉"></div>
-            <div className="👉"></div>
+      <div className="relative z-10 flex flex-col items-center max-w-sm px-6 text-center space-y-6">
+        <div className="relative w-20 h-20 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 p-0.5 shadow-[0_0_35px_rgba(249,115,22,0.4)] animate-pulse">
+          <div className="w-full h-full bg-[#e3efed] rounded-full flex items-center justify-center">
+            <ChefHat className="w-10 h-10 text-orange-600 stroke-[1.5]" />
           </div>
         </div>
 
