@@ -172,7 +172,7 @@ export default function RestaurantMenuPage() {
       <section
         ref={menuSectionRef}
         id="cylinder-menu"
-        className="relative z-10 w-full flex flex-col items-center justify-start pt-6 pb-12 px-2 sm:px-6 bg-gradient-to-b from-sky-400/10 via-[#0a0504]/50 to-[#0a0504]"
+        className="relative z-10 w-full flex flex-col items-center justify-start pt-2 pb-8 px-2 sm:px-6"
       >
         {/* Main Presentation Area: Vertical Spotlight Navbar Tightly Coupled with 3D Cylinder */}
         <div className="relative z-10 w-full flex flex-col lg:flex-row items-center lg:items-center justify-center gap-3 lg:gap-2 max-w-7xl mx-auto py-1">
