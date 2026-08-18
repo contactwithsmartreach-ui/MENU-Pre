@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 interface PreloadScreenProps {
@@ -8,18 +8,13 @@ interface PreloadScreenProps {
 }
 
 export function PreloadScreen({ onComplete }: PreloadScreenProps) {
-  const [isReady, setIsReady] = useState(false);
   const [isFadingOut, setIsFadingOut] = useState(false);
-
-  useLayoutEffect(() => {
-    setIsReady(true);
-  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsFadingOut(true);
       setTimeout(onComplete, 400);
-    }, 1500);
+    }, 1400);
 
     return () => clearTimeout(timer);
   }, [onComplete]);
@@ -33,18 +28,17 @@ export function PreloadScreen({ onComplete }: PreloadScreenProps) {
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.08)_0%,transparent_70%)] pointer-events-none" />
 
-      {isReady && (
-        <div className="relative z-10 flex items-center justify-center scale-150">
-          <div className="🤚">
-            <div className="🌴"></div>
-            <div className="👍"></div>
-            <div className="👉"></div>
-            <div className="👉"></div>
-            <div className="👉"></div>
-            <div className="👉"></div>
-          </div>
+      {/* Rendered directly on initial HTML without any state delay */}
+      <div className="relative z-10 flex items-center justify-center scale-150">
+        <div className="🤚">
+          <div className="🌴"></div>
+          <div className="👍"></div>
+          <div className="👉"></div>
+          <div className="👉"></div>
+          <div className="👉"></div>
+          <div className="👉"></div>
         </div>
-      )}
+      </div>
 
       <style jsx>{`
         .🤚 {
