@@ -29,24 +29,20 @@ export function SidebarNav() {
 
   return (
     <>
-      {/* Floating Toggle Icon Button in Top-Left Open Space */}
+      {/* Floating Toggle Icon Button in Top-Left Open Space - Minimalist Bars Only */}
       <div className="fixed top-6 left-6 z-50 flex items-center">
         <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.15 }}
+          whileTap={{ scale: 0.9 }}
           onClick={() => setIsExpanded((prev) => !prev)}
           aria-label="Toggle Menu & Info"
-          className={cn(
-            "group relative w-12 h-12 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300",
-            "bg-neutral-950/90 backdrop-blur-xl border text-white shadow-lg",
-            isExpanded
-              ? "border-orange-400 shadow-[0_0_25px_rgba(249,115,22,0.4)]"
-              : "border-orange-500/30 hover:border-orange-400/80 shadow-[0_0_15px_rgba(0,0,0,0.5)]"
-          )}
+          className="relative p-2.5 flex items-center justify-center cursor-pointer focus:outline-none text-orange-500 hover:text-orange-400 transition-colors drop-shadow-[0_2px_10px_rgba(249,115,22,0.6)]"
         >
-          <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-red-500 to-amber-500 flex items-center justify-center text-white shadow-md shadow-red-500/30">
-            {isExpanded ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-          </div>
+          {isExpanded ? (
+            <X className="w-8 h-8 stroke-[2.5] text-orange-500 drop-shadow-[0_0_12px_rgba(249,115,22,0.8)]" />
+          ) : (
+            <Menu className="w-8 h-8 stroke-[2.5] text-orange-500 drop-shadow-[0_0_12px_rgba(249,115,22,0.8)]" />
+          )}
         </motion.button>
       </div>
 
