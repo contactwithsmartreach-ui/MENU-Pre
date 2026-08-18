@@ -13,7 +13,6 @@ export function PreloadScreen({ onComplete }: PreloadScreenProps) {
   const [isFadingOut, setIsFadingOut] = useState(false);
 
   useEffect(() => {
-    // Smooth progress interval that increments gradually (takes about 1.8 seconds total)
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
@@ -24,9 +23,9 @@ export function PreloadScreen({ onComplete }: PreloadScreenProps) {
           }, 300);
           return 100;
         }
-        return prev + 3;
+        return prev + 2;
       });
-    }, 45);
+    }, 50);
 
     return () => clearInterval(interval);
   }, [onComplete]);
@@ -41,7 +40,7 @@ export function PreloadScreen({ onComplete }: PreloadScreenProps) {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.1)_0%,transparent_70%)] pointer-events-none" />
 
       <div className="relative z-10 flex flex-col items-center max-w-sm px-6 text-center space-y-6">
-        {/* Hand Loader appearing instantly */}
+        {/* Hand Loader rendered immediately */}
         <div className="flex items-center justify-center scale-125 my-4">
           <div className="🤚">
             <div className="🌴"></div>
