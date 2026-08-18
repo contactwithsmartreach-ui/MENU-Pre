@@ -9,6 +9,7 @@ import { VerticalSpotlightNavbar } from "@/components/restaurant/VerticalSpotlig
 import { MenuSectionDivider } from "@/components/restaurant/MenuSectionDivider";
 import { SidebarNav } from "@/components/restaurant/SidebarNav";
 import { OrderDrawer } from "@/components/restaurant/OrderDrawer";
+import { PreloadScreen } from "@/components/restaurant/PreloadScreen";
 import { toast } from "sonner";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Loader2 } from "lucide-react";
@@ -30,6 +31,7 @@ const CATEGORY_ITEMS = [
 ];
 
 export default function RestaurantMenuPage() {
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedDish, setSelectedDish] = useState<MenuItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeCategoryIdx, setActiveCategoryIdx] = useState<number>(0);
@@ -119,6 +121,9 @@ export default function RestaurantMenuPage() {
 
   return (
     <div className="relative min-h-screen w-full bg-[#e3efed] text-neutral-900 flex flex-col items-center justify-between select-none overflow-x-hidden">
+      {/* Luxury Preloader Screen */}
+      {isLoading && <PreloadScreen onComplete={() => setIsLoading(false)} />}
+
       {/* Premium Animated Sidebar Nav */}
       <SidebarNav />
 
