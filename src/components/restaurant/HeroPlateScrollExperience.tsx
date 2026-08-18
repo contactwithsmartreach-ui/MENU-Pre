@@ -57,9 +57,6 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
 
       {/* Hero Headline */}
       <div className="relative z-10 max-w-2xl space-y-3 mt-2">
-        <span className="text-[11px] sm:text-xs font-serif uppercase tracking-[0.4em] text-cyan-200 bg-neutral-950/40 px-4 py-1.5 rounded-full border border-sky-400/30 backdrop-blur-md shadow-lg">
-          Welcome to Haute Dining
-        </span>
         <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-[0.18em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300 drop-shadow-[0_12px_30px_rgba(249,115,22,0.6)] pt-2">
           L&apos;AURA SAHARA
         </h1>
