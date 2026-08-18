@@ -152,12 +152,12 @@ export default function RestaurantMenuPage() {
       <section
         ref={menuSectionRef}
         id="cylinder-menu"
-        className="relative z-10 w-full flex flex-col items-center justify-start pt-16 sm:pt-24 pb-12 px-2 sm:px-6 bg-gradient-to-b from-[#e3efed] via-[#d4e7e4] to-[#c6dedb]"
+        className="relative z-10 w-full flex flex-col items-center justify-start pt-6 pb-8 px-2 sm:px-6 bg-gradient-to-b from-[#e3efed] via-[#d4e7e4] to-[#c6dedb]"
       >
         {/* Main Presentation Area: Vertical Spotlight Navbar Tightly Coupled with 3D Cylinder */}
-        <div className="relative z-10 w-full flex flex-col lg:flex-row items-center lg:items-center justify-center gap-6 lg:gap-8 max-w-7xl mx-auto py-8 sm:py-12">
-          {/* Vertical Spotlight Navbar moved further down and spaced */}
-          <div className="shrink-0 flex items-center justify-center lg:pr-6 z-30 pt-4 sm:pt-10">
+        <div className="relative z-10 w-full flex flex-col lg:flex-row items-center lg:items-center justify-center gap-3 lg:gap-2 max-w-7xl mx-auto py-1">
+          {/* Vertical Spotlight Navbar */}
+          <div className="shrink-0 flex items-center justify-center lg:pr-2 z-30">
             <VerticalSpotlightNavbar
               items={CATEGORY_ITEMS}
               activeIndex={activeCategoryIdx}
@@ -168,7 +168,7 @@ export default function RestaurantMenuPage() {
           {/* Dedicated 3D Cylinder Menu with Suspense Lazy Loading */}
           <div
             ref={cylinderContainerRef}
-            className="flex-1 w-full flex items-center justify-center overflow-visible scroll-mt-12"
+            className="flex-1 w-full flex items-center justify-center overflow-visible scroll-mt-6"
           >
             <Suspense
               fallback={
@@ -202,7 +202,7 @@ export default function RestaurantMenuPage() {
         />
 
         {/* Footer */}
-        <footer className="relative z-10 w-full py-6 mt-8 text-neutral-600 text-center">
+        <footer className="relative z-10 w-full py-3 mt-4 text-neutral-600">
           <MadeWithDyad />
         </footer>
       </section>
