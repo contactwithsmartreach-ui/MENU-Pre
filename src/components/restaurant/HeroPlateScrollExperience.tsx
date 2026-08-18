@@ -44,12 +44,14 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
           src="/images/burger-shop-3d.jpg"
           alt="3D Burger Shop Background"
           className="w-full h-full object-cover object-center scale-105 filter brightness-[0.95] contrast-105 saturate-[0.95]"
+          loading="eager"
+          fetchPriority="high"
         />
         {/* Luxurious Light Blue & Luminous White Professional Tint */}
         <div className="absolute inset-0 bg-gradient-to-tr from-sky-400/25 via-cyan-100/15 to-white/35 mix-blend-overlay" />
         
         {/* Subtle radial sheen for depth */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(56,189,248,0.1)_80%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(56,189,248,0.1)_80%]" />
 
         {/* Smooth Bottom Edge Fade into Page Background (#e3efed) */}
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent via-[#e3efed]/60 to-[#e3efed]" />
