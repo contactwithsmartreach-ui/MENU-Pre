@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SaharaButton } from "./SaharaButton";
 import { ChevronDown, ChefHat } from "lucide-react";
 
@@ -10,9 +10,15 @@ interface HeroPlateScrollExperienceProps {
 
 export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExperienceProps) {
   const hatRef = useRef<HTMLDivElement>(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const tickingRef = useRef(false);
 
   useEffect(() => {
+    // Preload background image instantly
+    const img = new window.Image();
+    img.src = "/images/burger-shop-3d.jpg";
+    img.onload = () => setImageLoaded(true);
+
     const handleScroll = () => {
       if (!tickingRef.current) {
         window.requestAnimationFrame(() => {
@@ -38,13 +44,19 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
 
   return (
     <section className="relative w-full min-h-[75vh] sm:min-h-[85vh] flex flex-col items-center justify-center px-4 pt-16 pb-32 text-center select-none overflow-hidden [contain:layout_style]">
-      {/* 3D Burger Shop Background Image with Light Blue & White Tint & Smooth Bottom Fade */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <img
-          src="/images/burger-shop-3d.jpg"
-          alt="3D Burger Shop Background"
-          className="w-full h-full object-cover object-center scale-105 filter brightness-[0.95] contrast-105 saturate-[0.95]"
-        />
+      {/* 3D Burger Shop Background Image with Instant Unified Render */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none bg-neutral-900">
+        <div
+          className={`absolute inset-0 transition-opacity duration-700 ${
+            imageLoaded ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <img
+            src="/images/burger-shop-3d.jpg"
+            alt="3D Burger Shop Background"
+            className="w-full h-full object-cover object-center scale-105 filter brightness-[0.95] contrast-105 saturate-[0.95]"
+          />
+        </div>
         {/* Luxurious Light Blue & Luminous White Professional Tint */}
         <div className="absolute inset-0 bg-gradient-to-tr from-sky-400/25 via-cyan-100/15 to-white/35 mix-blend-overlay" />
         
