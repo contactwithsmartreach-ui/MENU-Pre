@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { SaharaButton } from "./SaharaButton";
 import { ChevronDown, ChefHat } from "lucide-react";
 
 interface HeroPlateScrollExperienceProps {
@@ -67,38 +66,30 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
         </p>
       </div>
 
-      {/* CTA Button & Scroll-Following Chef Hat */}
-      <div className="relative z-30 flex flex-col items-center gap-6 pt-6 pb-8">
-        {/* Hardware-accelerated Scrolling Chef Hat */}
+      {/* Interactive Chef Hat replacing the welcome button */}
+      <div className="relative z-30 flex flex-col items-center gap-6 pt-8 pb-8">
         <div
           ref={hatRef}
           className="relative flex flex-col items-center group cursor-pointer will-change-transform transform-gpu"
           onClick={onScrollToMenu}
         >
-          <div className="absolute -inset-3 bg-sky-400/20 rounded-full blur-xl group-hover:bg-orange-500/35 transition-opacity duration-300 pointer-events-none" />
-          <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-b from-neutral-100 via-neutral-200 to-neutral-300 border-2 border-sky-300/60 shadow-[0_15px_35px_rgba(0,0,0,0.6),0_0_25px_rgba(56,189,248,0.4)] flex items-center justify-center text-neutral-900 transform group-hover:scale-105 transition-transform duration-200">
-            <ChefHat className="w-10 h-10 sm:w-12 sm:h-12 text-neutral-900 stroke-[1.5]" />
+          <div className="absolute -inset-4 bg-sky-400/30 rounded-full blur-2xl group-hover:bg-orange-500/40 transition-opacity duration-300 pointer-events-none animate-pulse" />
+          <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-b from-neutral-100 via-neutral-200 to-neutral-300 border-2 border-orange-400/80 shadow-[0_20px_40px_rgba(0,0,0,0.7),0_0_30px_rgba(249,115,22,0.5)] flex items-center justify-center text-neutral-900 transform group-hover:scale-110 transition-transform duration-200">
+            <ChefHat className="w-12 h-12 sm:w-14 sm:h-14 text-neutral-900 stroke-[1.5]" />
           </div>
-          <div className="w-10 h-2.5 bg-black/60 rounded-full blur-sm mt-1" />
-        </div>
-
-        {/* Exact Sahara Button Component */}
-        <div className="relative pt-1 pb-4">
-          <SaharaButton
-            onClick={onScrollToMenu}
-            primaryText="WELCOME"
-            hoverText="SAHARA"
-            size="lg"
-          />
+          <div className="w-12 h-3 bg-black/50 rounded-full blur-sm mt-1.5" />
+          <span className="mt-3 text-xs font-serif uppercase tracking-[0.25em] text-amber-200 font-bold drop-shadow-md bg-neutral-950/80 px-4 py-1.5 rounded-full border border-orange-500/40">
+            Tap to Enter Kitchen
+          </span>
         </div>
 
         <button
           type="button"
           onClick={onScrollToMenu}
-          className="flex items-center gap-1 text-[11px] font-serif uppercase tracking-widest text-cyan-200 hover:text-white transition-colors mt-2 animate-bounce cursor-pointer drop-shadow-md"
+          className="flex items-center gap-1.5 text-xs font-serif uppercase tracking-widest text-cyan-100 hover:text-white transition-colors mt-1 animate-bounce cursor-pointer drop-shadow-md"
         >
           <span>Explore Cylinder Menu</span>
-          <ChevronDown className="w-3.5 h-3.5" />
+          <ChevronDown className="w-4 h-4" />
         </button>
       </div>
     </section>
