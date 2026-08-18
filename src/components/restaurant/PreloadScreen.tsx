@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Sparkles, ChefHat } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface PreloadScreenProps {
@@ -13,14 +13,13 @@ export function PreloadScreen({ onComplete }: PreloadScreenProps) {
   const [isFadingOut, setIsFadingOut] = useState(false);
 
   useEffect(() => {
-    // Fast simulated preload progress
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
           setTimeout(() => {
             setIsFadingOut(true);
-            setTimeout(onComplete, 500); // Wait for fade out transition
+            setTimeout(onComplete, 500);
           }, 300);
           return 100;
         }
@@ -38,13 +37,169 @@ export function PreloadScreen({ onComplete }: PreloadScreenProps) {
         isFadingOut ? "opacity-0 pointer-events-none" : "opacity-100"
       )}
     >
-      {/* Background radial atmosphere matching page tone */}
+      <style jsx>{`
+        .🤚 {
+          --skin-color: #E4C560;
+          --tap-speed: 0.6s;
+          --tap-stagger: 0.1s;
+          position: relative;
+          width: 80px;
+          height: 60px;
+          margin-left: 80px;
+        }
+
+        .🤚:before {
+          content: '';
+          display: block;
+          width: 180%;
+          height: 75%;
+          position: absolute;
+          top: 70%;
+          right: 20%;
+          background-color: black;
+          border-radius: 40px 10px;
+          filter: blur(10px);
+          opacity: 0.15;
+        }
+
+        .🌴 {
+          display: block;
+          width: 100%;
+          height: 100%;
+          position: absolute;
+          top: 0;
+          left: 0;
+          background-color: var(--skin-color);
+          border-radius: 10px 40px;
+        }
+
+        .👍 {
+          position: absolute;
+          width: 120%;
+          height: 38px;
+          background-color: var(--skin-color);
+          bottom: -18%;
+          right: 1%;
+          transform-origin: calc(100% - 20px) 20px;
+          transform: rotate(-20deg);
+          border-radius: 30px 20px 20px 10px;
+          border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+          border-left: 2px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .👍:after {
+          width: 20%;
+          height: 60%;
+          content: '';
+          background-color: rgba(255, 255, 255, 0.3);
+          position: absolute;
+          bottom: -8%;
+          left: 5px;
+          border-radius: 60% 10% 10% 30%;
+          border-right: 2px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .👉 {
+          position: absolute;
+          width: 80%;
+          height: 35px;
+          background-color: var(--skin-color);
+          bottom: 32%;
+          right: 64%;
+          transform-origin: 100% 20px;
+          animation-duration: calc(var(--tap-speed) * 2);
+          animation-timing-function: ease-in-out;
+          animation-iteration-count: infinite;
+          transform: rotate(10deg);
+        }
+
+        .👉:before {
+          content: '';
+          position: absolute;
+          width: 140%;
+          height: 30px;
+          background-color: var(--skin-color);
+          bottom: 8%;
+          right: 65%;
+          transform-origin: calc(100% - 20px) 20px;
+          transform: rotate(-60deg);
+          border-radius: 20px;
+        }
+
+        .👉:nth-child(1) {
+          animation-delay: 0s;
+          filter: brightness(70%);
+          animation-name: tap-upper-1;
+        }
+
+        .👉:nth-child(2) {
+          animation-delay: var(--tap-stagger);
+          filter: brightness(80%);
+          animation-name: tap-upper-2;
+        }
+
+        .👉:nth-child(3) {
+          animation-delay: calc(var(--tap-stagger) * 2);
+          filter: brightness(90%);
+          animation-name: tap-upper-3;
+        }
+
+        .👉:nth-child(4) {
+          animation-delay: calc(var(--tap-stagger) * 3);
+          filter: brightness(100%);
+          animation-name: tap-upper-4;
+        }
+
+        @keyframes tap-upper-1 {
+          0%, 50%, 100% {
+            transform: rotate(10deg) scale(0.4);
+          }
+          40% {
+            transform: rotate(50deg) scale(0.4);
+          }
+        }
+
+        @keyframes tap-upper-2 {
+          0%, 50%, 100% {
+            transform: rotate(10deg) scale(0.6);
+          }
+          40% {
+            transform: rotate(50deg) scale(0.6);
+          }
+        }
+
+        @keyframes tap-upper-3 {
+          0%, 50%, 100% {
+            transform: rotate(10deg) scale(0.8);
+          }
+          40% {
+            transform: rotate(50deg) scale(0.8);
+          }
+        }
+
+        @keyframes tap-upper-4 {
+          0%, 50%, 100% {
+            transform: rotate(10deg) scale(1);
+          }
+          40% {
+            transform: rotate(50deg) scale(1);
+          }
+        }
+      `}</style>
+
+      {/* Background radial atmosphere */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.1)_0%,transparent_70%)] pointer-events-none" />
 
-      <div className="relative z-10 flex flex-col items-center max-w-sm px-6 text-center space-y-6">
-        <div className="relative w-20 h-20 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 p-0.5 shadow-[0_0_35px_rgba(249,115,22,0.4)] animate-pulse">
-          <div className="w-full h-full bg-[#e3efed] rounded-full flex items-center justify-center">
-            <ChefHat className="w-10 h-10 text-orange-600 stroke-[1.5]" />
+      <div className="relative z-10 flex flex-col items-center max-w-sm px-6 text-center space-y-8">
+        {/* Tapping Hand Animation from Uiverse */}
+        <div className="py-4">
+          <div className="🤚">
+            <div className="🌴"></div>
+            <div className="👍"></div>
+            <div className="👉"></div>
+            <div className="👉"></div>
+            <div className="👉"></div>
+            <div className="👉"></div>
           </div>
         </div>
 
