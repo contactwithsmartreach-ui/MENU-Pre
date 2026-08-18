@@ -53,7 +53,7 @@ export function PreloadScreen({ onComplete }: PreloadScreenProps) {
 
         <div className="space-y-2">
           <div className="flex items-center justify-center gap-1.5 text-orange-600">
-            <Sparkles className="w-4 h-4 fill-orange-600 animate-spin" />
+            <Sparkles className="w-4 h-4 fill-orange-600" />
             <span className="text-[10px] uppercase font-serif tracking-[0.3em]">L&apos;Aura Sahara</span>
           </div>
           <h2 className="text-2xl font-serif font-bold text-neutral-900 tracking-widest uppercase">
