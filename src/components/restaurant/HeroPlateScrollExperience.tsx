@@ -37,8 +37,8 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
   }, []);
 
   return (
-    <section className="relative w-full min-h-[66vh] sm:min-h-[74vh] flex flex-col items-center justify-center px-4 pt-16 pb-16 text-center select-none overflow-hidden [contain:layout_style]">
-      {/* 3D Burger Shop Background Image with Luxurious Light Blue & White Premium Gradient Overlays & Deep Bottom Fade into Navbar */}
+    <section className="relative w-full min-h-[62vh] sm:min-h-[70vh] flex flex-col items-center justify-center px-4 pt-16 pb-12 text-center select-none overflow-hidden [contain:layout_style]">
+      {/* 3D Burger Shop Background Image with Luxurious Light Blue & White Premium Gradient Overlays & Smooth Bottom Fade */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <img
           src="/images/burger-shop-3d.jpg"
@@ -51,8 +51,8 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
         {/* Subtle radial sheen for depth */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(56,189,248,0.15)_80%)]" />
 
-        {/* Deep Smooth Gradient Fade Transition into the Spotlight Navbar Area */}
-        <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-b from-transparent via-[#0a0504]/75 to-[#0a0504]" />
+        {/* Seamless Smooth Fade Transition into the Body Background (#0a0504) */}
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent via-[#0a0504]/60 to-[#0a0504]" />
       </div>
 
       {/* Hero Headline */}
