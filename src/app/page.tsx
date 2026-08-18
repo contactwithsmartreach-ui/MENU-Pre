@@ -112,7 +112,7 @@ export default function RestaurantMenuPage() {
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-[#0a0504] text-neutral-100 flex flex-col items-center justify-between select-none overflow-x-hidden">
+    <div className="relative min-h-screen w-full bg-[#0c0605] text-neutral-100 flex flex-col items-center justify-between select-none overflow-x-hidden">
       {/* Premium Animated Sidebar Nav (Icon Only) */}
       <SidebarNav />
 
@@ -127,7 +127,7 @@ export default function RestaurantMenuPage() {
       />
 
       {/* Sahara Sunset Ambient Atmospheric Background */}
-      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden transform-gpu">
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden transform-gpu bg-[#0c0605]">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[450px] bg-gradient-to-tr from-red-600/20 via-orange-500/20 to-amber-500/10 rounded-full blur-3xl" />
         <div className="absolute bottom-10 right-1/4 translate-x-1/2 w-[500px] h-[350px] bg-red-700/15 rounded-full blur-3xl" />
 
@@ -165,14 +165,14 @@ export default function RestaurantMenuPage() {
       {/* Part 1: Top Hero Section with Floating Plate Experience */}
       <HeroPlateScrollExperience onScrollToMenu={smoothScrollToMenu} />
 
-      {/* Transitional Section Separation Divider (Overlaps fade for smooth integration) */}
+      {/* Transitional Section Separation Divider */}
       <MenuSectionDivider />
 
-      {/* Part 2: Interactive 3D Cylinder Gastronomy Menu with top dark gradient overlay */}
+      {/* Part 2: Interactive 3D Cylinder Gastronomy Menu */}
       <section
         ref={menuSectionRef}
         id="cylinder-menu"
-        className="relative z-10 w-full flex flex-col items-center justify-start pt-6 pb-8 px-2 sm:px-6 bg-gradient-to-b from-[#0a0504] via-[#0a0504] to-[#0a0504]"
+        className="relative z-10 w-full flex flex-col items-center justify-start pt-6 pb-8 px-2 sm:px-6 bg-[#0c0605]"
       >
         {/* Main Presentation Area: Vertical Spotlight Navbar Tightly Coupled with 3D Cylinder */}
         <div className="relative z-10 w-full flex flex-col lg:flex-row items-center lg:items-center justify-center gap-3 lg:gap-2 max-w-7xl mx-auto py-1">
