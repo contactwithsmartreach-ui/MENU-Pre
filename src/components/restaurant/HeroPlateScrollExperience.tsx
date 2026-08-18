@@ -38,7 +38,7 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
 
   return (
     <section className="relative w-full min-h-[75vh] sm:min-h-[85vh] flex flex-col items-center justify-center px-4 pt-16 pb-32 text-center select-none overflow-hidden [contain:layout_style]">
-      {/* 3D Burger Shop Background Image with Luxurious Light Blue & White Premium Gradient Overlays & Deep Multi-Stop Fade extending to the middle */}
+      {/* 3D Burger Shop Background Image with Luxurious Light Blue & White Premium Gradient Overlays & Seamless Multi-Stop Fade */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <img
           src="/images/burger-shop-3d.jpg"
@@ -51,8 +51,8 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
         {/* Subtle radial sheen for depth */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(56,189,248,0.15)_80%)]" />
 
-        {/* Deep Multi-Stop Smooth Fade Transition extending deep into the page transitioning cleanly to solid #0a0504 */}
-        <div className="absolute inset-x-0 bottom-0 h-[85vh] bg-gradient-to-b from-transparent via-orange-950/20 via-neutral-950/90 to-[#0a0504]" />
+        {/* Extended Multi-Stop Smooth Fade Transition into Solid #0a0504 */}
+        <div className="absolute inset-x-0 bottom-0 h-[100vh] bg-gradient-to-b from-transparent via-orange-950/25 via-neutral-950/75 via-[#0a0504]/90 to-[#0a0504]" />
       </div>
 
       {/* Hero Headline */}
