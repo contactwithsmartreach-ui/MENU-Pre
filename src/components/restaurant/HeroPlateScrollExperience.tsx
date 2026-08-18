@@ -51,8 +51,8 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
         {/* Subtle radial sheen for depth */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(56,189,248,0.15)_80%)]" />
 
-        {/* Deep Multi-Stop Smooth Fade Transition extending deep into the page with warm orange & obsidian black blend */}
-        <div className="absolute inset-x-0 bottom-0 h-[70vh] bg-gradient-to-b from-transparent via-orange-950/40 via-neutral-950/80 to-[#0a0504]" />
+        {/* Deep Multi-Stop Smooth Fade Transition extending deep into the page transitioning cleanly to solid #0a0504 */}
+        <div className="absolute inset-x-0 bottom-0 h-[85vh] bg-gradient-to-b from-transparent via-orange-950/20 via-neutral-950/90 to-[#0a0504]" />
       </div>
 
       {/* Hero Headline */}
