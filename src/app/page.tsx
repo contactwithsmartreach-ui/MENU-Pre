@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, lazy, Suspense } from "react";
 import { MENU_ITEMS } from "@/data/menu-data";
 import { MenuItem, CartItem } from "@/types/restaurant";
-import { CombinedCylinderMenu } from "@/components/restaurant/CombinedCylinderMenu";
 import { DishDetailModal } from "@/components/restaurant/DishDetailModal";
 import { HeroPlateScrollExperience } from "@/components/restaurant/HeroPlateScrollExperience";
 import { VerticalSpotlightNavbar } from "@/components/restaurant/VerticalSpotlightNavbar";
@@ -12,6 +11,13 @@ import { SidebarNav } from "@/components/restaurant/SidebarNav";
 import { OrderDrawer } from "@/components/restaurant/OrderDrawer";
 import { toast } from "sonner";
 import { MadeWithDyad } from "@/components/made-with-dyad";
+import { Loader2 } from "lucide-react";
+
+const LazyCylinderWrapper = lazy(() =>
+  import("@/components/restaurant/LazyCylinderWrapper").then((mod) => ({
+    default: mod.LazyCylinderWrapper,
+  }))
+);
 
 const CATEGORY_ITEMS = [
   { label: "All", id: "All" },
@@ -155,15 +161,28 @@ export default function RestaurantMenuPage() {
             />
           </div>
 
-          {/* Dedicated 3D Cylinder Menu */}
+          {/* Dedicated 3D Cylinder Menu with Suspense Lazy Loading */}
           <div
             ref={cylinderContainerRef}
             className="flex-1 w-full flex items-center justify-center overflow-visible scroll-mt-6"
           >
-            <CombinedCylinderMenu
-              items={filteredItems}
-              onSelectItem={handleOpenDish}
-            />
+            <Suspense
+              fallback={
+                <div className="w-full h-[600px] flex items-center justify-center">
+                  <div className="flex flex-col items-center gap-3">
+                    <Loader2 className="w-8 h-8 text-orange-500 animate-spin" />
+                    <span className="text-xs font-serif uppercase tracking-widest text-neutral-600">
+                      Loading 3D Menu...
+                    </span>
+                  </div>
+                </div>
+              }
+            >
+              <LazyCylinderWrapper
+                items={filteredItems}
+                onSelectItem={handleOpenDish}
+              />
+            </Suspense>
           </div>
         </div>
 
