@@ -91,15 +91,15 @@ export function VerticalSpotlightNavbar({
             translateZ = 25;
           } else if (distance === 1) {
             scale = 0.98;
-            opacity = 0.8;
+            opacity = 0.85;
             translateZ = -10;
           } else if (distance === 2) {
             scale = 0.9;
-            opacity = 0.6;
+            opacity = 0.7;
             translateZ = -30;
           } else {
             scale = 0.84;
-            opacity = 0.45;
+            opacity = 0.55;
             translateZ = -45;
           }
 
@@ -124,18 +124,18 @@ export function VerticalSpotlightNavbar({
               >
                 {/* Leading Radiant Ember Beacon */}
                 {isActive ? (
-                  <span className="w-3.5 h-3.5 rounded-full bg-gradient-to-r from-red-500 to-amber-300 shadow-[0_0_18px_rgba(249,115,22,1),0_0_30px_rgba(239,68,68,0.9)] shrink-0 animate-pulse" />
+                  <span className="w-3.5 h-3.5 rounded-full bg-gradient-to-r from-red-500 to-amber-400 shadow-[0_0_18px_rgba(249,115,22,1),0_0_30px_rgba(239,68,68,0.9)] shrink-0 animate-pulse" />
                 ) : (
-                  <span className="w-2 h-2 rounded-full bg-orange-400/50 shadow-[0_0_10px_rgba(249,115,22,0.4)] group-hover:bg-amber-300 group-hover:shadow-[0_0_16px_rgba(251,191,36,0.9)] transition-all shrink-0" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-orange-500/70 shadow-[0_0_10px_rgba(249,115,22,0.6)] group-hover:bg-amber-400 group-hover:shadow-[0_0_16px_rgba(251,191,36,0.9)] transition-all shrink-0" />
                 )}
 
-                {/* Bold Large Course Label */}
+                {/* Bold Large Course Label with Premium Orange Contrast */}
                 <span
                   className={cn(
                     "font-serif tracking-widest uppercase transition-all duration-300 whitespace-nowrap",
                     isActive
-                      ? "text-xl sm:text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-orange-300 to-amber-200 drop-shadow-[0_0_25px_rgba(249,115,22,0.85)]"
-                      : "text-base sm:text-lg md:text-xl font-bold text-orange-200/85 drop-shadow-[0_0_10px_rgba(249,115,22,0.2)] group-hover:text-amber-200 group-hover:drop-shadow-[0_0_20px_rgba(249,115,22,0.7)]"
+                      ? "text-xl sm:text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-600 to-amber-600 drop-shadow-[0_2px_15px_rgba(234,88,12,0.4)]"
+                      : "text-base sm:text-lg md:text-xl font-bold text-orange-800/90 drop-shadow-[0_1px_8px_rgba(234,88,12,0.25)] group-hover:text-orange-600 group-hover:drop-shadow-[0_2px_12px_rgba(234,88,12,0.5)]"
                   )}
                 >
                   {item.label}
