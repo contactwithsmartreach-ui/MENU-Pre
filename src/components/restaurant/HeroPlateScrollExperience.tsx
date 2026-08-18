@@ -37,13 +37,13 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
   }, []);
 
   return (
-    <section className="relative w-full min-h-[64vh] sm:min-h-[72vh] flex flex-col items-center justify-center px-4 pt-16 pb-16 text-center select-none overflow-hidden [contain:layout_style]">
-      {/* 3D Burger Shop Background Image with Luxurious Light Blue & White Premium Gradient Overlays & Deep Soft Bottom Fade */}
+    <section className="relative w-full min-h-[75vh] sm:min-h-[85vh] flex flex-col items-center justify-center px-4 pt-16 pb-32 text-center select-none overflow-hidden [contain:layout_style]">
+      {/* 3D Burger Shop Background Image with Luxurious Light Blue & White Premium Gradient Overlays & Deep Multi-Stop Fade extending to the middle */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <img
           src="/images/burger-shop-3d.jpg"
           alt="3D Burger Shop Background"
-          className="w-full h-full object-cover object-center scale-105 filter brightness-[0.88] contrast-105 saturate-[0.9]"
+          className="w-full h-full object-cover object-center scale-105 filter brightness-[0.85] contrast-105 saturate-[0.9]"
         />
         {/* Luxurious Light Blue & Luminous White Professional Tint */}
         <div className="absolute inset-0 bg-gradient-to-tr from-sky-400/30 via-cyan-100/20 to-white/45 mix-blend-overlay" />
@@ -51,8 +51,8 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
         {/* Subtle radial sheen for depth */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(56,189,248,0.15)_80%)]" />
 
-        {/* Deep Seamless Smooth Fade Transition into the Body Background (#0a0504) */}
-        <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-b from-transparent via-[#0a0504]/75 to-[#0a0504]" />
+        {/* Deep Multi-Stop Smooth Fade Transition extending deep into the page with warm orange & obsidian black blend */}
+        <div className="absolute inset-x-0 bottom-0 h-[70vh] bg-gradient-to-b from-transparent via-orange-950/40 via-neutral-950/80 to-[#0a0504]" />
       </div>
 
       {/* Hero Headline */}
@@ -69,7 +69,7 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
       </div>
 
       {/* CTA Button & Scroll-Following Chef Hat */}
-      <div className="relative z-30 flex flex-col items-center gap-6 pt-6 pb-4">
+      <div className="relative z-30 flex flex-col items-center gap-6 pt-6 pb-8">
         {/* Hardware-accelerated Scrolling Chef Hat */}
         <div
           ref={hatRef}
