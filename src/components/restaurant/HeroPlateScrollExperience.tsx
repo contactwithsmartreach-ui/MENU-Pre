@@ -37,26 +37,26 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
   }, []);
 
   return (
-    <section className="relative w-full min-h-[66vh] sm:min-h-[74vh] flex flex-col items-center justify-center px-4 pt-16 pb-16 text-center select-none overflow-hidden [contain:layout_style]">
-      {/* 3D Burger Shop Background Image with Luxurious Light Blue & White Premium Gradient Overlays & Seamless Color Fade */}
+    <section className="relative w-full min-h-[66vh] sm:min-h-[74vh] flex flex-col items-center justify-center px-4 pt-16 pb-24 text-center select-none overflow-visible [contain:layout]">
+      {/* 3D Burger Shop Background Image with Luxurious Light Blue & White Premium Gradient Overlays & Extended Light Blue Bottom Fade */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <img
           src="/images/burger-shop-3d.jpg"
           alt="3D Burger Shop Background"
-          className="w-full h-full object-cover object-center scale-105 filter brightness-[0.88] contrast-105 saturate-[0.9]"
+          className="w-full h-[calc(100%+80px)] object-cover object-center scale-105 filter brightness-[0.88] contrast-105 saturate-[0.9]"
         />
         {/* Luxurious Light Blue & Luminous White Professional Tint */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-sky-400/30 via-cyan-100/20 to-white/45 mix-blend-overlay" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-sky-400/35 via-cyan-100/25 to-white/45 mix-blend-overlay" />
         
         {/* Subtle radial sheen for depth */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(56,189,248,0.15)_80%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(56,189,248,0.2)_80%)]" />
 
-        {/* Seamless Color-Tinted Multi-Step Gradient Fade into #0a0504 (Zero Hard Lines) */}
-        <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-b from-transparent via-sky-950/20 via-sky-950/50 via-[#0a0504]/80 to-[#0a0504]" />
+        {/* Extended Seamless Light Blue to Dark Bottom Gradient Fade (overlapping into the navbar section) */}
+        <div className="absolute inset-x-0 bottom-[-80px] h-96 bg-gradient-to-b from-sky-500/20 via-sky-600/40 via-[#0a0504]/80 to-[#0a0504] pointer-events-none z-10" />
       </div>
 
       {/* Hero Headline */}
-      <div className="relative z-10 max-w-2xl space-y-3 mt-2">
+      <div className="relative z-20 max-w-2xl space-y-3 mt-2">
         <span className="text-[11px] sm:text-xs font-serif uppercase tracking-[0.4em] text-cyan-200 bg-neutral-950/40 px-4 py-1.5 rounded-full border border-sky-400/30 backdrop-blur-md shadow-lg">
           Welcome to Haute Dining
         </span>
