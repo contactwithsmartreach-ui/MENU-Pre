@@ -37,7 +37,7 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
   }, []);
 
   return (
-    <section className="relative w-full min-h-[75vh] sm:min-h-[85vh] flex flex-col items-center justify-center px-4 pt-16 pb-32 text-center select-none overflow-hidden [contain:layout_style]">
+    <section className="relative w-full min-h-[75vh] sm:min-h-[85vh] flex flex-col items-center justify-between px-4 pt-16 pb-16 text-center select-none overflow-hidden [contain:layout_style]">
       {/* 3D Burger Shop Background Image with Light Blue & White Tint & Smooth Bottom Fade */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <img
@@ -67,8 +67,11 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
         </p>
       </div>
 
-      {/* CTA Button & Scroll-Following Chef Hat */}
-      <div className="relative z-30 flex flex-col items-center gap-6 pt-6 pb-8">
+      {/* Spacer to push content down */}
+      <div className="my-auto" />
+
+      {/* CTA Button & Scroll-Following Chef Hat - Repositioned Below Hero Section */}
+      <div className="relative z-30 flex flex-col items-center gap-4 pt-8 pb-4">
         {/* Hardware-accelerated Scrolling Chef Hat */}
         <div
           ref={hatRef}
@@ -83,7 +86,7 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
         </div>
 
         {/* Exact Sahara Button Component */}
-        <div className="relative pt-1 pb-4">
+        <div className="relative pt-1 pb-2">
           <SaharaButton
             onClick={onScrollToMenu}
             primaryText="WELCOME"
@@ -95,7 +98,7 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
         <button
           type="button"
           onClick={onScrollToMenu}
-          className="flex items-center gap-1 text-[11px] font-serif uppercase tracking-widest text-cyan-200 hover:text-white transition-colors mt-2 animate-bounce cursor-pointer drop-shadow-md"
+          className="flex items-center gap-1 text-[11px] font-serif uppercase tracking-widest text-cyan-200 hover:text-white transition-colors mt-1 animate-bounce cursor-pointer drop-shadow-md"
         >
           <span>Explore Cylinder Menu</span>
           <ChevronDown className="w-3.5 h-3.5" />
