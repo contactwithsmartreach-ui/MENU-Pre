@@ -38,16 +38,16 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
 
   return (
     <section className="relative w-full min-h-[75vh] sm:min-h-[85vh] flex flex-col items-center justify-between px-4 pt-16 pb-16 text-center select-none overflow-hidden [contain:layout_style]">
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none bg-neutral-900">
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <img
-          src="https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=1600&auto=format&fit=crop"
+          src="/images/burger-shop-3d.jpg"
           alt="3D Burger Shop Background"
-          className="w-full h-full object-cover object-center scale-105 filter brightness-[0.85] contrast-105 saturate-[0.95]"
+          className="w-full h-full object-cover object-center scale-105 filter brightness-[0.95] contrast-105 saturate-[0.95]"
           loading="eager"
           fetchPriority="high"
         />
-        <div className="absolute inset-0 bg-gradient-to-tr from-sky-950/40 via-cyan-900/20 to-neutral-950/60 mix-blend-multiply" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(0,0,0,0.6)_90%]" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-sky-400/25 via-cyan-100/15 to-white/35 mix-blend-overlay" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(56,189,248,0.1)_80%]" />
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent via-[#e3efed]/60 to-[#e3efed]" />
       </div>
 
