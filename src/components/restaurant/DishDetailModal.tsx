@@ -23,7 +23,6 @@ export function DishDetailModal({
   dish,
   isOpen,
   onClose,
-  onAddToCart,
 }: DishDetailModalProps) {
   if (!dish) return null;
 
@@ -32,11 +31,6 @@ export function DishDetailModal({
       description: `Price: $${dish.price} • Connecting phone call...`,
     });
     window.location.href = "tel:0659242630";
-    onClose();
-  };
-
-  const handleAdd = () => {
-    onAddToCart(dish, 1);
     onClose();
   };
 
@@ -116,22 +110,14 @@ export function DishDetailModal({
           </div>
 
           {/* Action Footer */}
-          <div className="pt-3 border-t border-orange-500/20 flex flex-col sm:flex-row items-center justify-between gap-3 pb-2">
+          <div className="pt-3 border-t border-orange-500/25 flex items-center justify-center pb-2">
             <button
               type="button"
               onClick={handleCallOrder}
-              className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-green-600 via-emerald-500 to-teal-500 text-white font-serif tracking-widest uppercase text-xs font-bold shadow-lg hover:scale-[1.02] active:scale-95 transition-all cursor-pointer border border-emerald-300/50"
+              className="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-gradient-to-r from-green-600 via-emerald-500 to-teal-500 text-white font-serif tracking-widest uppercase text-xs font-bold shadow-xl hover:scale-[1.02] active:scale-95 transition-all cursor-pointer border border-emerald-300/50"
             >
               <PhoneCall className="w-4 h-4 animate-pulse" />
               <span>ORDER</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={handleAdd}
-              className="w-full sm:w-auto px-6 py-3 rounded-full bg-neutral-900 border border-orange-500/40 text-orange-300 hover:text-white hover:bg-neutral-800 transition-colors text-xs font-serif tracking-widest uppercase font-bold cursor-pointer"
-            >
-              Add to Table
             </button>
           </div>
         </div>
