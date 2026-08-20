@@ -441,7 +441,7 @@ export function CombinedCylinderMenu({
 
           {currentFrontDish && (
             <div className="flex flex-col items-center justify-center text-center group px-3 py-1">
-              <span className="text-sm sm:text-base font-serif font-bold text-white tracking-wide drop-shadow-md truncate max-w-[190px] sm:max-w-xs">
+              <span className="text-sm sm:text-base font-serif font-bold text-orange-400 tracking-wide drop-shadow-md truncate max-w-[190px] sm:max-w-xs">
                 {currentFrontDish.name}
               </span>
               <button
