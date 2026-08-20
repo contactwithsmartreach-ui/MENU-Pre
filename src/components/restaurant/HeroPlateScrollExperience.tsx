@@ -42,7 +42,7 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
         <img
           src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=1600&auto=format&fit=crop"
           alt="3D Burger Shop Background"
-          className="w-full h-full object-cover object-center scale-105 filter brightness-[0.95] contrast-105 saturate-[0.95]"
+          className="w-full h-full object-contain sm:object-cover object-center scale-100 filter brightness-[0.95] contrast-105 saturate-[0.95]"
           loading="eager"
           fetchPriority="high"
         />
