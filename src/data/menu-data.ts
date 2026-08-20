@@ -2,6 +2,22 @@ import { MenuItem } from "@/types/restaurant";
 
 export const MENU_ITEMS: MenuItem[] = [
   {
+    id: "dish-pizza-pepperoni",
+    name: "Pizza Pepperoni Suprême",
+    category: "Mains",
+    price: 700,
+    description: "Pâte artisanale croustillante cuite au feu de bois, sauce tomate mijotée aux herbes fraîches, généreuse mozzarella filante et tranches de pepperoni pur bœuf dorées et croustillantes.",
+    image: "./images/pizza-pepperoni-supreme.jpg",
+    prepTime: "15 min",
+    calories: 680,
+    rating: 4.9,
+    reviewsCount: 185,
+    tags: ["Pizza", "Pepperoni", "Four à Bois", "Fromage Fondant", "Best Seller"],
+    chefNote: "Préparée avec une mozzarella fior di latte ultra crémeuse et cuite à 450°C pour un croustillant parfait.",
+    isSignature: true,
+    spicyLevel: 1,
+  },
+  {
     id: "dish-1",
     name: "Entrecôte Wagyu à la Truffe",
     category: "Chef Specials",
