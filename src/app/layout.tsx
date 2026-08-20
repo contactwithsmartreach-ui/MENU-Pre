@@ -14,22 +14,19 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://laurasahara.github.io'),
   title: "L'Aura | Interactive 3D Cylinder Restaurant Menu",
   description: "Experience luxury dining with our interactive 3D rotating cylinder menu.",
   openGraph: {
     title: "L'Aura Sahara | Interactive 3D Restaurant Menu",
     description: "Explore our immersive 3D cylinder menu, chef specials, cocktails, and table orders.",
-    url: "https://laurasahara.github.io",
+    url: "https://laurasahara.dining",
     siteName: "L'Aura Sahara",
     images: [
       {
         url: "/og-image.png",
-        secureUrl: "https://laurasahara.github.io/og-image.png",
         width: 1200,
         height: 630,
         alt: "L'Aura Sahara 3D Restaurant Menu Preview",
-        type: "image/png",
       },
     ],
     locale: "fr_FR",
@@ -39,7 +36,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "L'Aura Sahara | Interactive 3D Restaurant Menu",
     description: "Experience luxury dining with our interactive 3D rotating cylinder menu.",
-    images: ["https://laurasahara.github.io/og-image.png"],
+    images: ["/og-image.png"],
   },
 };
 
