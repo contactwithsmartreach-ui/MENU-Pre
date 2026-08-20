@@ -5,13 +5,13 @@ import { MenuItem } from "@/types/restaurant";
 import { cn } from "@/lib/utils";
 import {
   Star,
-  Eye,
-  Plus,
+  PhoneCall,
   Sparkles,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 export interface CombinedCylinderMenuProps {
   items: MenuItem[];
@@ -271,10 +271,12 @@ export function CombinedCylinderMenu({
     }
   };
 
-  const handleCardClick = (dish: MenuItem, index: number) => {
-    if (dragDistanceRef.current > 8) return;
-    rotateToIndex(index, false);
-    onSelectItem(dish);
+  const handleCallOrder = (dish: MenuItem, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    toast.success(`Calling 0659242630 to order ${dish.name}`, {
+      description: `Price: $${dish.price} • Connecting phone call...`,
+    });
+    window.location.href = "tel:0659242630";
   };
 
   const currentFrontDish = items[activeFrontIndex] || items[0];
@@ -325,7 +327,8 @@ export function CombinedCylinderMenu({
                   key={dish.id}
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleCardClick(dish, i);
+                    rotateToIndex(i, false);
+                    onSelectItem(dish);
                   }}
                   onMouseEnter={() => !isMobile && setHoveredIdx(i)}
                   onMouseLeave={() => !isMobile && setHoveredIdx(null)}
@@ -333,7 +336,8 @@ export function CombinedCylinderMenu({
                   tabIndex={0}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
-                      handleCardClick(dish, i);
+                      rotateToIndex(i, false);
+                      onSelectItem(dish);
                     }
                   }}
                   className={cn(
@@ -385,17 +389,21 @@ export function CombinedCylinderMenu({
                     </div>
                   </div>
 
-                  {/* Hover Badge */}
+                  {/* Hover Call Button */}
                   <div
                     className={cn(
-                      "absolute inset-0 flex items-center justify-center z-20 pointer-events-none transition-opacity duration-150",
-                      isHovered ? "opacity-100" : "opacity-0"
+                      "absolute inset-0 flex items-center justify-center z-20 transition-opacity duration-150",
+                      isHovered ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
                     )}
                   >
-                    <span className="bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white font-serif tracking-widest uppercase px-3 py-1 rounded-full text-xs font-bold shadow-lg border border-orange-200/50 flex items-center gap-1.5">
-                      <Eye className="w-3 h-3" />
-                      <span>ORDER</span>
-                    </span>
+                    <button
+                      type="button"
+                      onClick={(e) => handleCallOrder(dish, e)}
+                      className="bg-gradient-to-r from-green-600 via-emerald-500 to-teal-500 text-white font-serif tracking-widest uppercase px-3.5 py-2 rounded-full text-xs font-bold shadow-xl border border-emerald-200/50 flex items-center gap-1.5 hover:scale-105 transition-transform cursor-pointer"
+                    >
+                      <PhoneCall className="w-3.5 h-3.5 animate-pulse" />
+                      <span>CALL 0659242630</span>
+                    </button>
                   </div>
 
                   {/* Bottom Dish Information */}
@@ -407,7 +415,7 @@ export function CombinedCylinderMenu({
                       {dish.description}
                     </p>
 
-                    <div className="mt-2 pt-2 border-t border-orange-500/25 flex items-center justify-between">
+                    <div className="mt-2 pt-2 border-t border-orange-500/25 flex items-center justify-between pointer-events-auto">
                       <div className="flex items-baseline gap-0.5">
                         <span className="text-[10px] font-serif text-orange-400 font-bold">$</span>
                         <span className="text-base sm:text-lg font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300 font-serif">
@@ -415,14 +423,14 @@ export function CombinedCylinderMenu({
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] text-orange-200/70 font-mono">
-                          {dish.prepTime}
-                        </span>
-                        <div className="w-6 h-6 rounded-full bg-orange-500/20 border border-orange-400/50 flex items-center justify-center text-orange-300 group-hover:bg-orange-500 group-hover:text-neutral-950 transition-colors shadow-sm">
-                          <Plus className="w-3 h-3 stroke-[2.5]" />
-                        </div>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => handleCallOrder(dish, e)}
+                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-500/20 border border-green-400/50 text-green-300 hover:bg-green-500 hover:text-neutral-950 transition-colors shadow-sm cursor-pointer text-[10px] font-serif uppercase font-bold"
+                      >
+                        <PhoneCall className="w-3 h-3" />
+                        <span>Order Call</span>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -447,20 +455,19 @@ export function CombinedCylinderMenu({
 
           {/* Center Front Dish Display */}
           {currentFrontDish && (
-            <button
-              type="button"
-              onClick={() => onSelectItem(currentFrontDish)}
-              className="flex flex-col items-center justify-center text-center cursor-pointer group px-3 py-1 transition-transform hover:scale-105"
-            >
-              <span className="text-sm sm:text-base font-serif font-bold text-white tracking-wide group-hover:text-orange-300 transition-colors drop-shadow-md truncate max-w-[190px] sm:max-w-xs">
+            <div className="flex flex-col items-center justify-center text-center group px-3 py-1">
+              <span className="text-sm sm:text-base font-serif font-bold text-white tracking-wide drop-shadow-md truncate max-w-[190px] sm:max-w-xs">
                 {currentFrontDish.name}
               </span>
-              <span className="text-xs text-amber-400 font-serif font-semibold mt-0.5 tracking-wider flex items-center gap-1.5">
-                <span>${currentFrontDish.price}</span>
-                <span className="text-orange-400/60">&bull;</span>
-                <span className="text-orange-300/90 underline underline-offset-4">Click to Order</span>
-              </span>
-            </button>
+              <button
+                type="button"
+                onClick={(e) => handleCallOrder(currentFrontDish, e)}
+                className="text-xs text-amber-400 font-serif font-semibold mt-1 tracking-wider flex items-center gap-1.5 bg-green-950/80 px-3 py-1 rounded-full border border-green-500/40 hover:bg-green-900 transition-colors cursor-pointer shadow-lg"
+              >
+                <PhoneCall className="w-3.5 h-3.5 text-green-400 animate-pulse" />
+                <span className="text-white">${currentFrontDish.price} &bull; Call 0659242630</span>
+              </button>
+            </div>
           )}
 
           {/* Next Button */}
