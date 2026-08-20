@@ -1,7 +1,19 @@
+export type MenuCategory =
+  | "Pizzas"
+  | "Burgers"
+  | "Tacos"
+  | "Plats"
+  | "Desserts"
+  | "Boissons"
+  | "Starters"
+  | "Mains"
+  | "Chef Specials"
+  | "Cocktails";
+
 export interface MenuItem {
   id: string;
   name: string;
-  category: "Starters" | "Mains" | "Chef Specials" | "Desserts" | "Cocktails";
+  category: MenuCategory;
   price: number;
   description: string;
   image: string;
