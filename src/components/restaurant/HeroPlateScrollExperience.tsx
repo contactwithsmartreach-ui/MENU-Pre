@@ -19,7 +19,7 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
           if (hatRef.current) {
             const scrollY = window.scrollY;
             const translateY = Math.min(scrollY * 0.28, 130);
-            const scale = Math.max(0.8, 1 - scrollY * 0.0008);
+            const scale = Math.max(0.75, 0.95 - scrollY * 0.0008);
             const opacity = Math.max(0.15, 1 - scrollY * 0.0025);
             const rotate = (scrollY * 0.12) % 360;
 
@@ -37,7 +37,7 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
   }, []);
 
   return (
-    <section className="relative w-full min-h-[75vh] sm:min-h-[85vh] flex flex-col items-center justify-between px-4 pt-16 pb-16 text-center select-none overflow-hidden [contain:layout_style]">
+    <section className="relative w-full min-h-[70vh] sm:min-h-[80vh] flex flex-col items-center justify-between px-4 pt-12 pb-12 text-center select-none overflow-hidden [contain:layout_style] [transform:translateZ(-30px)] scale-[0.97]">
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <img
           src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=1600&auto=format&fit=crop"
@@ -62,7 +62,7 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
 
       <div className="my-auto" />
 
-      <div className="relative z-30 flex flex-col items-center gap-4 pt-8 pb-4">
+      <div className="relative z-30 flex flex-col items-center gap-4 pt-6 pb-2">
         <div
           ref={hatRef}
           className="relative flex flex-col items-center group cursor-pointer will-change-transform transform-gpu"
