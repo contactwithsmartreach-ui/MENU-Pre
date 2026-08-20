@@ -84,7 +84,7 @@ export function DishDetailModal({
             </div>
           </DialogHeader>
 
-          <p className="text-sm text-orange-400 leading-relaxed font-light">
+          <p className="text-sm text-neutral-300 leading-relaxed font-light">
             {dish.description}
           </p>
 
