@@ -10,8 +10,8 @@ import { MenuSectionDivider } from "@/components/restaurant/MenuSectionDivider";
 import { SidebarNav } from "@/components/restaurant/SidebarNav";
 import { OrderDrawer } from "@/components/restaurant/OrderDrawer";
 import { PreloadScreen } from "@/components/restaurant/PreloadScreen";
+import { LegalFooter } from "@/components/restaurant/LegalFooter";
 import { toast } from "sonner";
-import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Loader2 } from "lucide-react";
 
 const LazyCylinderWrapper = lazy(() =>
@@ -200,12 +200,10 @@ export default function RestaurantMenuPage() {
           }}
           onAddToCart={handleAddToCart}
         />
-
-        {/* Footer */}
-        <footer className="relative z-10 w-full py-3 mt-6 text-neutral-600">
-          <MadeWithDyad />
-        </footer>
       </section>
+
+      {/* Production Legal Footer */}
+      <LegalFooter />
     </div>
   );
 }
