@@ -8,6 +8,7 @@ import { HeroPlateScrollExperience } from "@/components/restaurant/HeroPlateScro
 import { VerticalSpotlightNavbar } from "@/components/restaurant/VerticalSpotlightNavbar";
 import { MenuSectionDivider } from "@/components/restaurant/MenuSectionDivider";
 import { SidebarNav } from "@/components/restaurant/SidebarNav";
+import { BottomInfoBar } from "@/components/restaurant/BottomInfoBar";
 import { OrderDrawer } from "@/components/restaurant/OrderDrawer";
 import { PreloadScreen } from "@/components/restaurant/PreloadScreen";
 import { toast } from "sonner";
@@ -152,7 +153,7 @@ export default function RestaurantMenuPage() {
       <section
         ref={menuSectionRef}
         id="cylinder-menu"
-        className="relative z-10 w-full flex flex-col items-center justify-start pt-6 pb-8 px-2 sm:px-6 bg-gradient-to-b from-[#e3efed] via-[#d4e7e4] to-[#c6dedb]"
+        className="relative z-10 w-full flex flex-col items-center justify-start pt-6 pb-4 px-2 sm:px-6 bg-gradient-to-b from-[#e3efed] via-[#d4e7e4] to-[#c6dedb]"
       >
         {/* Main Presentation Area: Vertical Spotlight Navbar Tightly Coupled with 3D Cylinder */}
         <div className="relative z-10 w-full flex flex-col lg:flex-row items-center lg:items-center justify-center gap-3 lg:gap-2 max-w-7xl mx-auto py-1">
@@ -190,6 +191,9 @@ export default function RestaurantMenuPage() {
           </div>
         </div>
 
+        {/* Dedicated Bottom Info Bar (Hours, Map & Roads, Wi-Fi QR) */}
+        <BottomInfoBar />
+
         {/* Dish Detail Dialog */}
         <DishDetailModal
           dish={selectedDish}
@@ -202,7 +206,7 @@ export default function RestaurantMenuPage() {
         />
 
         {/* Footer */}
-        <footer className="relative z-10 w-full py-3 mt-4 text-neutral-600">
+        <footer className="relative z-10 w-full py-3 mt-2 text-neutral-600">
           <MadeWithDyad />
         </footer>
       </section>
