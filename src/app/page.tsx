@@ -20,14 +20,14 @@ const LazyCylinderWrapper = lazy(() =>
   }))
 );
 
+// Ces catégories correspondent exactement au champ "category" des données du menu
 const CATEGORY_ITEMS = [
   { label: "Tout", id: "All" },
-  { label: "Pizzas", id: "Pizza" },
-  { label: "Burgers", id: "Burgers" },
-  { label: "Tacos", id: "Tacos" },
-  { label: "Plats", id: "Plates" },
-  { label: "Desserts", id: "Dessert" },
-  { label: "Boissons", id: "Drinks" },
+  { label: "Spécialités du Chef", id: "Chef Specials" },
+  { label: "Entrées", id: "Starters" },
+  { label: "Plats Principaux", id: "Mains" },
+  { label: "Desserts", id: "Desserts" },
+  { label: "Cocktails", id: "Cocktails" },
 ];
 
 export default function RestaurantMenuPage() {
@@ -42,23 +42,11 @@ export default function RestaurantMenuPage() {
   const menuSectionRef = useRef<HTMLDivElement>(null);
   const cylinderContainerRef = useRef<HTMLDivElement>(null);
 
-  // Filter items based on category selection
+  // Filtre exact : n'affiche que les plats dont la catégorie correspond exactement à celle sélectionnée
   const filteredItems =
     selectedCategory === "All"
       ? MENU_ITEMS
-      : selectedCategory === "Pizza"
-      ? MENU_ITEMS.filter((item) => item.category === "Mains" || item.tags.some(t => t.toLowerCase().includes("pizza") || t.toLowerCase().includes("pasta")))
-      : selectedCategory === "Burgers"
-      ? MENU_ITEMS.filter((item) => item.category === "Chef Specials")
-      : selectedCategory === "Tacos"
-      ? MENU_ITEMS.filter((item) => item.category === "Starters")
-      : selectedCategory === "Plates"
-      ? MENU_ITEMS.filter((item) => item.category === "Mains")
-      : selectedCategory === "Dessert"
-      ? MENU_ITEMS.filter((item) => item.category === "Desserts")
-      : selectedCategory === "Drinks"
-      ? MENU_ITEMS.filter((item) => item.category === "Cocktails")
-      : MENU_ITEMS;
+      : MENU_ITEMS.filter((item) => item.category === selectedCategory);
 
   const handleOpenDish = (dish: MenuItem) => {
     setSelectedDish(dish);
@@ -97,36 +85,30 @@ export default function RestaurantMenuPage() {
     setCart([]);
   };
 
-  // Smooth scrolling to center the cylinder cards
-  const smoothScrollToMenu = useCallback(() => {
+  // Défilement fluide vers la section du menu cylindre
+  const scrollToMenu = useCallback(() => {
     const targetElement = cylinderContainerRef.current || menuSectionRef.current;
-    
+
     if (targetElement) {
       const rect = targetElement.getBoundingClientRect();
       const targetY = window.scrollY + rect.top - 12;
-
-      if (Math.abs(window.scrollY - targetY) > 50) {
-        window.scrollTo({
-          top: targetY,
-          behavior: "smooth",
-        });
-      }
+      window.scrollTo({ top: targetY, behavior: "smooth" });
     }
   }, []);
 
   const handleCategorySelect = (index: number) => {
     setActiveCategoryIdx(index);
-    smoothScrollToMenu();
+    scrollToMenu();
   };
 
   return (
     <div className="relative min-h-screen w-full bg-[#e3efed] text-neutral-900 flex flex-col items-center justify-between select-none overflow-x-hidden">
       {isLoading && <PreloadScreen onComplete={() => setIsLoading(false)} />}
 
-      {/* Premium Animated Sidebar Nav */}
+      {/* Barre latérale animée */}
       <SidebarNav />
 
-      {/* Order Drawer Sheet */}
+      {/* Tiroir de commande */}
       <OrderDrawer
         isOpen={isOrderDrawerOpen}
         onClose={() => setIsOrderDrawerOpen(false)}
@@ -136,27 +118,26 @@ export default function RestaurantMenuPage() {
         onClearCart={handleClearCart}
       />
 
-      {/* 3D Burger Shop Matching Atmospheric Ambient Background */}
+      {/* Arrière-plan atmosphérique ambiant */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden transform-gpu">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[450px] bg-gradient-to-tr from-orange-400/15 via-sky-300/20 to-amber-200/10 rounded-full blur-3xl" />
         <div className="absolute bottom-10 right-1/4 translate-x-1/2 w-[500px] h-[350px] bg-orange-500/10 rounded-full blur-3xl" />
       </div>
 
-      {/* Part 1: Top Hero Section with Floating Plate Experience */}
-      <HeroPlateScrollExperience onScrollToMenu={smoothScrollToMenu} />
+      {/* Partie 1 : Section Héro */}
+      <HeroPlateScrollExperience onScrollToMenu={scrollToMenu} />
 
-      {/* Transitional Section Separation Divider */}
+      {/* Séparateur de section */}
       <MenuSectionDivider />
 
-      {/* Part 2: Interactive 3D Cylinder Gastronomy Menu */}
+      {/* Partie 2 : Menu cylindre interactif */}
       <section
         ref={menuSectionRef}
         id="cylinder-menu"
         className="relative z-10 w-full flex flex-col items-center justify-start pt-6 pb-4 px-2 sm:px-6 bg-gradient-to-b from-[#e3efed] via-[#d4e7e4] to-[#c6dedb]"
       >
-        {/* Main Presentation Area: Vertical Spotlight Navbar Tightly Coupled with 3D Cylinder */}
-        <div className="relative z-10 w-full flex flex-col lg:flex-row items-center lg:items-center justify-center gap-3 lg:gap-2 max-w-7xl mx-auto py-1">
-          {/* Vertical Spotlight Navbar */}
+        <div className="relative z-10 w-full flex flex-col lg:flex-row items-center justify-center gap-3 lg:gap-2 max-w-7xl mx-auto py-1">
+          {/* Barre de navigation verticale avec surbrillance */}
           <div className="shrink-0 flex items-center justify-center lg:pr-2 z-35">
             <VerticalSpotlightNavbar
               items={CATEGORY_ITEMS}
@@ -165,7 +146,7 @@ export default function RestaurantMenuPage() {
             />
           </div>
 
-          {/* Dedicated 3D Cylinder Menu with Suspense Lazy Loading */}
+          {/* Menu cylindre 3D avec chargement paresseux */}
           <div
             ref={cylinderContainerRef}
             className="flex-1 w-full flex items-center justify-center overflow-visible scroll-mt-6"
@@ -176,7 +157,7 @@ export default function RestaurantMenuPage() {
                   <div className="flex flex-col items-center gap-3">
                     <Loader2 className="w-8 h-8 text-orange-500 animate-spin" />
                     <span className="text-xs font-serif uppercase tracking-widest text-neutral-600">
-                      Loading 3D Menu...
+                      Préparation du Menu 3D...
                     </span>
                   </div>
                 </div>
@@ -190,10 +171,10 @@ export default function RestaurantMenuPage() {
           </div>
         </div>
 
-        {/* Dish Detail Dialog */}
+        {/* Dialogue de détail du plat */}
         <DishDetailModal
           dish={selectedDish}
-        isOpen={isModalOpen}
+          isOpen={isModalOpen}
           onClose={() => {
             setIsModalOpen(false);
             setSelectedDish(null);
@@ -201,7 +182,7 @@ export default function RestaurantMenuPage() {
           onAddToCart={handleAddToCart}
         />
 
-        {/* Footer */}
+        {/* Pied de page */}
         <footer className="relative z-10 w-full py-3 mt-6 text-neutral-600">
           <MadeWithDyad />
         </footer>
