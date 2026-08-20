@@ -21,47 +21,29 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://laurasahara.dining"),
-  title: "L'Aura Sahara | Menu Gastronomique 3D Interactif",
-  description: "Découvrez l'expérience gastronomique L'Aura Sahara : notre menu rotatif 3D exclusif, pizzas au feu de bois, smash burgers wagyu, tacos gourmets et commandes rapides.",
-  applicationName: "L'Aura Sahara",
-  keywords: [
-    "L'Aura Sahara",
-    "Restaurant 3D",
-    "Menu interactif",
-    "Pizzas",
-    "Burgers",
-    "Tacos",
-    "Gastronomie",
-    "Restaurant Sahara",
-  ],
-  authors: [{ name: "L'Aura Sahara" }],
-  creator: "L'Aura Sahara",
+  title: "L'Aura | Interactive 3D Cylinder Restaurant Menu",
+  description: "Experience luxury dining with our interactive 3D rotating cylinder menu.",
   openGraph: {
-    type: "website",
-    locale: "fr_FR",
+    title: "L'Aura Sahara | Interactive 3D Restaurant Menu",
+    description: "Explore our immersive 3D cylinder menu, chef specials, cocktails, and table orders.",
     url: "https://laurasahara.dining",
     siteName: "L'Aura Sahara",
-    title: "L'Aura Sahara | Menu Gastronomique 3D Interactif",
-    description: "Explorez notre menu cylindrique 3D immersif, nos spécialités signatures, et commandez directement par téléphone au 0659242630.",
     images: [
       {
-        url: "/opengraph-image",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "L'Aura Sahara - Menu Gastronomique 3D Interactif",
-        type: "image/png",
+        alt: "L'Aura Sahara 3D Restaurant Menu Preview",
       },
     ],
+    locale: "fr_FR",
+    type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "L'Aura Sahara | Menu Gastronomique 3D Interactif",
-    description: "Explorez notre menu 3D inédit, nos plats signatures et commandez votre repas en quelques secondes.",
-    images: ["/opengraph-image"],
-  },
-  icons: {
-    icon: "/favicon.ico",
+    title: "L'Aura Sahara | Interactive 3D Restaurant Menu",
+    description: "Experience luxury dining with our interactive 3D rotating cylinder menu.",
+    images: ["/og-image.png"],
   },
 };
 
@@ -71,9 +53,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className="dark">
+    <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#e3efed] text-neutral-900 min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-neutral-950 text-white min-h-screen`}
       >
         {children}
         <Toaster position="top-center" richColors theme="dark" />
