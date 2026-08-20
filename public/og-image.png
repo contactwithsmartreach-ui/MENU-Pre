@@ -1,100 +1,59 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
-    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0a0504" />
-      <stop offset="50%" stop-color="#0d1413" />
-      <stop offset="100%" stop-color="#07100e" />
-    </linearGradient>
-    <linearGradient id="accent-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#111827" />
+      <stop offset="100%" stop-color="#030712" />
+    </radialGradient>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#ef4444" />
       <stop offset="50%" stop-color="#f97316" />
       <stop offset="100%" stop-color="#fbbf24" />
     </linearGradient>
-    <radialGradient id="glow-1" cx="20%" cy="30%" r="50%">
-      <stop offset="0%" stop-color="#f97316" stop-opacity="0.25" />
-      <stop offset="100%" stop-color="#f97316" stop-opacity="0" />
-    </radialGradient>
-    <radialGradient id="glow-2" cx="80%" cy="70%" r="60%">
-      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.15" />
-      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0" />
-    </radialGradient>
-    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="15" stdDeviation="25" flood-color="#000000" flood-opacity="0.6" />
-    </filter>
+    <linearGradient id="badgeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f97316" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#ef4444" stop-opacity="0.2" />
+    </linearGradient>
   </defs>
 
   <!-- Background -->
-  <rect width="1200" height="630" fill="url(#bg-gradient)" />
-  <rect width="1200" height="630" fill="url(#glow-1)" />
-  <rect width="1200" height="630" fill="url(#glow-2)" />
+  <rect width="1200" height="630" fill="url(#bgGrad)" />
+  
+  <!-- Decorative Glow Circles -->
+  <circle cx="200" cy="150" r="250" fill="#f97316" opacity="0.12" filter="blur(60px)" />
+  <circle cx="1000" cy="500" r="300" fill="#ef4444" opacity="0.1" filter="blur(80px)" />
 
-  <!-- Subtle grid pattern -->
-  <g stroke="#f97316" stroke-opacity="0.05" stroke-width="1">
-    <path d="M0 105 H1200 M0 210 H1200 M0 315 H1200 M0 420 H1200 M0 525 H1200" />
-    <path d="M200 0 V630 M400 0 V630 M600 0 V630 M800 0 V630 M1000 0 V630" />
+  <!-- Card Border Container -->
+  <rect x="40" y="40" width="1120" height="550" rx="32" fill="#0f172a" fill-opacity="0.75" stroke="#f97316" stroke-opacity="0.3" stroke-width="2" />
+
+  <!-- Inner Badge Pill -->
+  <rect x="460" y="110" width="280" height="44" rx="22" fill="url(#badgeGrad)" stroke="#f97316" stroke-opacity="0.5" stroke-width="1" />
+  <text x="600" y="137" font-family="serif" font-size="15" font-weight="bold" fill="#fbbf24" letter-spacing="4" text-anchor="middle">GASTRONOMIE 3D</text>
+
+  <!-- Main Title -->
+  <text x="600" y="240" font-family="serif" font-size="64" font-weight="900" fill="url(#textGrad)" letter-spacing="6" text-anchor="middle">L'AURA SAHARA</text>
+
+  <!-- Subtitle -->
+  <text x="600" y="300" font-family="sans-serif" font-size="22" font-weight="300" fill="#cbd5e1" letter-spacing="2" text-anchor="middle">Expérience Interactive de Menu Cylindre & Réservations</text>
+
+  <!-- Divider Line -->
+  <line x1="350" y1="360" x2="850" y2="360" stroke="#f97316" stroke-opacity="0.4" stroke-width="2" stroke-dasharray="8 6" />
+
+  <!-- Feature Pills -->
+  <g transform="translate(240, 410)">
+    <rect x="0" y="0" width="210" height="64" rx="16" fill="#1e293b" stroke="#334155" stroke-width="1" />
+    <text x="105" y="38" font-family="sans-serif" font-size="16" font-weight="bold" fill="#f8fafc" text-anchor="middle">&#127828; Chef Specials</text>
   </g>
 
-  <!-- Left Content Area -->
-  <g transform="translate(80, 140)">
-    <!-- Badge -->
-    <rect x="0" y="0" width="220" height="38" rx="19" fill="#1c110d" stroke="#f97316" stroke-opacity="0.5" />
-    <text x="25" y="24" fill="#fbbf24" font-family="serif" font-size="13" font-weight="bold" letter-spacing="3">GASTRONOMIE 3D</text>
-
-    <!-- Main Title -->
-    <text x="0" y="115" fill="url(#accent-gradient)" font-family="serif" font-size="64" font-weight="900" letter-spacing="4" filter="url(#shadow)">L&apos;AURA SAHARA</text>
-    
-    <!-- Subtitle -->
-    <text x="0" y="170" fill="#e2e8f0" font-family="sans-serif" font-size="22" font-weight="300" letter-spacing="1">Expérience Culinaire Cylindrique Immersive</text>
-
-    <!-- Feature Tags -->
-    <g transform="translate(0, 225)">
-      <rect x="0" y="0" width="160" height="42" rx="12" fill="#141a19" stroke="#38bdf8" stroke-opacity="0.3" />
-      <text x="20" y="27" fill="#38bdf8" font-family="sans-serif" font-size="14" font-weight="600">✨ Menu 3D Rotatif</text>
-
-      <rect x="180" y="0" width="150" height="42" rx="12" fill="#141a19" stroke="#f97316" stroke-opacity="0.3" />
-      <text x="200" y="27" fill="#f97316" font-family="sans-serif" font-size="14" font-weight="600">🔥 Wagyu & Vins</text>
-
-      <rect x="345" y="0" width="140" height="42" rx="12" fill="#141a19" stroke="#22c55e" stroke-opacity="0.3" />
-      <text x="365" y="27" fill="#22c55e" font-family="sans-serif" font-size="14" font-weight="600">📞 Commandes</text>
-    </g>
-
-    <!-- URL Domain Badge -->
-    <text x="0" y="320" fill="#94a3b8" font-family="monospace" font-size="15" tracking="2">laurasahara.dining &bull; Ouvert 7j/7</text>
+  <g transform="translate(495, 410)">
+    <rect x="0" y="0" width="210" height="64" rx="16" fill="#1e293b" stroke="#334155" stroke-width="1" />
+    <text x="105" y="38" font-family="sans-serif" font-size="16" font-weight="bold" fill="#f8fafc" text-anchor="middle">&#127865; Cocktails Fumés</text>
   </g>
 
-  <!-- Right Side: 3D Cylinder Visual Representation -->
-  <g transform="translate(880, 315)" filter="url(#shadow)">
-    <!-- Central Card Mockup -->
-    <g transform="translate(-130, -210)">
-      <rect width="260" height="370" rx="28" fill="#120907" stroke="#f97316" stroke-width="2" />
-      <!-- Mock image area -->
-      <rect x="12" y="12" width="236" height="210" rx="18" fill="#26120c" />
-      <circle cx="130" cy="115" r="45" fill="#f97316" fill-opacity="0.3" />
-      <text x="130" y="122" fill="#fbbf24" font-family="serif" font-size="18" text-anchor="middle" font-weight="bold">Wagyu A5</text>
-      
-      <!-- Text details -->
-      <text x="24" y="255" fill="#ffffff" font-family="serif" font-size="18" font-weight="bold">Entrecôte Wagyu à la Truffe</text>
-      <text x="24" y="280" fill="#cbd5e1" font-family="sans-serif" font-size="12">Émulsion de truffe noire...</text>
-      <text x="24" y="325" fill="#fbbf24" font-family="serif" font-size="22" font-weight="bold">8,500 DA</text>
-      <rect x="145" y="305" width="95" height="35" rx="17" fill="url(#accent-gradient)" />
-      <text x="192" y="328" fill="#ffffff" font-family="sans-serif" font-size="12" font-weight="bold" text-anchor="middle">VOIR</text>
-    </g>
-
-    <!-- Left background card peek -->
-    <g transform="translate(-290, -170) scale(0.75)" opacity="0.6">
-      <rect width="260" height="370" rx="28" fill="#120907" stroke="#f97316" stroke-width="1" />
-      <rect x="12" y="12" width="236" height="210" rx="18" fill="#1c0f0a" />
-      <text x="24" y="255" fill="#ffffff" font-family="serif" font-size="18" font-weight="bold">Coquilles Saint-Jacques</text>
-      <text x="24" y="325" fill="#fbbf24" font-family="serif" font-size="22" font-weight="bold">4,200 DA</text>
-    </g>
-
-    <!-- Right background card peek -->
-    <g transform="translate(35, -170) scale(0.75)" opacity="0.6">
-      <rect width="260" height="370" rx="28" fill="#120907" stroke="#f97316" stroke-width="1" />
-      <rect x="12" y="12" width="236" height="210" rx="18" fill="#1c0f0a" />
-      <text x="24" y="255" fill="#ffffff" font-family="serif" font-size="18" font-weight="bold">Risotto aux Morilles</text>
-      <text x="24" y="325" fill="#fbbf24" font-family="serif" font-size="22" font-weight="bold">4,800 DA</text>
-    </g>
+  <g transform="translate(750, 410)">
+    <rect x="0" y="0" width="210" height="64" rx="16" fill="#1e293b" stroke="#334155" stroke-width="1" />
+    <text x="105" y="38" font-family="sans-serif" font-size="16" font-weight="bold" fill="#f8fafc" text-anchor="middle">&#128222; 0659242630</text>
   </g>
+
+  <!-- Footer Info -->
+  <text x="600" y="525" font-family="sans-serif" font-size="14" fill="#94a3b8" letter-spacing="1" text-anchor="middle">742 Evergreen Terrace, Sahara District &bull; Ouvert 7j/7 jusqu'à 23h00</text>
 </svg>
