@@ -228,11 +228,12 @@ export function CombinedCylinderMenu({
       const instantVelocity = (stepX / dt) * 8;
 
       const sensitivity = isMobile ? 0.22 : 0.14;
-      currentRotationRef.current -= stepX * sensitivity;
+      // Inverted sign here to make drag direction natural
+      currentRotationRef.current += stepX * sensitivity;
       targetRotationRef.current = currentRotationRef.current;
 
       velocityRef.current =
-        velocityRef.current * 0.2 - instantVelocity * 0.8 * sensitivity;
+        velocityRef.current * 0.2 + instantVelocity * 0.8 * sensitivity;
 
       lastPointerXRef.current = e.clientX;
       lastPointerTimeRef.current = now;
@@ -257,7 +258,8 @@ export function CombinedCylinderMenu({
       isAutoSpinningRef.current = false;
       isTransitioningToTargetRef.current = false;
 
-      const impulse = (e.deltaX > 0 ? -1 : 1) * Math.min(Math.abs(e.deltaX) * 0.008, 0.25);
+      // Inverted wheel impulse direction
+      const impulse = (e.deltaX > 0 ? 1 : -1) * Math.min(Math.abs(e.deltaX) * 0.008, 0.25);
       velocityRef.current += impulse;
 
       autoResumeTimeoutRef.current = setTimeout(() => {
