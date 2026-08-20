@@ -37,42 +37,42 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
   }, []);
 
   return (
-    <section className="relative w-full min-h-[60vh] sm:min-h-[75vh] flex flex-col items-center justify-between px-4 pt-8 pb-8 text-center select-none overflow-hidden [contain:layout_style] [transform:translateZ(-120px)] scale-[0.82]">
+    <section className="relative w-full min-h-[50vh] sm:min-h-[65vh] flex flex-col items-center justify-between px-4 pt-6 pb-6 text-center select-none overflow-hidden">
+      {/* Background Image Perfectly Contained */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <img
           src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=1600&auto=format&fit=crop"
           alt="3D Burger Shop Background"
-          className="w-full h-full object-cover object-center scale-105 filter brightness-[0.95] contrast-105 saturate-[0.95]"
+          className="w-full h-full object-cover object-center filter brightness-[0.92] contrast-105"
           loading="eager"
-          fetchPriority="high"
         />
         <div className="absolute inset-0 bg-gradient-to-tr from-sky-400/25 via-cyan-100/15 to-white/35 mix-blend-overlay" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(56,189,248,0.1)_80%]" />
-        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent via-[#e3efed]/60 to-[#e3efed]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(56,189,248,0.15)_80%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent via-[#e3efed]/70 to-[#e3efed]" />
       </div>
 
-      <div className="relative z-10 max-w-2xl space-y-2 mt-1">
-        <h1 className="text-2xl sm:text-4xl md:text-5xl font-serif font-black tracking-[0.18em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300 drop-shadow-[0_12px_30px_rgba(249,115,22,0.6)] pt-1">
+      <div className="relative z-10 max-w-2xl space-y-2 mt-2">
+        <h1 className="text-2xl sm:text-4xl md:text-5xl font-serif font-black tracking-[0.18em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300 drop-shadow-[0_8px_20px_rgba(249,115,22,0.5)] pt-1">
           L&apos;AURA SAHARA
         </h1>
-        <p className="text-[11px] sm:text-xs font-serif uppercase tracking-[0.3em] text-neutral-200 drop-shadow-md">
+        <p className="text-[11px] sm:text-xs font-serif uppercase tracking-[0.3em] text-neutral-100 drop-shadow-md">
           Expérience de Gastronomie 3D Immersive
         </p>
       </div>
 
       <div className="my-auto" />
 
-      <div className="relative z-30 flex flex-col items-center gap-3 pt-4 pb-1">
+      <div className="relative z-30 flex flex-col items-center gap-3 pt-3 pb-1">
         <div
           ref={hatRef}
           className="relative flex flex-col items-center group cursor-pointer will-change-transform transform-gpu"
           onClick={onScrollToMenu}
         >
           <div className="absolute -inset-3 bg-sky-400/20 rounded-full blur-xl group-hover:bg-orange-500/35 transition-opacity duration-300 pointer-events-none" />
-          <div className="relative w-14 h-14 sm:w-18 sm:h-18 rounded-full bg-gradient-to-b from-neutral-100 via-neutral-200 to-neutral-300 border-2 border-sky-300/60 shadow-[0_15px_35px_rgba(0,0,0,0.6),0_0_25px_rgba(56,189,248,0.4)] flex items-center justify-center text-neutral-900 transform group-hover:scale-105 transition-transform duration-200">
-            <ChefHat className="w-8 h-8 sm:w-10 sm:h-10 text-neutral-900 stroke-[1.5]" />
+          <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-b from-neutral-100 via-neutral-200 to-neutral-300 border-2 border-sky-300/60 shadow-[0_12px_30px_rgba(0,0,0,0.5),0_0_20px_rgba(56,189,248,0.35)] flex items-center justify-center text-neutral-900 transform group-hover:scale-105 transition-transform duration-200">
+            <ChefHat className="w-7 h-7 sm:w-9 sm:h-9 text-neutral-900 stroke-[1.5]" />
           </div>
-          <div className="w-8 h-2 bg-black/60 rounded-full blur-sm mt-1" />
+          <div className="w-8 h-2 bg-black/50 rounded-full blur-sm mt-1" />
         </div>
 
         <div className="relative pt-1 pb-1">

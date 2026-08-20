@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -30,7 +30,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "20"
 
       - name: Get pnpm store directory
         id: pnpm-cache
@@ -46,19 +46,16 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
-      - name: Build with Next.js
+      - name: Build static site
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          NODE_ENV: production
         run: |
-          cat << 'EOF' > next.config.ts
-          import type { NextConfig } from "next";
-          const nextConfig: NextConfig = {
-            output: 'export',
-            images: { unoptimized: true },
-          };
-          export default nextConfig;
-          EOF
           pnpm run build
+          # Création essentielle du fichier .nojekyll pour que GitHub Pages serve les dossiers _next
+          touch ./out/.nojekyll
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
