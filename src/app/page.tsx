@@ -8,7 +8,6 @@ import { HeroPlateScrollExperience } from "@/components/restaurant/HeroPlateScro
 import { VerticalSpotlightNavbar } from "@/components/restaurant/VerticalSpotlightNavbar";
 import { MenuSectionDivider } from "@/components/restaurant/MenuSectionDivider";
 import { SidebarNav } from "@/components/restaurant/SidebarNav";
-import { BottomInfoBar } from "@/components/restaurant/BottomInfoBar";
 import { OrderDrawer } from "@/components/restaurant/OrderDrawer";
 import { PreloadScreen } from "@/components/restaurant/PreloadScreen";
 import { toast } from "sonner";
@@ -191,9 +190,6 @@ export default function RestaurantMenuPage() {
           </div>
         </div>
 
-        {/* Dedicated Bottom Info Bar (Hours, Map & Roads, Wi-Fi QR) */}
-        <BottomInfoBar />
-
         {/* Dish Detail Dialog */}
         <DishDetailModal
           dish={selectedDish}
@@ -206,7 +202,7 @@ export default function RestaurantMenuPage() {
         />
 
         {/* Footer */}
-        <footer className="relative z-10 w-full py-3 mt-2 text-neutral-600">
+        <footer className="relative z-10 w-full py-3 mt-6 text-neutral-600">
           <MadeWithDyad />
         </footer>
       </section>
