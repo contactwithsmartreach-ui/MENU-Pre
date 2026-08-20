@@ -146,8 +146,11 @@
 @layer base {
   * {
     @apply border-border;
+    touch-action: pan-y;
   }
   body {
     @apply bg-background text-foreground;
+    touch-action: pan-y;
+    overscroll-behavior-y: none;
   }
 }
