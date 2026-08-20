@@ -9,6 +9,7 @@ import {
   Sparkles,
   ChevronLeft,
   ChevronRight,
+  UtensilsCrossed,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
@@ -69,7 +70,6 @@ export function CombinedCylinderMenu({
 
   const cardHeight = Math.round(cardWidth * 1.35);
 
-  // Increased multiplier and added extra depth offset to push cards further back in 3D space
   const radius =
     Math.round(cardWidth / (2 * Math.sin(Math.PI / Math.max(N, 3)))) * (isMobile ? 1.25 : 1.35) +
     (isMobile ? 40 : 80);
@@ -314,6 +314,7 @@ export function CombinedCylinderMenu({
             {items.map((dish, i) => {
               const itemAngle = i * angleStep;
               const isHovered = hoveredIdx === i;
+              const dishImage = dish.image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=800&auto=format&fit=crop";
 
               return (
                 <div
@@ -349,15 +350,23 @@ export function CombinedCylinderMenu({
                       "below 4px linear-gradient(to bottom, transparent 65%, rgba(0, 0, 0, 0.15) 85%, rgba(249, 115, 22, 0.25) 100%)",
                   }}
                 >
-                  <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+                  <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none flex items-center justify-center bg-neutral-900">
                     <img
-                      src={dish.image}
+                      src={dishImage}
                       alt={dish.name}
                       className="w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
                       loading="lazy"
                       decoding="async"
                       draggable={false}
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=800&auto=format&fit=crop";
+                      }}
                     />
+                    {!dish.image && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-neutral-950/70">
+                        <UtensilsCrossed className="w-12 h-12 text-orange-400/50" />
+                      </div>
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-[#0a0504] via-[#0a0504]/40 to-transparent" />
                     <div className="absolute inset-0 bg-gradient-to-tr from-red-600/20 via-orange-500/10 to-transparent mix-blend-color-dodge opacity-85" />
                   </div>
