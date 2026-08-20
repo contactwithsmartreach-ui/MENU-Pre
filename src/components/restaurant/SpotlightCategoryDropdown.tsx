@@ -24,39 +24,39 @@ export interface CategoryOption {
 export const CATEGORY_CONFIG: CategoryOption[] = [
   {
     id: "All",
-    name: "Full Collection",
+    name: "Collection Complète",
     icon: Sparkles,
-    tagline: "Explore all culinary creations",
+    tagline: "Explorez toutes nos créations culinaires",
   },
   {
     id: "Chef Specials",
-    name: "Chef Specials",
+    name: "Spécialités du Chef",
     icon: Flame,
-    tagline: "Signature masterwork dishes",
+    tagline: "Plats signatures d'exception",
   },
   {
     id: "Starters",
-    name: "Starters & Crudo",
+    name: "Entrées & Crudo",
     icon: Utensils,
-    tagline: "Palate awakening appetizers",
+    tagline: "Mises en bouche éveillant le palais",
   },
   {
     id: "Mains",
-    name: "Entrées & Mains",
+    name: "Plats Principaux",
     icon: ChefHat,
-    tagline: "Prime meats, seafood & pastas",
+    tagline: "Viandes nobles, poissons & pâtes",
   },
   {
     id: "Desserts",
-    name: "Artisan Desserts",
+    name: "Desserts Artisans",
     icon: Cake,
-    tagline: "Sweet finales & confectionary",
+    tagline: "Douces finales & confiseries",
   },
   {
     id: "Cocktails",
-    name: "Craft Cocktails",
+    name: "Cocktails Création",
     icon: Wine,
-    tagline: "Smoked elixirs & spirits",
+    tagline: "Élixirs fumés & spiritueux",
   },
 ];
 
@@ -80,7 +80,6 @@ export function SpotlightCategoryDropdown({
     CATEGORY_CONFIG.find((c) => c.id === selectedCategory) || CATEGORY_CONFIG[0];
   const CurrentIcon = currentCategory.icon;
 
-  // Handle clicking outside to close
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
@@ -94,7 +93,6 @@ export function SpotlightCategoryDropdown({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Spotlight cursor tracking inside dropdown
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!dropdownRef.current) return;
     const rect = dropdownRef.current.getBoundingClientRect();
@@ -114,7 +112,6 @@ export function SpotlightCategoryDropdown({
       ref={containerRef}
       className={cn("relative z-50 flex flex-col items-center", className)}
     >
-      {/* Dropdown Trigger Button with Glowing Border */}
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
@@ -134,7 +131,7 @@ export function SpotlightCategoryDropdown({
           </div>
           <div className="flex flex-col text-left">
             <span className="text-[10px] uppercase font-serif tracking-widest text-orange-300/70 leading-none">
-              Menu Course
+              Service
             </span>
             <span className="text-xs sm:text-sm font-serif font-bold text-white tracking-wide">
               {currentCategory.name}
@@ -150,7 +147,6 @@ export function SpotlightCategoryDropdown({
         />
       </button>
 
-      {/* Vertical Spotlight Dropdown Menu */}
       {isOpen && (
         <div
           ref={dropdownRef}
@@ -162,7 +158,6 @@ export function SpotlightCategoryDropdown({
             "animate-in fade-in-0 zoom-in-95 duration-200"
           )}
         >
-          {/* Dynamic Cursor Spotlight Radial Glow */}
           <div
             className="pointer-events-none absolute -inset-px transition-opacity duration-300 rounded-2xl"
             style={{
@@ -174,10 +169,10 @@ export function SpotlightCategoryDropdown({
           <div className="relative z-10 flex flex-col gap-1">
             <div className="px-3 py-1.5 border-b border-white/5 mb-1 flex items-center justify-between">
               <span className="text-[10px] font-serif uppercase tracking-[0.2em] text-orange-300/60">
-                Filter Cylinder Course
+                Filtrer les Cours
               </span>
               <span className="text-[10px] text-neutral-500 font-mono">
-                {CATEGORY_CONFIG.length} Courses
+                {CATEGORY_CONFIG.length} Cours
               </span>
             </div>
 

@@ -11,14 +11,14 @@ export function SidebarNav() {
   const [activeModal, setActiveModal] = useState<"hours" | "location" | "wifi" | null>(null);
 
   const handlePhoneClick = () => {
-    toast.success("Calling L'Aura Sahara", {
-      description: "0659242630 • Direct Order & Table Reservations",
+    toast.success("Appel de L'Aura Sahara", {
+      description: "0659242630 • Commandes & Réservations de Tables",
     });
     window.location.href = "tel:0659242630";
   };
 
   const handleSocialClick = (platform: string) => {
-    toast.info(`Connecting to ${platform}`, {
+    toast.info(`Connexion à ${platform}`, {
       description: `@laurasahara.dining`,
     });
   };
@@ -27,13 +27,12 @@ export function SidebarNav() {
     <>
       <RestaurantInfoModals activeModal={activeModal} onClose={() => setActiveModal(null)} />
 
-      {/* Floating Toggle Icon Button in Top-Left Open Space */}
       <div className="fixed top-6 left-6 z-50 flex items-center">
         <motion.button
           whileHover={{ scale: 1.15 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => setIsExpanded((prev) => !prev)}
-          aria-label="Toggle Menu & Info"
+          aria-label="Basculer le Menu & Info"
           className="relative p-2.5 flex items-center justify-center cursor-pointer focus:outline-none text-orange-600 hover:text-orange-500 transition-colors drop-shadow-[0_2px_10px_rgba(249,115,22,0.4)]"
         >
           {isExpanded ? (
@@ -44,11 +43,9 @@ export function SidebarNav() {
         </motion.button>
       </div>
 
-      {/* Premium Animated Sidebar Drawer */}
       <AnimatePresence>
         {isExpanded && (
           <>
-            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -57,7 +54,6 @@ export function SidebarNav() {
               className="fixed inset-0 z-40 bg-neutral-950/40 backdrop-blur-md"
             />
 
-            {/* Sidebar Content */}
             <motion.aside
               initial={{ x: "-100%", opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
@@ -66,28 +62,26 @@ export function SidebarNav() {
               className="fixed top-0 left-0 bottom-0 z-50 w-80 sm:w-96 bg-[#e3efed] backdrop-blur-2xl border-r border-orange-500/30 shadow-[20px_0_60px_rgba(0,0,0,0.25)] p-6 flex flex-col justify-between overflow-y-auto text-neutral-900"
             >
               <div className="space-y-5 pt-16">
-                {/* Header branding */}
                 <div className="space-y-1 pb-4 border-b border-orange-500/20">
                   <div className="flex items-center gap-2 text-orange-600">
                     <Sparkles className="w-4 h-4 fill-orange-600" />
                     <span className="text-xs uppercase font-serif tracking-[0.25cm] font-bold">L&apos;Aura Sahara</span>
                   </div>
                   <h2 className="text-2xl font-serif font-bold text-orange-600 tracking-wide">
-                    Gastronomy Portal
+                    Portail Gastronomique
                   </h2>
                   <p className="text-xs text-neutral-600 font-light">
-                    Explore live hours, map directions, Wi-Fi, and order hotline.
+                    Consultez les horaires, l&apos;accès, le Wi-Fi et la ligne de commande.
                   </p>
                 </div>
 
-                {/* Live Status & Hours Banner */}
                 <button
                   type="button"
                   onClick={() => {
                     setActiveModal("hours");
                     setIsExpanded(false);
                   }}
-                  className="group flex items-center justify-between w-full p-3 rounded-2xl bg-white border border-green-500/30 hover:border-green-600 transition-all cursor-pointer shadow-sm text-left"
+                  className="group flex items-center justify-between w-full p-3.5 rounded-2xl bg-white border border-green-500/30 hover:border-green-600 transition-all cursor-pointer shadow-sm text-left"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-green-500 flex items-center justify-center text-white shadow-lg shadow-green-500/30 shrink-0 group-hover:scale-105 transition-transform">
@@ -97,22 +91,21 @@ export function SidebarNav() {
                       <div className="flex items-center gap-1.5">
                         <span className="w-2 h-2 rounded-full bg-green-600 animate-ping" />
                         <span className="text-xs font-semibold text-neutral-900 group-hover:text-green-700 transition-colors">
-                          Open until 11:00 PM
+                          Ouvert jusqu&apos;à 23h00
                         </span>
                       </div>
-                      <p className="text-[11px] text-neutral-500">Tap to view full weekly hours</p>
+                      <p className="text-[11px] text-neutral-500">Voir les horaires complets</p>
                     </div>
                   </div>
                 </button>
 
-                {/* Location Map & Directions Button */}
                 <button
                   type="button"
                   onClick={() => {
                     setActiveModal("location");
                     setIsExpanded(false);
                   }}
-                  className="group flex items-center justify-between w-full p-3 rounded-2xl bg-white border border-orange-500/30 hover:border-orange-600 transition-all cursor-pointer shadow-sm text-left"
+                  className="group flex items-center justify-between w-full p-3.5 rounded-2xl bg-white border border-orange-500/30 hover:border-orange-600 transition-all cursor-pointer shadow-sm text-left"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-red-600 to-orange-500 flex items-center justify-center text-white shadow-lg shadow-orange-500/30 shrink-0 group-hover:scale-105 transition-transform">
@@ -120,7 +113,7 @@ export function SidebarNav() {
                     </div>
                     <div>
                       <span className="text-xs font-semibold text-neutral-900 group-hover:text-orange-600 transition-colors">
-                        Sanctuary Location & Map
+                        Localisation & Plan
                       </span>
                       <p className="text-[11px] text-neutral-500 truncate max-w-[180px]">742 Evergreen Terrace, CA</p>
                     </div>
@@ -128,14 +121,13 @@ export function SidebarNav() {
                   <MapPin className="w-4 h-4 text-orange-600" />
                 </button>
 
-                {/* Wi-Fi QR Code Button */}
                 <button
                   type="button"
                   onClick={() => {
                     setActiveModal("wifi");
                     setIsExpanded(false);
                   }}
-                  className="group flex items-center justify-between w-full p-3 rounded-2xl bg-white border border-sky-500/30 hover:border-sky-600 transition-all cursor-pointer shadow-sm text-left"
+                  className="group flex items-center justify-between w-full p-3.5 rounded-2xl bg-white border border-sky-500/30 hover:border-sky-600 transition-all cursor-pointer shadow-sm text-left"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-600 to-cyan-500 flex items-center justify-center text-white shadow-lg shadow-sky-500/30 shrink-0 group-hover:scale-105 transition-transform">
@@ -143,18 +135,17 @@ export function SidebarNav() {
                     </div>
                     <div>
                       <span className="text-xs font-semibold text-neutral-900 group-hover:text-sky-600 transition-colors">
-                        High-Speed Wi-Fi
+                        Wi-Fi Haut Débit
                       </span>
-                      <p className="text-[11px] text-neutral-500">Scan QR Code & Credentials</p>
+                      <p className="text-[11px] text-neutral-500">QR Code & Identifiants</p>
                     </div>
                   </div>
                   <Wifi className="w-4 h-4 text-sky-600" />
                 </button>
 
-                {/* Direct Order Hotline */}
                 <div className="space-y-2 pt-2">
                   <p className="text-[10px] font-serif uppercase tracking-widest text-orange-600 font-bold">
-                    Phone Order Hotline
+                    Ligne de Commande Téléphonique
                   </p>
                   <button
                     type="button"
@@ -166,7 +157,7 @@ export function SidebarNav() {
                     </div>
                     <div className="flex flex-col text-left">
                       <span className="text-xs font-serif font-semibold text-neutral-900 group-hover:text-green-700 transition-colors">
-                        Call to Order
+                        Appeler pour Commander
                       </span>
                       <span className="text-[11px] text-green-700 font-mono font-bold">
                         0659242630
@@ -175,10 +166,9 @@ export function SidebarNav() {
                   </button>
                 </div>
 
-                {/* Social Channels */}
                 <div className="space-y-2 pt-1">
                   <p className="text-[10px] font-serif uppercase tracking-widest text-orange-600 font-bold">
-                    Social Channels
+                    Réseaux Sociaux
                   </p>
                   <div className="grid grid-cols-2 gap-2.5">
                     <button
@@ -210,10 +200,9 @@ export function SidebarNav() {
                 </div>
               </div>
 
-              {/* Footer */}
               <div className="pt-4 border-t border-orange-500/20 text-center">
-                <p className="text-[11px] text-neutral-600 font-serif font-medium">Open Daily: 5:00 PM &ndash; Midnight</p>
-                <p className="text-[10px] text-green-700 font-mono font-bold mt-0.5">Order Hotline: 0659242630</p>
+                <p className="text-[11px] text-neutral-600 font-serif font-medium">Ouvert 7j/7 : 17h00 &ndash; Minuit</p>
+                <p className="text-[10px] text-green-700 font-mono font-bold mt-0.5">Commande : 0659242630</p>
               </div>
             </motion.aside>
           </>

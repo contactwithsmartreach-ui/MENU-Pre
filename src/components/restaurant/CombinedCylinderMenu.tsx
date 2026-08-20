@@ -35,7 +35,6 @@ export function CombinedCylinderMenu({
     typeof window !== "undefined" ? window.innerWidth : 390
   );
 
-  // High-performance refs
   const cylinderRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const currentRotationRef = useRef(0);
@@ -53,7 +52,6 @@ export function CombinedCylinderMenu({
   const autoResumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const animFrameRef = useRef<number | null>(null);
 
-  // Responsive sizing
   useEffect(() => {
     const handleResize = () => {
       const w = window.innerWidth;
@@ -75,7 +73,6 @@ export function CombinedCylinderMenu({
     Math.round(cardWidth / (2 * Math.tan(Math.PI / Math.max(N, 3)))) +
     (isMobile ? 12 : 24);
 
-  // Hardware-accelerated GPU transform setter
   const setTransform = useCallback(
     (deg: number) => {
       currentRotationRef.current = deg;
@@ -86,7 +83,6 @@ export function CombinedCylinderMenu({
     [radius]
   );
 
-  // Smooth Category Switch Effect
   const prevItemsRef = useRef(items);
   useEffect(() => {
     if (prevItemsRef.current !== items) {
@@ -106,7 +102,6 @@ export function CombinedCylinderMenu({
     }
   }, [items, setTransform]);
 
-  // Optimized RequestAnimationFrame loop
   useEffect(() => {
     let lastTime = performance.now();
     let lastCalculatedFront = 0;
@@ -273,8 +268,8 @@ export function CombinedCylinderMenu({
 
   const handleCallOrder = (dish: MenuItem, e?: React.MouseEvent) => {
     e?.stopPropagation();
-    toast.success(`Calling 0659242630 to order ${dish.name}`, {
-      description: `Price: $${dish.price} • Connecting phone call...`,
+    toast.success(`Appel au 0659242630 pour commander ${dish.name}`, {
+      description: `Prix : $${dish.price} • Connexion de l'appel...`,
     });
     window.location.href = "tel:0659242630";
   };
@@ -289,7 +284,6 @@ export function CombinedCylinderMenu({
         className
       )}
     >
-      {/* 3D Cylinder Stage */}
       <div
         ref={stageRef}
         className="relative w-full min-h-[500px] sm:min-h-[580px] md:min-h-[640px] flex items-center justify-center overflow-visible touch-pan-y cursor-grab active:cursor-grabbing pt-4 pb-28"
@@ -298,7 +292,6 @@ export function CombinedCylinderMenu({
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
       >
-        {/* Floor Reflection Gradient Pool */}
         <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 w-[80%] max-w-[550px] h-20 bg-gradient-to-r from-red-600/15 via-orange-500/20 to-amber-400/15 blur-2xl rounded-full opacity-60" />
 
         <div
@@ -310,7 +303,6 @@ export function CombinedCylinderMenu({
             perspective: isMobile ? "800px" : "1200px",
           }}
         >
-          {/* Rotating Cylinder Core */}
           <div
             ref={cylinderRef}
             className="relative w-0 h-0 [transform-style:preserve-3d] will-change-transform transform-gpu overflow-visible"
@@ -356,7 +348,6 @@ export function CombinedCylinderMenu({
                       "below 4px linear-gradient(to bottom, transparent 65%, rgba(0, 0, 0, 0.15) 85%, rgba(249, 115, 22, 0.25) 100%)",
                   }}
                 >
-                  {/* Dish Image Background */}
                   <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
                     <img
                       src={dish.image}
@@ -370,7 +361,6 @@ export function CombinedCylinderMenu({
                     <div className="absolute inset-0 bg-gradient-to-tr from-red-600/20 via-orange-500/10 to-transparent mix-blend-color-dodge opacity-85" />
                   </div>
 
-                  {/* Top Bar Badges */}
                   <div className="relative z-10 p-3 flex items-center justify-between w-full pointer-events-none">
                     {dish.isSignature ? (
                       <Badge className="bg-gradient-to-r from-red-500 to-orange-500 text-white font-serif tracking-wider uppercase px-2 py-0.5 rounded-full text-[10px] shadow-sm border-0 flex items-center gap-1">
@@ -389,7 +379,6 @@ export function CombinedCylinderMenu({
                     </div>
                   </div>
 
-                  {/* Hover Call Button */}
                   <div
                     className={cn(
                       "absolute inset-0 flex items-center justify-center z-20 transition-opacity duration-150",
@@ -402,11 +391,10 @@ export function CombinedCylinderMenu({
                       className="bg-gradient-to-r from-green-600 via-emerald-500 to-teal-500 text-white font-serif tracking-widest uppercase px-5 py-2.5 rounded-full text-xs font-bold shadow-xl border border-emerald-200/50 flex items-center gap-1.5 hover:scale-105 transition-transform cursor-pointer"
                     >
                       <PhoneCall className="w-3.5 h-3.5 animate-pulse" />
-                      <span>ORDER</span>
+                      <span>COMMANDER</span>
                     </button>
                   </div>
 
-                  {/* Bottom Dish Information */}
                   <div className="absolute bottom-0 inset-x-0 z-10 p-3 pt-5 bg-gradient-to-t from-[#0a0504] via-[#0a0504]/95 to-transparent flex flex-col justify-end pointer-events-none">
                     <h3 className="text-sm font-serif font-bold text-white tracking-wide truncate group-hover:text-orange-300 transition-colors">
                       {dish.name}
@@ -429,7 +417,7 @@ export function CombinedCylinderMenu({
                         className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-green-600 to-emerald-500 border border-green-400/50 text-white hover:brightness-110 transition-all shadow-sm cursor-pointer text-[10px] font-serif uppercase font-bold"
                       >
                         <PhoneCall className="w-3 h-3" />
-                        <span>ORDER</span>
+                        <span>COMMANDER</span>
                       </button>
                     </div>
                   </div>
@@ -440,20 +428,17 @@ export function CombinedCylinderMenu({
         </div>
       </div>
 
-      {/* Floating Controls */}
       <div className="relative z-40 w-full max-w-3xl px-4 flex flex-col items-center gap-3 mt-2 pb-4">
         <div className="relative w-full max-w-xl flex items-center justify-between px-1 sm:px-6">
-          {/* Previous Button */}
           <button
             type="button"
-            aria-label="Rotate Previous Dish"
+            aria-label="Plat Précédent"
             onClick={() => stepRotate("prev")}
             className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center bg-gradient-to-r from-red-500 to-orange-500 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-all text-neutral-950 cursor-pointer z-10"
           >
             <ChevronLeft className="w-5 h-5 text-neutral-950 stroke-[3]" />
           </button>
 
-          {/* Center Front Dish Display */}
           {currentFrontDish && (
             <div className="flex flex-col items-center justify-center text-center group px-3 py-1">
               <span className="text-sm sm:text-base font-serif font-bold text-white tracking-wide drop-shadow-md truncate max-w-[190px] sm:max-w-xs">
@@ -465,15 +450,14 @@ export function CombinedCylinderMenu({
                 className="text-xs text-white font-serif font-semibold mt-1 tracking-wider flex items-center gap-1.5 bg-gradient-to-r from-green-600 to-emerald-600 px-4 py-1.5 rounded-full border border-green-400/50 hover:brightness-110 transition-all cursor-pointer shadow-lg"
               >
                 <PhoneCall className="w-3.5 h-3.5 text-white animate-pulse" />
-                <span>${currentFrontDish.price} &bull; ORDER</span>
+                <span>${currentFrontDish.price} &bull; COMMANDER</span>
               </button>
             </div>
           )}
 
-          {/* Next Button */}
           <button
             type="button"
-            aria-label="Rotate Next Dish"
+            aria-label="Plat Suivant"
             onClick={() => stepRotate("next")}
             className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center bg-gradient-to-r from-red-500 to-orange-500 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-all text-neutral-950 cursor-pointer z-10"
           >

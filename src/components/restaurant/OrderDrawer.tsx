@@ -38,8 +38,8 @@ export function OrderDrawer({
   const total = subtotal + tax;
 
   const handleCheckout = () => {
-    toast.success("Order Placed Successfully!", {
-      description: "Our master chefs have received your culinary request.",
+    toast.success("Commande validée avec succès !", {
+      description: "Nos chefs ont bien reçu votre demande gastronomique.",
     });
     onClearCart();
     onClose();
@@ -52,7 +52,7 @@ export function OrderDrawer({
           <div className="flex items-center justify-between">
             <SheetTitle className="text-2xl font-serif text-amber-400 flex items-center gap-2">
               <ShoppingBag className="w-5 h-5" />
-              Your Table Order
+              Commande de Table
             </SheetTitle>
             {cart.length > 0 && (
               <button
@@ -60,14 +60,14 @@ export function OrderDrawer({
                 onClick={onClearCart}
                 className="text-xs text-orange-300/70 hover:text-red-400 transition-colors"
               >
-                Clear all
+                Tout effacer
               </button>
             )}
           </div>
           <SheetDescription className="text-xs text-neutral-400">
             {cart.length === 0
-              ? "Your dining order is currently empty."
-              : `${cart.reduce((c, i) => c + i.quantity, 0)} items prepared for your table`}
+              ? "Votre commande est actuellement vide."
+              : `${cart.reduce((c, i) => c + i.quantity, 0)} articles préparés pour votre table`}
           </SheetDescription>
         </SheetHeader>
 
@@ -77,9 +77,9 @@ export function OrderDrawer({
               <ShoppingBag className="w-8 h-8" />
             </div>
             <div className="space-y-1">
-              <p className="text-base font-semibold text-white">No dishes selected yet</p>
+              <p className="text-base font-semibold text-white">Aucun plat sélectionné</p>
               <p className="text-xs text-neutral-400 max-w-xs">
-                Spin through our cylinder menu and click any signature dish to add it to your order.
+                Faites tourner notre menu cylindre et cliquez sur un plat pour l&apos;ajouter à votre commande.
               </p>
             </div>
           </div>
@@ -147,11 +147,11 @@ export function OrderDrawer({
           <div className="border-t border-orange-500/20 pt-4 space-y-4 pb-2">
             <div className="space-y-1.5 text-sm">
               <div className="flex justify-between text-neutral-400 text-xs">
-                <span>Subtotal</span>
+                <span>Sous-total</span>
                 <span>${subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-neutral-400 text-xs">
-                <span>Estimated Tax (8.25%)</span>
+                <span>Taxes estimées (8.25%)</span>
                 <span>${tax.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-white font-bold font-serif text-base pt-1 border-t border-orange-500/20">
@@ -163,8 +163,8 @@ export function OrderDrawer({
             <div className="w-full flex justify-center pt-2">
               <SaharaButton
                 onClick={handleCheckout}
-                primaryText={`CONFIRM • $${total.toFixed(2)}`}
-                hoverText="CHECKOUT"
+                primaryText={`CONFIRMER • $${total.toFixed(2)}`}
+                hoverText="VALIDER"
                 size="md"
                 className="w-full"
               />

@@ -38,7 +38,6 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
 
   return (
     <section className="relative w-full min-h-[75vh] sm:min-h-[85vh] flex flex-col items-center justify-between px-4 pt-16 pb-16 text-center select-none overflow-hidden [contain:layout_style]">
-      {/* 3D Burger Shop Background Image with Light Blue & White Tint & Smooth Bottom Fade */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <img
           src="/images/burger-shop-3d.jpg"
@@ -47,32 +46,23 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
           loading="eager"
           fetchPriority="high"
         />
-        {/* Luxurious Light Blue & Luminous White Professional Tint */}
         <div className="absolute inset-0 bg-gradient-to-tr from-sky-400/25 via-cyan-100/15 to-white/35 mix-blend-overlay" />
-        
-        {/* Subtle radial sheen for depth */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(56,189,248,0.1)_80%]" />
-
-        {/* Smooth Bottom Edge Fade into Page Background (#e3efed) */}
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent via-[#e3efed]/60 to-[#e3efed]" />
       </div>
 
-      {/* Hero Headline */}
       <div className="relative z-10 max-w-2xl space-y-3 mt-2">
         <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-[0.18em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300 drop-shadow-[0_12px_30px_rgba(249,115,22,0.6)] pt-2">
           L&apos;AURA SAHARA
         </h1>
         <p className="text-xs sm:text-sm font-serif uppercase tracking-[0.3em] text-neutral-200 drop-shadow-md">
-          Immersive 3D Gastronomy Experience
+          Expérience de Gastronomie 3D Immersive
         </p>
       </div>
 
-      {/* Spacer to push content down */}
       <div className="my-auto" />
 
-      {/* CTA Button & Scroll-Following Chef Hat - Repositioned Below Hero Section */}
       <div className="relative z-30 flex flex-col items-center gap-4 pt-8 pb-4">
-        {/* Hardware-accelerated Scrolling Chef Hat */}
         <div
           ref={hatRef}
           className="relative flex flex-col items-center group cursor-pointer will-change-transform transform-gpu"
@@ -85,11 +75,10 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
           <div className="w-10 h-2.5 bg-black/60 rounded-full blur-sm mt-1" />
         </div>
 
-        {/* Exact Sahara Button Component */}
         <div className="relative pt-1 pb-2">
           <SaharaButton
             onClick={onScrollToMenu}
-            primaryText="WELCOME"
+            primaryText="BIENVENUE"
             hoverText="SAHARA"
             size="lg"
           />
@@ -100,7 +89,7 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
           onClick={onScrollToMenu}
           className="flex items-center gap-1 text-[11px] font-serif uppercase tracking-widest text-cyan-200 hover:text-white transition-colors mt-1 animate-bounce cursor-pointer drop-shadow-md"
         >
-          <span>Explore Cylinder Menu</span>
+          <span>Explorer le Menu Cylindre</span>
           <ChevronDown className="w-3.5 h-3.5" />
         </button>
       </div>

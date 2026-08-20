@@ -27,8 +27,8 @@ export function DishDetailModal({
   if (!dish) return null;
 
   const handleCallOrder = () => {
-    toast.success(`Calling 0659242630 to order ${dish.name}`, {
-      description: `Price: $${dish.price} • Connecting phone call...`,
+    toast.success(`Appel au 0659242630 pour commander ${dish.name}`, {
+      description: `Prix : $${dish.price} • Connexion de l'appel...`,
     });
     window.location.href = "tel:0659242630";
     onClose();
@@ -52,7 +52,7 @@ export function DishDetailModal({
             {dish.isSignature && (
               <Badge className="bg-neutral-950/80 text-amber-300 border border-orange-400/40 backdrop-blur-md">
                 <Sparkles className="w-3 h-3 mr-1 fill-amber-300" />
-                Sahara Signature
+                Signature Sahara
               </Badge>
             )}
           </div>
@@ -71,7 +71,7 @@ export function DishDetailModal({
             <div className="flex items-center gap-4 text-xs text-orange-200/70 pt-1">
               <span className="flex items-center gap-1 text-amber-300 font-semibold">
                 <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                <strong className="text-white">{dish.rating}</strong> ({dish.reviewsCount} reviews)
+                <strong className="text-white">{dish.rating}</strong> ({dish.reviewsCount} avis)
               </span>
               <span className="flex items-center gap-1 font-mono">
                 <Clock className="w-3.5 h-3.5 text-orange-400" />
@@ -92,7 +92,7 @@ export function DishDetailModal({
             <div className="p-3.5 rounded-2xl bg-orange-950/30 border border-orange-500/25 flex items-start gap-3">
               <Utensils className="w-4 h-4 text-orange-400 mt-0.5 shrink-0" />
               <div>
-                <p className="text-xs font-semibold text-orange-300 font-serif tracking-wide">Chef&apos;s Recommendation</p>
+                <p className="text-xs font-semibold text-orange-300 font-serif tracking-wide">Recommandation du Chef</p>
                 <p className="text-xs text-neutral-300 mt-0.5 italic">{dish.chefNote}</p>
               </div>
             </div>
@@ -109,7 +109,6 @@ export function DishDetailModal({
             ))}
           </div>
 
-          {/* Action Footer */}
           <div className="pt-3 border-t border-orange-500/25 flex items-center justify-center pb-2">
             <button
               type="button"
@@ -117,7 +116,7 @@ export function DishDetailModal({
               className="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-gradient-to-r from-green-600 via-emerald-500 to-teal-500 text-white font-serif tracking-widest uppercase text-xs font-bold shadow-xl hover:scale-[1.02] active:scale-95 transition-all cursor-pointer border border-emerald-300/50"
             >
               <PhoneCall className="w-4 h-4 animate-pulse" />
-              <span>ORDER</span>
+              <span>COMMANDER</span>
             </button>
           </div>
         </div>
