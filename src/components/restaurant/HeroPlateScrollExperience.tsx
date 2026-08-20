@@ -19,7 +19,7 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
           if (hatRef.current) {
             const scrollY = window.scrollY;
             const translateY = Math.min(scrollY * 0.28, 130);
-            const scale = Math.max(0.75, 0.92 - scrollY * 0.0008);
+            const scale = Math.max(0.65, 0.85 - scrollY * 0.0008);
             const opacity = Math.max(0.15, 1 - scrollY * 0.0025);
             const rotate = (scrollY * 0.12) % 360;
 
@@ -37,7 +37,7 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
   }, []);
 
   return (
-    <section className="relative w-full min-h-[70vh] sm:min-h-[80vh] flex flex-col items-center justify-between px-4 pt-12 pb-12 text-center select-none overflow-hidden [contain:layout_style] [transform:translateZ(-60px)] scale-[0.92]">
+    <section className="relative w-full min-h-[60vh] sm:min-h-[75vh] flex flex-col items-center justify-between px-4 pt-8 pb-8 text-center select-none overflow-hidden [contain:layout_style] [transform:translateZ(-120px)] scale-[0.82]">
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <img
           src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=1600&auto=format&fit=crop"
@@ -48,49 +48,49 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
         />
         <div className="absolute inset-0 bg-gradient-to-tr from-sky-400/25 via-cyan-100/15 to-white/35 mix-blend-overlay" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(56,189,248,0.1)_80%]" />
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent via-[#e3efed]/60 to-[#e3efed]" />
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent via-[#e3efed]/60 to-[#e3efed]" />
       </div>
 
-      <div className="relative z-10 max-w-2xl space-y-3 mt-2">
-        <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-[0.18em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300 drop-shadow-[0_12px_30px_rgba(249,115,22,0.6)] pt-2">
+      <div className="relative z-10 max-w-2xl space-y-2 mt-1">
+        <h1 className="text-2xl sm:text-4xl md:text-5xl font-serif font-black tracking-[0.18em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300 drop-shadow-[0_12px_30px_rgba(249,115,22,0.6)] pt-1">
           L&apos;AURA SAHARA
         </h1>
-        <p className="text-xs sm:text-sm font-serif uppercase tracking-[0.3em] text-neutral-200 drop-shadow-md">
+        <p className="text-[11px] sm:text-xs font-serif uppercase tracking-[0.3em] text-neutral-200 drop-shadow-md">
           Expérience de Gastronomie 3D Immersive
         </p>
       </div>
 
       <div className="my-auto" />
 
-      <div className="relative z-30 flex flex-col items-center gap-4 pt-6 pb-2">
+      <div className="relative z-30 flex flex-col items-center gap-3 pt-4 pb-1">
         <div
           ref={hatRef}
           className="relative flex flex-col items-center group cursor-pointer will-change-transform transform-gpu"
           onClick={onScrollToMenu}
         >
           <div className="absolute -inset-3 bg-sky-400/20 rounded-full blur-xl group-hover:bg-orange-500/35 transition-opacity duration-300 pointer-events-none" />
-          <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-b from-neutral-100 via-neutral-200 to-neutral-300 border-2 border-sky-300/60 shadow-[0_15px_35px_rgba(0,0,0,0.6),0_0_25px_rgba(56,189,248,0.4)] flex items-center justify-center text-neutral-900 transform group-hover:scale-105 transition-transform duration-200">
-            <ChefHat className="w-10 h-10 sm:w-12 sm:h-12 text-neutral-900 stroke-[1.5]" />
+          <div className="relative w-14 h-14 sm:w-18 sm:h-18 rounded-full bg-gradient-to-b from-neutral-100 via-neutral-200 to-neutral-300 border-2 border-sky-300/60 shadow-[0_15px_35px_rgba(0,0,0,0.6),0_0_25px_rgba(56,189,248,0.4)] flex items-center justify-center text-neutral-900 transform group-hover:scale-105 transition-transform duration-200">
+            <ChefHat className="w-8 h-8 sm:w-10 sm:h-10 text-neutral-900 stroke-[1.5]" />
           </div>
-          <div className="w-10 h-2.5 bg-black/60 rounded-full blur-sm mt-1" />
+          <div className="w-8 h-2 bg-black/60 rounded-full blur-sm mt-1" />
         </div>
 
-        <div className="relative pt-1 pb-2">
+        <div className="relative pt-1 pb-1">
           <SaharaButton
             onClick={onScrollToMenu}
             primaryText="BIENVENUE"
             hoverText="SAHARA"
-            size="lg"
+            size="md"
           />
         </div>
 
         <button
           type="button"
           onClick={onScrollToMenu}
-          className="flex items-center gap-1 text-[11px] font-serif uppercase tracking-widest text-cyan-200 hover:text-white transition-colors mt-1 animate-bounce cursor-pointer drop-shadow-md"
+          className="flex items-center gap-1 text-[10px] font-serif uppercase tracking-widest text-cyan-200 hover:text-white transition-colors mt-0.5 animate-bounce cursor-pointer drop-shadow-md"
         >
           <span>Explorer le Menu Cylindre</span>
-          <ChevronDown className="w-3.5 h-3.5" />
+          <ChevronDown className="w-3 h-3" />
         </button>
       </div>
     </section>
