@@ -28,7 +28,7 @@ export function DishDetailModal({
 
   const handleCallOrder = () => {
     toast.success(`Appel au 0659242630 pour commander ${dish.name}`, {
-      description: `Prix : $${dish.price} • Connexion de l'appel...`,
+      description: `Prix : ${dish.price.toLocaleString()} DA • Connexion de l'appel...`,
     });
     window.location.href = "tel:0659242630";
     onClose();
@@ -64,8 +64,8 @@ export function DishDetailModal({
               <DialogTitle className="text-2xl font-bold font-serif text-white tracking-tight">
                 {dish.name}
               </DialogTitle>
-              <div className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300 font-serif whitespace-nowrap">
-                ${dish.price}
+              <div className="text-xl sm:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300 font-serif whitespace-nowrap">
+                {dish.price.toLocaleString()} DA
               </div>
             </div>
             <div className="flex items-center gap-4 text-xs text-orange-200/70 pt-1">

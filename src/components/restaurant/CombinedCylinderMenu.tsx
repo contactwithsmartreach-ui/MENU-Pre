@@ -269,7 +269,7 @@ export function CombinedCylinderMenu({
   const handleCallOrder = (dish: MenuItem, e?: React.MouseEvent) => {
     e?.stopPropagation();
     toast.success(`Appel au 0659242630 pour commander ${dish.name}`, {
-      description: `Prix : $${dish.price} • Connexion de l'appel...`,
+      description: `Prix : ${dish.price.toLocaleString()} DA • Connexion de l'appel...`,
     });
     window.location.href = "tel:0659242630";
   };
@@ -405,16 +405,15 @@ export function CombinedCylinderMenu({
 
                     <div className="mt-2 pt-2 border-t border-orange-500/25 flex items-center justify-between pointer-events-auto">
                       <div className="flex items-baseline gap-0.5">
-                        <span className="text-[10px] font-serif text-orange-400 font-bold">$</span>
-                        <span className="text-base sm:text-lg font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300 font-serif">
-                          {dish.price}
+                        <span className="text-sm sm:text-base font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300 font-serif">
+                          {dish.price.toLocaleString()} DA
                         </span>
                       </div>
 
                       <button
                         type="button"
                         onClick={(e) => handleCallOrder(dish, e)}
-                        className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-green-600 to-emerald-500 border border-green-400/50 text-white hover:brightness-110 transition-all shadow-sm cursor-pointer text-[10px] font-serif uppercase font-bold"
+                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-gradient-to-r from-green-600 to-emerald-500 border border-green-400/50 text-white hover:brightness-110 transition-all shadow-sm cursor-pointer text-[10px] font-serif uppercase font-bold"
                       >
                         <PhoneCall className="w-3 h-3" />
                         <span>COMMANDER</span>
@@ -450,7 +449,7 @@ export function CombinedCylinderMenu({
                 className="text-xs text-white font-serif font-semibold mt-1 tracking-wider flex items-center gap-1.5 bg-gradient-to-r from-green-600 to-emerald-600 px-4 py-1.5 rounded-full border border-green-400/50 hover:brightness-110 transition-all cursor-pointer shadow-lg"
               >
                 <PhoneCall className="w-3.5 h-3.5 text-white animate-pulse" />
-                <span>${currentFrontDish.price} &bull; COMMANDER</span>
+                <span>{currentFrontDish.price.toLocaleString()} DA &bull; COMMANDER</span>
               </button>
             </div>
           )}

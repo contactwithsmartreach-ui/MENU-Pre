@@ -100,7 +100,7 @@ export function OrderDrawer({
                     {item.dish.name}
                   </h4>
                   <p className="text-xs text-amber-400 font-serif font-bold">
-                    ${(item.dish.price * item.quantity).toFixed(2)}
+                    {(item.dish.price * item.quantity).toLocaleString()} DA
                   </p>
                   {item.specialInstructions && (
                     <p className="text-[11px] text-neutral-400 italic truncate mt-0.5">
@@ -148,22 +148,22 @@ export function OrderDrawer({
             <div className="space-y-1.5 text-sm">
               <div className="flex justify-between text-neutral-400 text-xs">
                 <span>Sous-total</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>{subtotal.toLocaleString()} DA</span>
               </div>
               <div className="flex justify-between text-neutral-400 text-xs">
                 <span>Taxes estimées (8.25%)</span>
-                <span>${tax.toFixed(2)}</span>
+                <span>{tax.toLocaleString(undefined, { maximumFractionDigits: 0 })} DA</span>
               </div>
               <div className="flex justify-between text-white font-bold font-serif text-base pt-1 border-t border-orange-500/20">
                 <span>Total</span>
-                <span className="text-amber-400">${total.toFixed(2)}</span>
+                <span className="text-amber-400">{total.toLocaleString(undefined, { maximumFractionDigits: 0 })} DA</span>
               </div>
             </div>
 
             <div className="w-full flex justify-center pt-2">
               <SaharaButton
                 onClick={handleCheckout}
-                primaryText={`CONFIRMER • $${total.toFixed(2)}`}
+                primaryText={`CONFIRMER • ${total.toLocaleString(undefined, { maximumFractionDigits: 0 })} DA`}
                 hoverText="VALIDER"
                 size="md"
                 className="w-full"

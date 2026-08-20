@@ -79,7 +79,7 @@ export default function RestaurantMenuPage() {
     });
 
     toast.success(`Added ${quantity}x ${dish.name} to order`, {
-      description: `$${(dish.price * quantity).toFixed(2)} • Ready in ~${dish.prepTime}`,
+      description: `${(dish.price * quantity).toLocaleString()} DA • Ready in ~${dish.prepTime}`,
     });
   };
 
@@ -157,7 +157,7 @@ export default function RestaurantMenuPage() {
         {/* Main Presentation Area: Vertical Spotlight Navbar Tightly Coupled with 3D Cylinder */}
         <div className="relative z-10 w-full flex flex-col lg:flex-row items-center lg:items-center justify-center gap-3 lg:gap-2 max-w-7xl mx-auto py-1">
           {/* Vertical Spotlight Navbar */}
-          <div className="shrink-0 flex items-center justify-center lg:pr-2 z-30">
+          <div className="shrink-0 flex items-center justify-center lg:pr-2 z-35">
             <VerticalSpotlightNavbar
               items={CATEGORY_ITEMS}
               activeIndex={activeCategoryIdx}
@@ -193,7 +193,7 @@ export default function RestaurantMenuPage() {
         {/* Dish Detail Dialog */}
         <DishDetailModal
           dish={selectedDish}
-          isOpen={isModalOpen}
+        isOpen={isModalOpen}
           onClose={() => {
             setIsModalOpen(false);
             setSelectedDish(null);

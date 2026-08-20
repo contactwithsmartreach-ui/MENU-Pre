@@ -3,7 +3,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { MenuItem } from "@/types/restaurant";
 import { cn } from "@/lib/utils";
-import { Star, Flame, ChevronLeft, ChevronRight, Plus, Eye, Utensils } from "lucide-react";
+import { Star, Flame, ChevronLeft, ChevronRight, Plus, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface HorizontalMenuScrollProps {
@@ -178,9 +178,8 @@ export function HorizontalMenuScroll({
 
                 <div className="mt-3 pt-2.5 border-t border-orange-500/25 flex items-center justify-between">
                   <div className="flex items-baseline gap-1">
-                    <span className="text-xs font-serif text-orange-400 font-bold">$</span>
-                    <span className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300 font-serif tracking-tight">
-                      {dish.price}
+                    <span className="text-xl sm:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300 font-serif tracking-tight">
+                      {dish.price.toLocaleString()} DA
                     </span>
                   </div>
 

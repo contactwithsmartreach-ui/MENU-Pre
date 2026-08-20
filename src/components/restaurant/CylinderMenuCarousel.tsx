@@ -444,9 +444,8 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
 
                       <div className="mt-2.5 sm:mt-3.5 pt-2 sm:pt-2.5 border-t border-orange-500/20 flex items-center justify-between">
                         <div className="flex items-baseline gap-1">
-                          <span className="text-[11px] sm:text-xs font-serif text-orange-400 font-bold">$</span>
-                          <span className="text-xl sm:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300 font-serif tracking-tight">
-                            {dish.price}
+                          <span className="text-lg sm:text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300 font-serif tracking-tight">
+                            {dish.price.toLocaleString()} DA
                           </span>
                         </div>
 
@@ -480,7 +479,7 @@ export const CylinderMenuCarousel = React.forwardRef<HTMLDivElement, CylinderMen
                   {activeItem.name}
                 </span>
                 <span className="text-[10px] text-orange-400 font-serif font-bold">
-                  ${activeItem.price} &bull; Tap to view details & customize
+                  {activeItem.price.toLocaleString()} DA &bull; Tap to view details & customize
                 </span>
               </div>
               <ChevronRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform ml-1" />
