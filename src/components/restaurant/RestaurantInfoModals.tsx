@@ -40,7 +40,6 @@ export function RestaurantInfoModals({ activeModal, onClose }: RestaurantInfoMod
 
   return (
     <>
-      {/* 1. Hours Modal */}
       <Dialog open={activeModal === "hours"} onOpenChange={(open) => !open && onClose()}>
         <DialogContent className="sm:max-w-md bg-[#0c0605] text-white border-orange-500/40 rounded-3xl p-6 shadow-[0_25px_60px_rgba(249,115,22,0.25)]">
           <DialogHeader className="space-y-2 border-b border-orange-500/20 pb-4 text-left">
@@ -49,7 +48,7 @@ export function RestaurantInfoModals({ activeModal, onClose }: RestaurantInfoMod
               <span className="text-xs uppercase font-serif tracking-[0.2em]">Operating Hours</span>
             </div>
             <DialogTitle className="text-xl font-serif font-bold text-white">
-              L&apos;Aura Sahara Schedule
+              L'Aura Sahara Schedule
             </DialogTitle>
             <DialogDescription className="text-xs text-neutral-400">
               We welcome walk-ins and phone orders during all operating hours.
@@ -58,16 +57,16 @@ export function RestaurantInfoModals({ activeModal, onClose }: RestaurantInfoMod
 
           <div className="py-4 space-y-3">
             <div className="flex items-center justify-between p-3 rounded-2xl bg-neutral-900/80 border border-orange-500/20">
-              <span className="text-sm font-serif text-white">Monday &ndash; Thursday</span>
-              <span className="text-xs font-mono text-amber-400 font-semibold">5:00 PM &ndash; 11:00 PM</span>
+              <span className="text-sm font-serif text-white">Monday - Thursday</span>
+              <span className="text-xs font-mono text-amber-400 font-semibold">5:00 PM - 11:00 PM</span>
             </div>
             <div className="flex items-center justify-between p-3 rounded-2xl bg-neutral-900/80 border border-orange-500/20">
-              <span className="text-sm font-serif text-white">Friday &ndash; Saturday</span>
-              <span className="text-xs font-mono text-amber-400 font-semibold">4:30 PM &ndash; 12:00 AM</span>
+              <span className="text-sm font-serif text-white">Friday - Saturday</span>
+              <span className="text-xs font-mono text-amber-400 font-semibold">4:30 PM - 12:00 AM</span>
             </div>
             <div className="flex items-center justify-between p-3 rounded-2xl bg-neutral-900/80 border border-orange-500/20">
               <span className="text-sm font-serif text-white">Sunday (Brunch & Dinner)</span>
-              <span className="text-xs font-mono text-amber-400 font-semibold">12:00 PM &ndash; 10:00 PM</span>
+              <span className="text-xs font-mono text-amber-400 font-semibold">12:00 PM - 10:00 PM</span>
             </div>
 
             <div className="p-3.5 rounded-2xl bg-green-950/30 border border-green-500/30 flex items-center justify-between mt-2">
@@ -87,7 +86,6 @@ export function RestaurantInfoModals({ activeModal, onClose }: RestaurantInfoMod
         </DialogContent>
       </Dialog>
 
-      {/* 2. Full Map & Road Navigation Modal */}
       <Dialog open={activeModal === "location"} onOpenChange={(open) => !open && onClose()}>
         <DialogContent className="sm:max-w-2xl bg-[#0c0605] text-white border-orange-500/40 rounded-3xl p-6 shadow-[0_25px_60px_rgba(249,115,22,0.25)] overflow-hidden">
           <DialogHeader className="space-y-1 border-b border-orange-500/20 pb-4 text-left">
@@ -103,9 +101,7 @@ export function RestaurantInfoModals({ activeModal, onClose }: RestaurantInfoMod
             </DialogDescription>
           </DialogHeader>
 
-          {/* Interactive Simulated Vector Map with Roads */}
           <div className="relative w-full h-72 sm:h-80 rounded-2xl overflow-hidden border border-orange-500/30 bg-neutral-950 my-2 shadow-inner">
-            {/* Map Background Grid / Roads Simulated */}
             <div className="absolute inset-0 bg-[#0f172a] opacity-90" />
             <svg
               className="absolute inset-0 w-full h-full opacity-40 pointer-events-none"
@@ -117,13 +113,11 @@ export function RestaurantInfoModals({ activeModal, onClose }: RestaurantInfoMod
                 </pattern>
               </defs>
               <rect width="100%" height="100%" fill="url(#grid)" />
-              {/* Simulated Highways & Roads */}
               <path d="M 0 100 Q 250 50 500 180 T 800 250" fill="none" stroke="#f97316" strokeWidth="6" opacity="0.6" />
               <path d="M 120 0 Q 180 200 350 400" fill="none" stroke="#38bdf8" strokeWidth="4" opacity="0.5" />
               <path d="M 0 280 Q 300 200 600 350" fill="none" stroke="#f59e0b" strokeWidth="3" opacity="0.4" />
             </svg>
 
-            {/* Pulsing Pin for Restaurant Location */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-10">
               <div className="relative flex items-center justify-center">
                 <span className="absolute -inset-4 rounded-full bg-orange-500/30 animate-ping" />
@@ -132,14 +126,13 @@ export function RestaurantInfoModals({ activeModal, onClose }: RestaurantInfoMod
                 </div>
               </div>
               <div className="bg-neutral-950/90 border border-orange-500/50 backdrop-blur-md px-3 py-1 rounded-full text-xs font-serif font-bold text-orange-300 shadow-xl mt-2 whitespace-nowrap">
-                L&apos;Aura Sahara Dining
+                L'Aura Sahara Dining
               </div>
             </div>
 
-            {/* Compass badge */}
             <div className="absolute top-3 right-3 bg-neutral-950/80 backdrop-blur-md border border-white/10 p-2 rounded-xl flex items-center gap-1.5 text-xs text-neutral-300 font-mono">
               <Compass className="w-4 h-4 text-orange-400 animate-spin" style={{ animationDuration: "12s" }} />
-              <span>N 34.0522&deg; W 118.2437&deg;</span>
+              <span>N 34.0522 W 118.2437</span>
             </div>
           </div>
 
@@ -160,7 +153,6 @@ export function RestaurantInfoModals({ activeModal, onClose }: RestaurantInfoMod
         </DialogContent>
       </Dialog>
 
-      {/* 3. Wi-Fi QR Code Modal */}
       <Dialog open={activeModal === "wifi"} onOpenChange={(open) => !open && onClose()}>
         <DialogContent className="sm:max-w-sm bg-[#0c0605] text-white border-orange-500/40 rounded-3xl p-6 shadow-[0_25px_60px_rgba(249,115,22,0.25)] text-center">
           <DialogHeader className="space-y-2 border-b border-orange-500/20 pb-4 text-center">
@@ -176,7 +168,6 @@ export function RestaurantInfoModals({ activeModal, onClose }: RestaurantInfoMod
           </DialogHeader>
 
           <div className="py-6 flex flex-col items-center justify-center space-y-4">
-            {/* Simulated QR Code Box */}
             <div className="w-44 h-44 rounded-2xl bg-white p-3 shadow-2xl flex items-center justify-center border-4 border-orange-500/30 relative overflow-hidden group">
               <div className="absolute inset-0 bg-gradient-to-tr from-orange-500/10 to-amber-500/10 pointer-events-none" />
               <div className="w-full h-full border-4 border-dashed border-neutral-900 rounded-xl flex flex-col items-center justify-center p-2 text-neutral-900">
