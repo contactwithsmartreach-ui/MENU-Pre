@@ -40,7 +40,7 @@ export function HeroPlateScrollExperience({ onScrollToMenu }: HeroPlateScrollExp
     <section className="relative w-full min-h-[75vh] sm:min-h-[85vh] flex flex-col items-center justify-between px-4 pt-16 pb-16 text-center select-none overflow-hidden [contain:layout_style]">
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <img
-          src="/images/burger-shop-3d.jpg"
+          src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=1600&auto=format&fit=crop"
           alt="3D Burger Shop Background"
           className="w-full h-full object-cover object-center scale-105 filter brightness-[0.95] contrast-105 saturate-[0.95]"
           loading="eager"
