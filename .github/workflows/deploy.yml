@@ -28,11 +28,10 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build with Next.js
         run: |
-          touch next.config.ts.bak
           cat << 'EOF' > next.config.ts
           import type { NextConfig } from "next";
           const nextConfig: NextConfig = {
