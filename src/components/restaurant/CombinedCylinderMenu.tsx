@@ -97,7 +97,7 @@ export function CombinedCylinderMenu({
 
       const timer = setTimeout(() => {
         setIsSwitchingCategory(false);
-      }, 100);
+      }, 80);
       return () => clearTimeout(timer);
     }
   }, [items, setTransform]);
@@ -115,7 +115,7 @@ export function CombinedCylinderMenu({
       } else if (isTransitioningToTargetRef.current) {
         const diff = targetRotationRef.current - currentRotationRef.current;
         if (Math.abs(diff) > 0.05) {
-          currentRotationRef.current += diff * Math.min(12.0 * dt, 0.35);
+          currentRotationRef.current += diff * Math.min(14.0 * dt, 0.4);
           setTransform(currentRotationRef.current);
         } else {
           currentRotationRef.current = targetRotationRef.current;
@@ -126,10 +126,10 @@ export function CombinedCylinderMenu({
         if (Math.abs(velocityRef.current) > 0.01) {
           currentRotationRef.current += velocityRef.current;
           targetRotationRef.current = currentRotationRef.current;
-          velocityRef.current *= 0.90;
+          velocityRef.current *= 0.88;
           setTransform(currentRotationRef.current);
         } else if (isAutoSpinningRef.current && hoveredIdx === null && !isSwitchingCategory) {
-          const ambientSpeed = 1.8;
+          const ambientSpeed = 1.5;
           currentRotationRef.current += ambientSpeed * dt;
           targetRotationRef.current = currentRotationRef.current;
           setTransform(currentRotationRef.current);
@@ -227,12 +227,12 @@ export function CombinedCylinderMenu({
       const dt = Math.max(now - lastPointerTimeRef.current, 8);
       const instantVelocity = (stepX / dt) * 8;
 
-      const sensitivity = isMobile ? 0.20 : 0.12;
+      const sensitivity = isMobile ? 0.22 : 0.14;
       currentRotationRef.current -= stepX * sensitivity;
       targetRotationRef.current = currentRotationRef.current;
 
       velocityRef.current =
-        velocityRef.current * 0.25 - instantVelocity * 0.75 * sensitivity;
+        velocityRef.current * 0.2 - instantVelocity * 0.8 * sensitivity;
 
       lastPointerXRef.current = e.clientX;
       lastPointerTimeRef.current = now;
@@ -280,7 +280,7 @@ export function CombinedCylinderMenu({
     <div
       onWheel={handleWheel}
       className={cn(
-        "w-full flex flex-col items-center justify-start relative select-none gap-2 sm:gap-4 pb-6 overflow-visible [contain:layout_style]",
+        "w-full flex flex-col items-center justify-start relative select-none gap-2 sm:gap-4 pb-6 overflow-visible [content-visibility:auto]",
         className
       )}
     >
@@ -334,14 +334,14 @@ export function CombinedCylinderMenu({
                   }}
                   className={cn(
                     "group absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[22px] sm:rounded-[26px] overflow-hidden cursor-pointer",
-                    "border border-orange-500/30 bg-[#0d0706] shadow-lg transition-colors duration-150 transform-gpu",
+                    "border border-orange-500/30 bg-[#0d0706] shadow-lg transition-colors duration-150 transform-gpu [backface-visibility:hidden]",
                     "hover:border-orange-400 hover:shadow-[0_15px_35px_rgba(249,115,22,0.35)] active:scale-[0.98]",
                     isHovered && "z-30"
                   )}
                   style={{
                     width: `${cardWidth}px`,
                     height: `${cardHeight}px`,
-                    transform: `rotateY(${itemAngle}deg) translateZ(${radius}px)`,
+                    transform: `translate3d(0,0,0) rotateY(${itemAngle}deg) translateZ(${radius}px)`,
                     backfaceVisibility: "hidden",
                     WebkitBackfaceVisibility: "hidden",
                     WebkitBoxReflect:
