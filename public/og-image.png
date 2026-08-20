@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#111827" />
+      <stop offset="100%" stop-color="#030712" />
+    </radialGradient>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ef4444" />
+      <stop offset="50%" stop-color="#f97316" />
+      <stop offset="100%" stop-color="#fbbf24" />
+    </linearGradient>
+    <linearGradient id="badgeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f97316" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#ef4444" stop-opacity="0.2" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGrad)" />
+  
+  <!-- Decorative Glow Circles -->
+  <circle cx="200" cy="150" r="250" fill="#f97316" opacity="0.12" filter="blur(60px)" />
+  <circle cx="1000" cy="500" r="300" fill="#ef4444" opacity="0.1" filter="blur(80px)" />
+
+  <!-- Card Border Container -->
+  <rect x="40" y="40" width="1120" height="550" rx="32" fill="#0f172a" fill-opacity="0.75" stroke="#f97316" stroke-opacity="0.3" stroke-width="2" />
+
+  <!-- Inner Badge Pill -->
+  <rect x="460" y="110" width="280" height="44" rx="22" fill="url(#badgeGrad)" stroke="#f97316" stroke-opacity="0.5" stroke-width="1" />
+  <text x="600" y="137" font-family="serif" font-size="15" font-weight="bold" fill="#fbbf24" letter-spacing="4" text-anchor="middle">GASTRONOMIE 3D</text>
+
+  <!-- Main Title -->
+  <text x="600" y="240" font-family="serif" font-size="64" font-weight="900" fill="url(#textGrad)" letter-spacing="6" text-anchor="middle">L'AURA SAHARA</text>
+
+  <!-- Subtitle -->
+  <text x="600" y="300" font-family="sans-serif" font-size="22" font-weight="300" fill="#cbd5e1" letter-spacing="2" text-anchor="middle">Expérience Interactive de Menu Cylindre & Réservations</text>
+
+  <!-- Divider Line -->
+  <line x1="350" y1="360" x2="850" y2="360" stroke="#f97316" stroke-opacity="0.4" stroke-width="2" stroke-dasharray="8 6" />
+
+  <!-- Feature Pills -->
+  <g transform="translate(240, 410)">
+    <rect x="0" y="0" width="210" height="64" rx="16" fill="#1e293b" stroke="#334155" stroke-width="1" />
+    <text x="105" y="38" font-family="sans-serif" font-size="16" font-weight="bold" fill="#f8fafc" text-anchor="middle">&#127828; Chef Specials</text>
+  </g>
+
+  <g transform="translate(495, 410)">
+    <rect x="0" y="0" width="210" height="64" rx="16" fill="#1e293b" stroke="#334155" stroke-width="1" />
+    <text x="105" y="38" font-family="sans-serif" font-size="16" font-weight="bold" fill="#f8fafc" text-anchor="middle">&#127865; Cocktails Fumés</text>
+  </g>
+
+  <g transform="translate(750, 410)">
+    <rect x="0" y="0" width="210" height="64" rx="16" fill="#1e293b" stroke="#334155" stroke-width="1" />
+    <text x="105" y="38" font-family="sans-serif" font-size="16" font-weight="bold" fill="#f8fafc" text-anchor="middle">&#128222; 0659242630</text>
+  </g>
+
+  <!-- Footer Info -->
+  <text x="600" y="525" font-family="sans-serif" font-size="14" fill="#94a3b8" letter-spacing="1" text-anchor="middle">742 Evergreen Terrace, Sahara District &bull; Ouvert 7j/7 jusqu'à 23h00</text>
+</svg>
