@@ -11,8 +11,9 @@ export function SidebarNav() {
 
   const handlePhoneClick = () => {
     toast.success("Calling L'Aura Sahara", {
-      description: "+1 (555) 724-2720 • Valet & Table Reservations",
+      description: "0659242630 • Direct Order & Table Reservations",
     });
+    window.location.href = "tel:0659242630";
   };
 
   const handleLocationClick = () => {
@@ -85,7 +86,7 @@ export function SidebarNav() {
                 {/* Contact & Location Actions */}
                 <div className="space-y-3">
                   <p className="text-[10px] font-serif uppercase tracking-widest text-orange-300/70">
-                    Direct Concierge
+                    Direct Order Hotline
                   </p>
 
                   <button
@@ -98,10 +99,10 @@ export function SidebarNav() {
                     </div>
                     <div className="flex flex-col text-left">
                       <span className="text-xs font-serif font-semibold text-white group-hover:text-green-400 transition-colors">
-                        Call Concierge
+                        Call to Order
                       </span>
-                      <span className="text-[11px] text-neutral-400 font-mono">
-                        +1 (555) 724-2720
+                      <span className="text-[11px] text-green-400 font-mono font-bold">
+                        0659242630
                       </span>
                     </div>
                   </button>
@@ -184,8 +185,8 @@ export function SidebarNav() {
                 <p className="text-[11px] text-neutral-400 font-serif">
                   Open Daily: 5:00 PM – Midnight
                 </p>
-                <p className="text-[10px] text-orange-400 font-mono mt-0.5">
-                  Valet Service Available
+                <p className="text-[10px] text-green-400 font-mono font-bold mt-0.5">
+                  Order Hotline: 0659242630
                 </p>
               </div>
             </motion.aside>

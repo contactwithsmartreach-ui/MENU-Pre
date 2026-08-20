@@ -399,10 +399,10 @@ export function CombinedCylinderMenu({
                     <button
                       type="button"
                       onClick={(e) => handleCallOrder(dish, e)}
-                      className="bg-gradient-to-r from-green-600 via-emerald-500 to-teal-500 text-white font-serif tracking-widest uppercase px-3.5 py-2 rounded-full text-xs font-bold shadow-xl border border-emerald-200/50 flex items-center gap-1.5 hover:scale-105 transition-transform cursor-pointer"
+                      className="bg-gradient-to-r from-green-600 via-emerald-500 to-teal-500 text-white font-serif tracking-widest uppercase px-4 py-2 rounded-full text-xs font-bold shadow-xl border border-emerald-200/50 flex items-center gap-1.5 hover:scale-105 transition-transform cursor-pointer"
                     >
                       <PhoneCall className="w-3.5 h-3.5 animate-pulse" />
-                      <span>CALL 0659242630</span>
+                      <span>ORDER</span>
                     </button>
                   </div>
 
@@ -426,10 +426,10 @@ export function CombinedCylinderMenu({
                       <button
                         type="button"
                         onClick={(e) => handleCallOrder(dish, e)}
-                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-500/20 border border-green-400/50 text-green-300 hover:bg-green-500 hover:text-neutral-950 transition-colors shadow-sm cursor-pointer text-[10px] font-serif uppercase font-bold"
+                        className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500/20 border border-green-400/50 text-green-300 hover:bg-green-500 hover:text-neutral-950 transition-colors shadow-sm cursor-pointer text-[10px] font-serif uppercase font-bold"
                       >
                         <PhoneCall className="w-3 h-3" />
-                        <span>Order Call</span>
+                        <span>ORDER</span>
                       </button>
                     </div>
                   </div>
@@ -462,10 +462,10 @@ export function CombinedCylinderMenu({
               <button
                 type="button"
                 onClick={(e) => handleCallOrder(currentFrontDish, e)}
-                className="text-xs text-amber-400 font-serif font-semibold mt-1 tracking-wider flex items-center gap-1.5 bg-green-950/80 px-3 py-1 rounded-full border border-green-500/40 hover:bg-green-900 transition-colors cursor-pointer shadow-lg"
+                className="text-xs text-amber-400 font-serif font-semibold mt-1 tracking-wider flex items-center gap-1.5 bg-green-950/80 px-3.5 py-1 rounded-full border border-green-500/40 hover:bg-green-900 transition-colors cursor-pointer shadow-lg"
               >
                 <PhoneCall className="w-3.5 h-3.5 text-green-400 animate-pulse" />
-                <span className="text-white">${currentFrontDish.price} &bull; Call 0659242630</span>
+                <span className="text-white">${currentFrontDish.price} &bull; ORDER</span>
               </button>
             </div>
           )}

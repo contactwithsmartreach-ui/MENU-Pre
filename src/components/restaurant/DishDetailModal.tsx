@@ -123,7 +123,7 @@ export function DishDetailModal({
               className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-green-600 via-emerald-500 to-teal-500 text-white font-serif tracking-widest uppercase text-xs font-bold shadow-lg hover:scale-[1.02] active:scale-95 transition-all cursor-pointer border border-emerald-300/50"
             >
               <PhoneCall className="w-4 h-4 animate-pulse" />
-              <span>CALL 0659242630 TO ORDER</span>
+              <span>ORDER</span>
             </button>
 
             <button
