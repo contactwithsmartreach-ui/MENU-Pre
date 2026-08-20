@@ -22,12 +22,12 @@ const LazyCylinderWrapper = lazy(() =>
 
 const CATEGORY_ITEMS = [
   { label: "Tout", id: "All" },
-  { label: "Pizzas", id: "Pizza" },
+  { label: "Pizzas", id: "Pizzas" },
   { label: "Burgers", id: "Burgers" },
   { label: "Tacos", id: "Tacos" },
-  { label: "Plats", id: "Plates" },
-  { label: "Desserts", id: "Dessert" },
-  { label: "Boissons", id: "Drinks" },
+  { label: "Plats", id: "Plats" },
+  { label: "Desserts", id: "Desserts" },
+  { label: "Boissons", id: "Boissons" },
 ];
 
 export default function RestaurantMenuPage() {
@@ -42,23 +42,11 @@ export default function RestaurantMenuPage() {
   const menuSectionRef = useRef<HTMLDivElement>(null);
   const cylinderContainerRef = useRef<HTMLDivElement>(null);
 
-  // Filter items based on category selection
+  // Exact filtering: when user clicks Pizzas -> only Pizzas; Burgers -> only Burgers, etc.
   const filteredItems =
     selectedCategory === "All"
       ? MENU_ITEMS
-      : selectedCategory === "Pizza"
-      ? MENU_ITEMS.filter((item) => item.category === "Mains" || item.tags.some(t => t.toLowerCase().includes("pizza") || t.toLowerCase().includes("pasta")))
-      : selectedCategory === "Burgers"
-      ? MENU_ITEMS.filter((item) => item.category === "Chef Specials")
-      : selectedCategory === "Tacos"
-      ? MENU_ITEMS.filter((item) => item.category === "Starters")
-      : selectedCategory === "Plates"
-      ? MENU_ITEMS.filter((item) => item.category === "Mains")
-      : selectedCategory === "Dessert"
-      ? MENU_ITEMS.filter((item) => item.category === "Desserts")
-      : selectedCategory === "Drinks"
-      ? MENU_ITEMS.filter((item) => item.category === "Cocktails")
-      : MENU_ITEMS;
+      : MENU_ITEMS.filter((item) => item.category === selectedCategory);
 
   const handleOpenDish = (dish: MenuItem) => {
     setSelectedDish(dish);
@@ -78,8 +66,8 @@ export default function RestaurantMenuPage() {
       return [...prevCart, { dish, quantity, specialInstructions: notes }];
     });
 
-    toast.success(`Added ${quantity}x ${dish.name} to order`, {
-      description: `${(dish.price * quantity).toLocaleString()} DA • Ready in ~${dish.prepTime}`,
+    toast.success(`Ajouté ${quantity}x ${dish.name} à la commande`, {
+      description: `${(dish.price * quantity).toLocaleString()} DA • Prêt en ~${dish.prepTime}`,
     });
   };
 
@@ -136,7 +124,7 @@ export default function RestaurantMenuPage() {
         onClearCart={handleClearCart}
       />
 
-      {/* 3D Burger Shop Matching Atmospheric Ambient Background */}
+      {/* 3D Matching Atmospheric Ambient Background */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden transform-gpu">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[450px] bg-gradient-to-tr from-orange-400/15 via-sky-300/20 to-amber-200/10 rounded-full blur-3xl" />
         <div className="absolute bottom-10 right-1/4 translate-x-1/2 w-[500px] h-[350px] bg-orange-500/10 rounded-full blur-3xl" />
@@ -176,7 +164,7 @@ export default function RestaurantMenuPage() {
                   <div className="flex flex-col items-center gap-3">
                     <Loader2 className="w-8 h-8 text-orange-500 animate-spin" />
                     <span className="text-xs font-serif uppercase tracking-widest text-neutral-600">
-                      Loading 3D Menu...
+                      Chargement du Menu 3D...
                     </span>
                   </div>
                 </div>
@@ -193,7 +181,7 @@ export default function RestaurantMenuPage() {
         {/* Dish Detail Dialog */}
         <DishDetailModal
           dish={selectedDish}
-        isOpen={isModalOpen}
+          isOpen={isModalOpen}
           onClose={() => {
             setIsModalOpen(false);
             setSelectedDish(null);
