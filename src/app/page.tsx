@@ -10,7 +10,6 @@ import { MenuSectionDivider } from "@/components/restaurant/MenuSectionDivider";
 import { SidebarNav } from "@/components/restaurant/SidebarNav";
 import { OrderDrawer } from "@/components/restaurant/OrderDrawer";
 import { PreloadScreen } from "@/components/restaurant/PreloadScreen";
-import { RestaurantInfoBar } from "@/components/restaurant/RestaurantInfoBar";
 import { toast } from "sonner";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Loader2 } from "lucide-react";
@@ -123,9 +122,6 @@ export default function RestaurantMenuPage() {
   return (
     <div className="relative min-h-screen w-full bg-[#e3efed] text-neutral-900 flex flex-col items-center justify-between select-none overflow-x-hidden">
       {isLoading && <PreloadScreen onComplete={() => setIsLoading(false)} />}
-
-      {/* Live Business Hours & Quick Info Bar */}
-      <RestaurantInfoBar />
 
       {/* Premium Animated Sidebar Nav */}
       <SidebarNav />
