@@ -40,13 +40,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "fr_FR",
-    url: "/",
+    url: "https://laurasahara.dining",
     siteName: "L'Aura Sahara",
     title: "L'Aura Sahara | Menu Gastronomique 3D Interactif",
     description: "Explorez notre menu cylindrique 3D immersif, nos spécialités signatures, et commandez directement par téléphone au 0659242630.",
     images: [
       {
-        url: "/og-image.png",
+        url: "https://laurasahara.dining/og-image.png",
+        secureUrl: "https://laurasahara.dining/og-image.png",
         width: 1200,
         height: 630,
         alt: "L'Aura Sahara - Menu Gastronomique 3D Interactif",
@@ -58,7 +59,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "L'Aura Sahara | Menu Gastronomique 3D Interactif",
     description: "Explorez notre menu 3D inédit, nos plats signatures et commandez votre repas en quelques secondes.",
-    images: ["/og-image.png"],
+    images: ["https://laurasahara.dining/og-image.png"],
   },
   icons: {
     icon: "/favicon.ico",
