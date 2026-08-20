@@ -64,14 +64,15 @@ export function CombinedCylinderMenu({
   }, []);
 
   const cardWidth = isMobile
-    ? Math.min(Math.round(viewportWidth * 0.68), 240)
-    : 280;
+    ? Math.min(Math.round(viewportWidth * 0.58), 210)
+    : 260;
 
   const cardHeight = Math.round(cardWidth * 1.35);
 
+  // Increased multiplier and added extra depth offset to push cards further back in 3D space
   const radius =
-    Math.round(cardWidth / (2 * Math.tan(Math.PI / Math.max(N, 3)))) +
-    (isMobile ? 12 : 24);
+    Math.round(cardWidth / (2 * Math.sin(Math.PI / Math.max(N, 3)))) * (isMobile ? 1.25 : 1.35) +
+    (isMobile ? 40 : 80);
 
   const setTransform = useCallback(
     (deg: number) => {
@@ -228,7 +229,6 @@ export function CombinedCylinderMenu({
       const instantVelocity = (stepX / dt) * 8;
 
       const sensitivity = isMobile ? 0.22 : 0.14;
-      // Inverted sign here to make drag direction natural
       currentRotationRef.current += stepX * sensitivity;
       targetRotationRef.current = currentRotationRef.current;
 
@@ -258,7 +258,6 @@ export function CombinedCylinderMenu({
       isAutoSpinningRef.current = false;
       isTransitioningToTargetRef.current = false;
 
-      // Inverted wheel impulse direction
       const impulse = (e.deltaX > 0 ? 1 : -1) * Math.min(Math.abs(e.deltaX) * 0.008, 0.25);
       velocityRef.current += impulse;
 
@@ -298,11 +297,11 @@ export function CombinedCylinderMenu({
 
         <div
           className={cn(
-            "relative w-full h-full flex items-center justify-center [perspective-origin:50%_40%] transition-opacity duration-100 overflow-visible",
+            "relative w-full h-full flex items-center justify-center [perspective-origin:50%_35%] transition-opacity duration-100 overflow-visible",
             isSwitchingCategory ? "opacity-30 scale-95" : "opacity-100 scale-100"
           )}
           style={{
-            perspective: isMobile ? "800px" : "1200px",
+            perspective: isMobile ? "1100px" : "1600px",
           }}
         >
           <div
