@@ -21,11 +21,11 @@ export interface VerticalSpotlightNavbarProps {
 export function VerticalSpotlightNavbar({
   items = [
     { label: "Tout", id: "All" },
-    { label: "Pizza", id: "Pizza" },
+    { label: "Pizzas", id: "Pizza" },
     { label: "Burgers", id: "Burgers" },
     { label: "Tacos", id: "Tacos" },
     { label: "Plats", id: "Plates" },
-    { label: "Dessert", id: "Dessert" },
+    { label: "Desserts", id: "Dessert" },
     { label: "Boissons", id: "Drinks" },
   ],
   className,

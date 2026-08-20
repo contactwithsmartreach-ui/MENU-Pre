@@ -21,13 +21,13 @@ const LazyCylinderWrapper = lazy(() =>
 );
 
 const CATEGORY_ITEMS = [
-  { label: "All", id: "All" },
-  { label: "Pizza", id: "Pizza" },
+  { label: "Tout", id: "All" },
+  { label: "Pizzas", id: "Pizza" },
   { label: "Burgers", id: "Burgers" },
   { label: "Tacos", id: "Tacos" },
-  { label: "Plates", id: "Plates" },
-  { label: "Dessert", id: "Dessert" },
-  { label: "Drinks", id: "Drinks" },
+  { label: "Plats", id: "Plates" },
+  { label: "Desserts", id: "Dessert" },
+  { label: "Boissons", id: "Drinks" },
 ];
 
 export default function RestaurantMenuPage() {
