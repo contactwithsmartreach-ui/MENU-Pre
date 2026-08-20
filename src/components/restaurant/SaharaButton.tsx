@@ -19,9 +19,9 @@ export function SaharaButton({
   className,
 }: SaharaButtonProps) {
   const sizeClasses = {
-    sm: "px-6 py-2 text-xs",
-    md: "px-8 py-2.5 text-sm",
-    lg: "px-10 py-3 text-base",
+    sm: "px-8 py-3 text-sm",
+    md: "px-10 py-4 text-base",
+    lg: "px-14 py-5 text-lg sm:text-xl",
   };
 
   return (
@@ -30,22 +30,22 @@ export function SaharaButton({
       onClick={onClick}
       style={{
         WebkitBoxReflect:
-          "below 0px linear-gradient(to bottom, rgba(0,0,0,0.0), rgba(0,0,0,0.4))",
+          "below 2px linear-gradient(to bottom, rgba(0,0,0,0.0), rgba(0,0,0,0.45))",
       }}
       className={cn(
-        "bg-gradient-to-r from-red-500 to-orange-500 rounded-full shadow-xl group-hover:shadow-2xl group-hover:shadow-red-600 shadow-red-600 uppercase font-serif tracking-widest relative overflow-hidden group text-transparent cursor-pointer z-10 after:absolute after:rounded-full after:bg-red-200 after:h-[85%] after:w-[95%] after:left-1/2 after:top-1/2 after:-translate-x-1/2 after:-translate-y-1/2 hover:saturate-[1.15] active:saturate-[1.4]",
+        "bg-gradient-to-r from-red-500 to-orange-500 rounded-full shadow-2xl group-hover:shadow-3xl group-hover:shadow-red-600 shadow-red-600 uppercase font-serif tracking-widest relative overflow-hidden group text-transparent cursor-pointer z-10 after:absolute after:rounded-full after:bg-red-200 after:h-[88%] after:w-[96%] after:left-1/2 after:top-1/2 after:-translate-x-1/2 after:-translate-y-1/2 hover:saturate-[1.15] active:saturate-[1.4]",
         sizeClasses[size],
         className
       )}
     >
       {primaryText}
       <p
-        className="absolute z-40 font-semibold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent top-1/2 left-1/2 -translate-x-1/2 group-hover:-translate-y-full h-full w-full transition-all duration-300 -translate-y-[62%] tracking-widest flex items-center justify-center"
+        className="absolute z-40 font-bold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent top-1/2 left-1/2 -translate-x-1/2 group-hover:-translate-y-full h-full w-full transition-all duration-300 -translate-y-[62%] tracking-widest flex items-center justify-center"
       >
         {primaryText}
       </p>
       <p
-        className="absolute z-40 top-1/2 left-1/2 bg-gradient-to-r from-red-700 to-orange-700 bg-clip-text text-transparent -translate-x-1/2 translate-y-full h-full w-full transition-all duration-300 group-hover:-translate-y-[62%] tracking-widest font-extrabold flex items-center justify-center"
+        className="absolute z-40 top-1/2 left-1/2 bg-gradient-to-r from-red-700 to-orange-700 bg-clip-text text-transparent -translate-x-1/2 translate-y-full h-full w-full transition-all duration-300 group-hover:-translate-y-[62%] tracking-widest font-black flex items-center justify-center"
       >
         {hoverText}
       </p>
