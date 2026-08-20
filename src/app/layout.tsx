@@ -21,7 +21,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://laurasahara.dining"),
+  metadataBase: new URL("https://contactwithsmartreach-ui.github.io/MENU-Pre/"),
   title: "L'Aura Sahara | Menu Gastronomique 3D Interactif",
   description: "Découvrez l'expérience gastronomique L'Aura Sahara : notre menu rotatif 3D exclusif, pizzas au feu de bois, smash burgers wagyu, tacos gourmets et commandes rapides.",
   applicationName: "L'Aura Sahara",
@@ -40,14 +40,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "fr_FR",
-    url: "https://laurasahara.dining",
+    url: "https://contactwithsmartreach-ui.github.io/MENU-Pre/",
     siteName: "L'Aura Sahara",
     title: "L'Aura Sahara | Menu Gastronomique 3D Interactif",
     description: "Explorez notre menu cylindrique 3D immersif, nos spécialités signatures, et commandez directement par téléphone au 0659242630.",
     images: [
       {
-        url: "https://laurasahara.dining/og-image.png",
-        secureUrl: "https://laurasahara.dining/og-image.png",
+        url: "og-image.png",
         width: 1200,
         height: 630,
         alt: "L'Aura Sahara - Menu Gastronomique 3D Interactif",
@@ -59,13 +58,13 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "L'Aura Sahara | Menu Gastronomique 3D Interactif",
     description: "Explorez notre menu 3D inédit, nos plats signatures et commandez votre repas en quelques secondes.",
-    images: ["https://laurasahara.dining/og-image.png"],
+    images: ["og-image.png"],
   },
   other: {
     "og:image:width": "1200",
     "og:image:height": "630",
     "og:image:type": "image/png",
-    "whatsapp:image": "https://laurasahara.dining/og-image.png",
+    "whatsapp:image": "https://contactwithsmartreach-ui.github.io/MENU-Pre/og-image.png",
   },
   icons: {
     icon: "/favicon.ico",
