@@ -46,8 +46,7 @@ export const metadata: Metadata = {
     description: "Explorez notre menu cylindrique 3D immersif, nos spécialités signatures, et commandez directement par téléphone au 0659242630.",
     images: [
       {
-        url: "https://laurasahara.dining/og-image.png",
-        secureUrl: "https://laurasahara.dining/og-image.png",
+        url: "/opengraph-image",
         width: 1200,
         height: 630,
         alt: "L'Aura Sahara - Menu Gastronomique 3D Interactif",
@@ -59,7 +58,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "L'Aura Sahara | Menu Gastronomique 3D Interactif",
     description: "Explorez notre menu 3D inédit, nos plats signatures et commandez votre repas en quelques secondes.",
-    images: ["https://laurasahara.dining/og-image.png"],
+    images: ["/opengraph-image"],
   },
   icons: {
     icon: "/favicon.ico",
