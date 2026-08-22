@@ -10,6 +10,7 @@ import { MenuSectionDivider } from "@/components/restaurant/MenuSectionDivider";
 import { SidebarNav } from "@/components/restaurant/SidebarNav";
 import { OrderDrawer } from "@/components/restaurant/OrderDrawer";
 import { PreloadScreen } from "@/components/restaurant/PreloadScreen";
+import { BamziShowcaseSection } from "@/components/restaurant/BamziShowcaseSection";
 import { toast } from "sonner";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Loader2 } from "lucide-react";
@@ -188,6 +189,9 @@ export default function RestaurantMenuPage() {
           }}
           onAddToCart={handleAddToCart}
         />
+
+        {/* Bamzi Dribbble Template Showcase Section at the very bottom */}
+        <BamziShowcaseSection />
 
         {/* Footer */}
         <footer className="relative z-10 w-full py-3 mt-6 text-neutral-600">
