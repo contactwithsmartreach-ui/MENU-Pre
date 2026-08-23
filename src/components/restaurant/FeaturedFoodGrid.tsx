@@ -138,57 +138,15 @@ const AnimatedCard = memo(function AnimatedCard({
 });
 
 export function FeaturedFoodGrid({ onSelectItem, className }: FeaturedFoodGridProps) {
-  const [titleVisible, setTitleVisible] = useState(false);
-  const titleRef = useRef<HTMLDivElement>(null);
-
   const featuredDishes = MENU_ITEMS.slice(0, 10);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTitleVisible(true);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (titleRef.current) {
-      observer.observe(titleRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
 
   return (
     <section
       className={cn(
-        "relative w-full max-w-7xl mx-auto py-16 px-4 sm:px-6 z-20 overflow-hidden",
+        "relative w-full max-w-7xl mx-auto py-12 px-4 sm:px-6 z-20 overflow-hidden",
         className
       )}
     >
-      {/* Category Title with Slide-in from Left Animation */}
-      <div
-        ref={titleRef}
-        className={cn(
-          "flex flex-col items-start mb-12 sm:mb-16 transition-all duration-500 ease-out transform",
-          titleVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"
-        )}
-      >
-        <div className="flex items-center gap-2 mb-2">
-          <div className="w-3 h-3 rounded-full bg-orange-500 animate-pulse" />
-          <span className="text-xs uppercase font-serif tracking-[0.25em] font-bold text-orange-600">
-            Galerie Gastronomique &bull; Sélection Exclusive
-          </span>
-        </div>
-        <h2 className="text-2xl sm:text-4xl font-serif font-black tracking-tight text-neutral-900">
-          Nos 10 Plats Phares en Surface
-        </h2>
-        <p className="text-xs sm:text-sm text-neutral-600 font-light mt-1">
-          Cartes fluides avec animation optimisée au défilement.
-        </p>
-      </div>
-
       {/* Grid of 10 Cards strictly 2 per line with high performance scroll reveal */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-y-12 gap-x-8 py-6">
         {featuredDishes.map((dish, index) => (
