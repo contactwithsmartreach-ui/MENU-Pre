@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Phone, MapPin, Menu, X, Wifi, Navigation, Sparkles, ExternalLink } from "lucide-react";
+import { Phone, MapPin, X, Wifi, Navigation, Sparkles, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { RestaurantInfoModals } from "./RestaurantInfoModals";
@@ -27,23 +27,22 @@ export function SidebarNav() {
     <>
       <RestaurantInfoModals activeModal={activeModal} onClose={() => setActiveModal(null)} />
 
-      {/* Floating Toggle Button with Pure Neon Orange 3 bars / Menu icon */}
+      {/* Floating Toggle Button with Pure Neon Orange 3 bars and no background box */}
       <div className="fixed top-6 left-6 z-50 flex items-center">
         <motion.button
-          whileHover={{ scale: 1.12 }}
+          whileHover={{ scale: 1.15 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => setIsExpanded((prev) => !prev)}
           aria-label="Basculer le Menu & Info"
-          className="relative group p-3.5 flex items-center justify-center rounded-2xl bg-black/90 backdrop-blur-xl border border-orange-500 text-orange-500 shadow-[0_0_25px_rgba(249,115,22,0.5)] hover:shadow-[0_0_35px_rgba(249,115,22,0.9)] transition-all duration-300 cursor-pointer focus:outline-none"
+          className="relative group p-2.5 flex items-center justify-center bg-transparent focus:outline-none cursor-pointer"
         >
-          <div className="absolute inset-0 rounded-2xl bg-orange-500/10 opacity-75 group-hover:opacity-100 transition-opacity" />
           {isExpanded ? (
-            <X className="w-6 h-6 stroke-[2.5] relative z-10 text-orange-400" />
+            <X className="w-8 h-8 stroke-[2.5] relative z-10 text-orange-500 drop-shadow-[0_0_12px_rgba(249,115,22,1)]" />
           ) : (
-            <div className="relative z-10 flex flex-col justify-between w-6 h-5">
-              <span className="w-full h-0.5 bg-orange-500 rounded-full shadow-[0_0_8px_rgba(249,115,22,1)]" />
-              <span className="w-full h-0.5 bg-orange-500 rounded-full shadow-[0_0_8px_rgba(249,115,22,1)]" />
-              <span className="w-full h-0.5 bg-orange-500 rounded-full shadow-[0_0_8px_rgba(249,115,22,1)]" />
+            <div className="relative z-10 flex flex-col justify-between w-7 h-5">
+              <span className="w-full h-0.5 bg-orange-500 rounded-full shadow-[0_0_10px_rgba(249,115,22,1)]" />
+              <span className="w-full h-0.5 bg-orange-500 rounded-full shadow-[0_0_10px_rgba(249,115,22,1)]" />
+              <span className="w-full h-0.5 bg-orange-500 rounded-full shadow-[0_0_10px_rgba(249,115,22,1)]" />
             </div>
           )}
         </motion.button>
