@@ -176,52 +176,42 @@ export function FeaturedFoodGrid({ onSelectItem, className }: FeaturedFoodGridPr
         className
       )}
     >
-      {/* Category Selection Dropdown Bar with High-End Styling */}
-      <div ref={dropdownRef} className="relative flex justify-center mb-12 z-30">
+      {/* Category Selection High-Contrast Text Trigger */}
+      <div ref={dropdownRef} className="relative flex flex-col items-center justify-center mb-12 z-30">
         <button
           type="button"
           onClick={() => setIsDropdownOpen((prev) => !prev)}
           className={cn(
-            "group relative flex items-center justify-between gap-6 px-8 py-4 rounded-2xl cursor-pointer transition-all duration-300",
-            "bg-gradient-to-r from-zinc-900 via-neutral-900 to-zinc-900",
-            "border border-orange-500/50 hover:border-amber-400 text-white shadow-[0_10px_30px_rgba(0,0,0,0.6)]",
-            isDropdownOpen
-              ? "border-amber-400 shadow-[0_0_30px_rgba(245,158,11,0.35)] scale-102 ring-2 ring-orange-500/20"
-              : "hover:shadow-[0_0_20px_rgba(249,115,22,0.25)]"
+            "group relative flex items-center gap-3 px-4 py-2 cursor-pointer transition-all duration-300",
+            "bg-transparent border-0 outline-none text-center"
           )}
         >
-          {/* Subtle glowing backdrop pill */}
-          <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-orange-500/10 via-amber-500/10 to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-
-          <div className="relative flex items-center gap-3.5 z-10">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-orange-600 via-amber-500 to-yellow-400 flex items-center justify-center text-white shadow-lg shadow-orange-900/40 ring-1 ring-white/20">
-              <Utensils className="w-4 h-4 text-white drop-shadow-sm" />
-            </div>
-            <div className="flex flex-col text-left">
-              <div className="flex items-center gap-1.5">
-                <Sparkles className="w-3 h-3 text-amber-400 animate-pulse" />
-                <span className="text-[10px] uppercase font-serif tracking-[0.2em] text-amber-300/90 font-semibold leading-none">
-                  Filtrer les Catégories
-                </span>
-              </div>
-              <span className="text-sm sm:text-base font-serif font-bold text-white tracking-wide mt-0.5 group-hover:text-amber-200 transition-colors">
-                {currentLabel}
+          <div className="flex flex-col items-center">
+            <div className="flex items-center gap-2 mb-1">
+              <Sparkles className="w-4 h-4 text-orange-400 animate-pulse" />
+              <span className="text-xs uppercase font-serif tracking-[0.25em] text-orange-400/90 font-bold">
+                Filtrer par Catégorie
               </span>
             </div>
-          </div>
-          
-          <div className="relative z-10 w-8 h-8 rounded-full bg-neutral-800/80 border border-orange-500/30 flex items-center justify-center group-hover:bg-orange-500/20 transition-colors">
-            <ChevronDown
-              className={cn(
-                "w-4 h-4 text-orange-400 transition-transform duration-300",
-                isDropdownOpen && "rotate-180 text-amber-300"
-              )}
-            />
+            
+            <div className="flex items-center gap-3">
+              <span className="text-2xl sm:text-4xl font-serif font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-300 to-orange-500 drop-shadow-[0_4px_16px_rgba(249,115,22,0.5)] group-hover:scale-105 transition-transform duration-300">
+                {currentLabel}
+              </span>
+              <div className="w-9 h-9 rounded-full bg-orange-500/10 border border-orange-500/40 flex items-center justify-center group-hover:bg-orange-500/20 transition-colors shadow-[0_0_15px_rgba(249,115,22,0.3)]">
+                <ChevronDown
+                  className={cn(
+                    "w-5 h-5 text-orange-400 transition-transform duration-300",
+                    isDropdownOpen && "rotate-180 text-amber-300"
+                  )}
+                />
+              </div>
+            </div>
           </div>
         </button>
 
         {isDropdownOpen && (
-          <div className="absolute top-full mt-3 w-80 p-2.5 rounded-2xl bg-zinc-950/95 backdrop-blur-2xl border border-orange-500/40 shadow-[0_25px_70px_rgba(0,0,0,0.9)] animate-in fade-in-0 zoom-in-95 duration-200 z-40 ring-1 ring-white/10">
+          <div className="absolute top-full mt-4 w-80 p-2.5 rounded-2xl bg-zinc-950/95 backdrop-blur-2xl border border-orange-500/40 shadow-[0_25px_70px_rgba(0,0,0,0.9)] animate-in fade-in-0 zoom-in-95 duration-200 z-40 ring-1 ring-white/10">
             <div className="flex flex-col gap-1.5">
               {CATEGORIES.map((cat) => {
                 const isSelected = selectedCategory === cat.id;
