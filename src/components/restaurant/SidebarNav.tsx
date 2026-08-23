@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Phone, MapPin, Menu, X, Sparkles, Clock, Wifi, Navigation } from "lucide-react";
+import { Phone, MapPin, Menu, X, Wifi, Navigation } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { RestaurantInfoModals } from "./RestaurantInfoModals";
@@ -62,43 +62,6 @@ export function SidebarNav() {
               className="fixed top-0 left-0 bottom-0 z-50 w-80 sm:w-96 bg-[#e3efed] backdrop-blur-2xl border-r border-orange-500/30 shadow-[20px_0_60px_rgba(0,0,0,0.25)] p-6 flex flex-col justify-between overflow-y-auto text-neutral-900"
             >
               <div className="space-y-5 pt-16">
-                <div className="space-y-1 pb-4 border-b border-orange-500/20">
-                  <div className="flex items-center gap-2 text-orange-600">
-                    <Sparkles className="w-4 h-4 fill-orange-600" />
-                    <span className="text-xs uppercase font-serif tracking-[0.25cm] font-bold">L&apos;Aura Sahara</span>
-                  </div>
-                  <h2 className="text-2xl font-serif font-bold text-orange-600 tracking-wide">
-                    Portail Gastronomique
-                  </h2>
-                  <p className="text-xs text-neutral-600 font-light">
-                    Consultez les horaires, l&apos;accès, le Wi-Fi et la ligne de commande.
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveModal("hours");
-                    setIsExpanded(false);
-                  }}
-                  className="group flex items-center justify-between w-full p-3.5 rounded-2xl bg-white border border-green-500/30 hover:border-green-600 transition-all cursor-pointer shadow-sm text-left"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-green-500 flex items-center justify-center text-white shadow-lg shadow-green-500/30 shrink-0 group-hover:scale-105 transition-transform">
-                      <Clock className="w-5 h-5 animate-pulse" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-green-600 animate-ping" />
-                        <span className="text-xs font-semibold text-neutral-900 group-hover:text-green-700 transition-colors">
-                          Ouvert jusqu&apos;à 23h00
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-neutral-500">Voir les horaires complets</p>
-                    </div>
-                  </div>
-                </button>
-
                 <button
                   type="button"
                   onClick={() => {
