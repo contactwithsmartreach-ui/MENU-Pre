@@ -112,31 +112,31 @@ const AnimatedCard = memo(function AnimatedCard({
           </div>
         </div>
 
-        {/* Card Text Content with 3D Pop Effect & Full Visibility */}
+        {/* Card Text Content with 3D Pop Effect & Bold Black Names */}
         <div 
           className="flex-1 min-w-0 flex flex-col justify-between py-1 h-full transition-transform duration-500 group-hover:translate-z-4"
           style={{ transform: "translateZ(20px)" }}
         >
           <div className="space-y-1">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-serif uppercase tracking-widest text-orange-700 font-bold">
+              <span className="text-[10px] font-serif uppercase tracking-widest text-orange-800 font-extrabold">
                 {dish.category} &bull; {dish.prepTime}
               </span>
-              <div className="flex items-center gap-1 bg-white/80 backdrop-blur-md px-2 py-0.5 rounded-full border border-orange-500/30 text-amber-600 text-xs font-bold shadow-sm">
+              <div className="flex items-center gap-1 bg-white/90 backdrop-blur-md px-2 py-0.5 rounded-full border border-orange-500/30 text-amber-700 text-xs font-bold shadow-sm">
                 <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
                 <span>{dish.rating}</span>
               </div>
             </div>
 
-            <h3 className="text-sm sm:text-base font-serif font-extrabold text-neutral-900 tracking-tight leading-snug break-words group-hover:text-orange-600 transition-colors">
+            <h3 className="text-base sm:text-lg font-serif font-black text-neutral-950 tracking-tight leading-snug break-words group-hover:text-orange-600 transition-colors">
               {dish.name}
             </h3>
-            <p className="text-xs text-neutral-600 line-clamp-2 font-light leading-relaxed">
+            <p className="text-xs text-neutral-700 line-clamp-2 font-medium leading-relaxed">
               {dish.description}
             </p>
           </div>
 
-          <div className="pt-2 mt-2 border-t border-orange-500/20 flex items-center justify-between">
+          <div className="pt-2 mt-2 border-t border-orange-500/25 flex items-center justify-between">
             <span className="text-base sm:text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-600 to-amber-600 font-serif drop-shadow-[0_1px_6px_rgba(249,115,22,0.3)]">
               {dish.price.toLocaleString()} DA
             </span>
