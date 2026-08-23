@@ -67,9 +67,10 @@ const AnimatedCard = memo(function AnimatedCard({
       onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectItem(dish)}
       style={{
         transitionDelay: `${(index % 2) * 60}ms`,
+        perspective: "1000px",
       }}
       className={cn(
-        "group duration-500 ease-out cursor-pointer py-4 transition-all transform-gpu w-full flex justify-center will-change-transform",
+        "group duration-500 ease-out cursor-pointer py-6 transition-all transform-gpu w-full flex justify-center will-change-transform",
         isVisible
           ? "opacity-100 scale-100 translate-y-0"
           : "opacity-0 scale-95 translate-y-12"
@@ -77,20 +78,26 @@ const AnimatedCard = memo(function AnimatedCard({
     >
       <div
         className={cn(
-          "relative rounded-2xl w-[320px] sm:w-[380px] h-48 bg-zinc-800 text-gray-50 flex items-center p-4 gap-4",
-          "border border-orange-500/30 shadow-xl overflow-hidden hover:-translate-y-1 transition-transform duration-200"
+          "relative w-[320px] sm:w-[380px] flex items-center gap-5 p-2 rounded-2xl transition-all duration-300",
+          "hover:scale-[1.03] hover:-translate-y-2 [transform-style:preserve-3d]"
         )}
+        style={{
+          filter: "drop-shadow(0 20px 30px rgba(249, 115, 22, 0.15))",
+        }}
       >
-        {/* Dish Image Container */}
-        <div className="relative w-36 h-36 rounded-xl overflow-hidden shrink-0 border border-orange-500/40 bg-neutral-950 shadow-md">
+        {/* 3D Floating Dish Image Container */}
+        <div 
+          className="relative w-36 h-36 rounded-2xl overflow-hidden shrink-0 shadow-[0_15px_35px_rgba(0,0,0,0.3)] border-2 border-orange-400/40 bg-neutral-100 transition-transform duration-500 group-hover:rotate-y-6 group-hover:scale-105"
+          style={{ transform: "translateZ(30px)" }}
+        >
           <img
             src={dish.image}
             alt={dish.name}
-            className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
             loading="lazy"
             decoding="async"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
           <div className="absolute top-2 left-2">
             {dish.isSignature ? (
               <Badge className="bg-gradient-to-r from-red-500 to-orange-500 text-white font-serif tracking-wider uppercase px-2 py-0.5 rounded-full text-[9px] shadow-md border-0">
@@ -105,38 +112,41 @@ const AnimatedCard = memo(function AnimatedCard({
           </div>
         </div>
 
-        {/* Card Content & Details */}
-        <div className="flex-1 min-w-0 flex flex-col justify-between py-1 h-full">
+        {/* Card Text Content with 3D Pop Effect */}
+        <div 
+          className="flex-1 min-w-0 flex flex-col justify-between py-1 h-full transition-transform duration-500 group-hover:translate-z-4"
+          style={{ transform: "translateZ(20px)" }}
+        >
           <div className="space-y-1">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-serif uppercase tracking-widest text-amber-300 font-thin">
+              <span className="text-[10px] font-serif uppercase tracking-widest text-orange-700 font-bold">
                 {dish.category} &bull; {dish.prepTime}
               </span>
-              <div className="flex items-center gap-1 bg-neutral-950 px-2 py-0.5 rounded-full border border-orange-500/30 text-amber-300 text-xs font-bold">
-                <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+              <div className="flex items-center gap-1 bg-white/80 backdrop-blur-md px-2 py-0.5 rounded-full border border-orange-500/30 text-amber-600 text-xs font-bold shadow-sm">
+                <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
                 <span>{dish.rating}</span>
               </div>
             </div>
 
-            <h3 className="text-base sm:text-lg font-serif font-bold text-white tracking-wide truncate group-hover:text-amber-300 transition-colors">
+            <h3 className="text-base sm:text-lg font-serif font-extrabold text-neutral-900 tracking-wide truncate group-hover:text-orange-600 transition-colors">
               {dish.name}
             </h3>
-            <p className="text-xs text-neutral-300/85 line-clamp-2 font-light leading-snug">
+            <p className="text-xs text-neutral-600 line-clamp-2 font-light leading-snug">
               {dish.description}
             </p>
           </div>
 
-          <div className="pt-2 border-t border-neutral-700 flex items-center justify-between">
-            <span className="text-base font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300 font-serif">
+          <div className="pt-2.5 mt-2 border-t border-orange-500/20 flex items-center justify-between">
+            <span className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-600 to-amber-600 font-serif drop-shadow-[0_1px_6px_rgba(249,115,22,0.3)]">
               {dish.price.toLocaleString()} DA
             </span>
 
             <button
               type="button"
               onClick={handleCallOrder}
-              className="flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-green-600 to-emerald-500 border border-green-400/50 text-white hover:brightness-110 transition-all shadow-md cursor-pointer text-[10px] font-serif uppercase font-bold"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-green-600 to-emerald-500 text-white hover:brightness-110 transition-all shadow-md cursor-pointer text-[10px] font-serif uppercase font-bold tracking-wider"
             >
-              <PhoneCall className="w-3 h-3" />
+              <PhoneCall className="w-3 h-3 animate-pulse" />
               <span>Commander</span>
             </button>
           </div>
@@ -188,14 +198,14 @@ export function FeaturedFoodGrid({ onSelectItem, className }: FeaturedFoodGridPr
         >
           <div className="flex flex-col items-center">
             <div className="flex items-center gap-3">
-              <span className="text-2xl sm:text-4xl font-serif font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-300 to-orange-500 drop-shadow-[0_4px_16px_rgba(249,115,22,0.5)] group-hover:scale-105 transition-transform duration-300">
+              <span className="text-2xl sm:text-4xl font-serif font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-amber-500 to-red-600 drop-shadow-[0_4px_16px_rgba(249,115,22,0.4)] group-hover:scale-105 transition-transform duration-300">
                 {currentLabel}
               </span>
-              <div className="w-9 h-9 rounded-full bg-orange-500/10 border border-orange-500/40 flex items-center justify-center group-hover:bg-orange-500/20 transition-colors shadow-[0_0_15px_rgba(249,115,22,0.3)]">
+              <div className="w-9 h-9 rounded-full bg-orange-500/15 border border-orange-500/50 flex items-center justify-center group-hover:bg-orange-500/25 transition-colors shadow-[0_0_15px_rgba(249,115,22,0.3)]">
                 <ChevronDown
                   className={cn(
-                    "w-5 h-5 text-orange-400 transition-transform duration-300",
-                    isDropdownOpen && "rotate-180 text-amber-300"
+                    "w-5 h-5 text-orange-600 transition-transform duration-300",
+                    isDropdownOpen && "rotate-180 text-amber-600"
                   )}
                 />
               </div>
@@ -204,7 +214,7 @@ export function FeaturedFoodGrid({ onSelectItem, className }: FeaturedFoodGridPr
         </button>
 
         {isDropdownOpen && (
-          <div className="absolute top-full mt-4 w-80 p-2.5 rounded-2xl bg-zinc-950/95 backdrop-blur-2xl border border-orange-500/40 shadow-[0_25px_70px_rgba(0,0,0,0.9)] animate-in fade-in-0 zoom-in-95 duration-200 z-40 ring-1 ring-white/10">
+          <div className="absolute top-full mt-4 w-80 p-2.5 rounded-2xl bg-white/95 backdrop-blur-2xl border border-orange-500/40 shadow-[0_25px_70px_rgba(0,0,0,0.2)] animate-in fade-in-0 zoom-in-95 duration-200 z-40 ring-1 ring-orange-500/20">
             <div className="flex flex-col gap-1.5">
               {CATEGORIES.map((cat) => {
                 const isSelected = selectedCategory === cat.id;
@@ -219,19 +229,19 @@ export function FeaturedFoodGrid({ onSelectItem, className }: FeaturedFoodGridPr
                     className={cn(
                       "flex items-center justify-between w-full px-4 py-3 rounded-xl text-left transition-all duration-200 cursor-pointer group/item",
                       isSelected
-                        ? "bg-gradient-to-r from-red-600/30 via-orange-600/30 to-amber-600/30 border border-amber-400/60 text-amber-200 font-bold shadow-lg shadow-orange-950/50"
-                        : "hover:bg-gradient-to-r hover:from-zinc-900 hover:to-neutral-900 text-neutral-300 hover:text-white border border-transparent"
+                        ? "bg-gradient-to-r from-red-500/20 via-orange-500/20 to-amber-500/20 border border-orange-400 text-orange-700 font-bold shadow-sm"
+                        : "hover:bg-orange-50 text-neutral-700 hover:text-neutral-900 border border-transparent"
                     )}
                   >
                     <div className="flex items-center gap-2.5">
                       <div className={cn(
                         "w-2 h-2 rounded-full transition-all duration-300",
-                        isSelected ? "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)] scale-125" : "bg-neutral-600 group-hover/item:bg-orange-400"
+                        isSelected ? "bg-orange-600 shadow-[0_0_8px_rgba(249,115,22,0.8)] scale-125" : "bg-neutral-400 group-hover/item:bg-orange-500"
                       )} />
                       <span className="text-sm font-serif tracking-wide">{cat.label}</span>
                     </div>
                     {isSelected && (
-                      <div className="w-6 h-6 rounded-full bg-amber-400/20 flex items-center justify-center text-amber-300">
+                      <div className="w-6 h-6 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-600">
                         <Check className="w-3.5 h-3.5" />
                       </div>
                     )}
@@ -243,8 +253,8 @@ export function FeaturedFoodGrid({ onSelectItem, className }: FeaturedFoodGridPr
         )}
       </div>
 
-      {/* Grid of Cards with smooth scroll reveal */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-y-12 gap-x-8 py-6">
+      {/* Grid of 3D Floating Cards */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-y-8 gap-x-8 py-6">
         {filteredDishes.map((dish, index) => (
           <AnimatedCard
             key={dish.id}
