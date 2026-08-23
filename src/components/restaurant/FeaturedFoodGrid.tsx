@@ -4,7 +4,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { MenuItem } from "@/types/restaurant";
 import { MENU_ITEMS } from "@/data/menu-data";
 import { cn } from "@/lib/utils";
-import { Star, Flame, PhoneCall, Utensils } from "lucide-react";
+import { Star, Flame, PhoneCall } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface FeaturedFoodGridProps {
@@ -66,12 +66,12 @@ export function FeaturedFoodGrid({ onSelectItem, className }: FeaturedFoodGridPr
           Nos 10 Plats Phares en Surface
         </h2>
         <p className="text-xs sm:text-sm text-neutral-600 font-light mt-1">
-          Cartes dynamiques inspirées du design interactif avec reflets et animations fluides.
+          Cartes dynamiques avec animation au défilement et effet 3D Uiverse.
         </p>
       </div>
 
-      {/* Grid of 10 Cards with Uiverse Skew/Rotation Animation Structure */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-y-20 gap-x-12 py-10">
+      {/* Grid of 10 Cards with Exact Javierrocadev Animation Structure & Scroll Reveal */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-y-20 gap-x-12 py-10 justify-items-center">
         {featuredDishes.map((dish, index) => {
           return (
             <div
@@ -81,26 +81,26 @@ export function FeaturedFoodGrid({ onSelectItem, className }: FeaturedFoodGridPr
               tabIndex={0}
               onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectItem(dish)}
               style={{
-                transitionDelay: `${index * 60}ms`,
+                transitionDelay: `${index * 80}ms`,
                 WebkitBoxReflect:
                   "below 4px linear-gradient(to bottom, transparent 65%, rgba(0, 0, 0, 0.15) 85%, rgba(249, 115, 22, 0.25) 100%)",
               }}
               className={cn(
-                "group origin-bottom-right duration-500 -rotate-6 sm:-rotate-12 hover:-rotate-0 hover:-skew-x-12 skew-x-0 hover:-translate-x-4 hover:translate-y-8 cursor-pointer py-4",
+                "group duration-500 -rotate-12 hover:-rotate-0 hover:skew-x-1 skew-x-0 hover:translate-x-6 hover:translate-y-12 cursor-pointer py-6 transition-all transform-gpu",
                 isVisible
                   ? "opacity-100 scale-100 translate-y-0"
-                  : "opacity-0 scale-95 translate-y-8"
+                  : "opacity-0 scale-95 translate-y-12"
               )}
             >
               <div
                 className={cn(
-                  "duration-500 group-hover:duration-400 relative rounded-2xl w-full max-w-xl h-44 sm:h-52 bg-neutral-900 text-gray-50 flex items-center p-4 sm:p-6 gap-4 sm:gap-6",
-                  "before:-skew-x-12 before:rounded-2xl before:absolute before:content-[''] before:bg-neutral-800 before:right-3 before:top-0 before:w-full before:h-full before:-z-10 group-hover:before:-right-3 group-hover:before:skew-x-12 before:duration-500 group-hover:duration-500",
+                  "group-hover:duration-400 relative rounded-2xl w-[320px] sm:w-[380px] h-48 bg-zinc-800 text-gray-50 flex items-center p-4 gap-4",
+                  "before:-skew-x-12 before:rounded-2xl before:absolute before:content-[''] before:bg-neutral-700 before:right-3 before:top-0 before:w-[320px] sm:before:w-[380px] before:h-48 before:-z-10",
                   "border border-orange-500/30 shadow-2xl overflow-hidden"
                 )}
               >
                 {/* Dish Image Container */}
-                <div className="relative w-32 sm:w-44 h-32 sm:h-40 rounded-xl overflow-hidden shrink-0 border border-orange-500/40 bg-neutral-950 shadow-lg">
+                <div className="relative w-36 h-36 rounded-xl overflow-hidden shrink-0 border border-orange-500/40 bg-neutral-950 shadow-lg">
                   <img
                     src={dish.image}
                     alt={dish.name}
@@ -123,10 +123,10 @@ export function FeaturedFoodGrid({ onSelectItem, className }: FeaturedFoodGridPr
                 </div>
 
                 {/* Card Content & Details */}
-                <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
+                <div className="flex-1 min-w-0 flex flex-col justify-between py-1 h-full">
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-serif uppercase tracking-widest text-orange-400 font-bold">
+                      <span className="text-[10px] font-serif uppercase tracking-widest text-amber-300 font-thin">
                         {dish.category} &bull; {dish.prepTime}
                       </span>
                       <div className="flex items-center gap-1 bg-neutral-950 px-2 py-0.5 rounded-full border border-orange-500/30 text-amber-300 text-xs font-bold">
@@ -135,25 +135,25 @@ export function FeaturedFoodGrid({ onSelectItem, className }: FeaturedFoodGridPr
                       </div>
                     </div>
 
-                    <h3 className="text-base sm:text-xl font-serif font-bold text-white tracking-wide truncate group-hover:text-orange-300 transition-colors">
+                    <h3 className="text-base sm:text-lg font-serif font-bold text-white tracking-wide truncate group-hover:text-amber-300 transition-colors">
                       {dish.name}
                     </h3>
-                    <p className="text-xs text-neutral-300/85 line-clamp-2 font-light leading-relaxed">
+                    <p className="text-xs text-neutral-300/85 line-clamp-2 font-light leading-snug">
                       {dish.description}
                     </p>
                   </div>
 
-                  <div className="pt-2 border-t border-orange-500/20 flex items-center justify-between">
-                    <span className="text-lg sm:text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300 font-serif">
+                  <div className="pt-2 border-t border-neutral-700 flex items-center justify-between">
+                    <span className="text-base font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300 font-serif">
                       {dish.price.toLocaleString()} DA
                     </span>
 
                     <button
                       type="button"
                       onClick={(e) => handleCallOrder(dish, e)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-green-600 to-emerald-500 border border-green-400/50 text-white hover:brightness-110 transition-all shadow-md cursor-pointer text-[11px] font-serif uppercase font-bold"
+                      className="flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-green-600 to-emerald-500 border border-green-400/50 text-white hover:brightness-110 transition-all shadow-md cursor-pointer text-[10px] font-serif uppercase font-bold"
                     >
-                      <PhoneCall className="w-3.5 h-3.5" />
+                      <PhoneCall className="w-3 h-3" />
                       <span>Commander</span>
                     </button>
                   </div>
