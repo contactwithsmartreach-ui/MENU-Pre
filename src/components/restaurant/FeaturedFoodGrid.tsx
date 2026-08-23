@@ -1,16 +1,26 @@
 "use client";
 
 import React, { useRef, useEffect, useState, memo } from "react";
-import { MenuItem } from "@/types/restaurant";
+import { MenuItem, MenuCategory } from "@/types/restaurant";
 import { MENU_ITEMS } from "@/data/menu-data";
 import { cn } from "@/lib/utils";
-import { Star, Flame, PhoneCall } from "lucide-react";
+import { Star, Flame, PhoneCall, ChevronDown, Check, Utensils } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface FeaturedFoodGridProps {
   onSelectItem: (item: MenuItem) => void;
   className?: string;
 }
+
+const CATEGORIES: { id: MenuCategory | "All"; label: string }[] = [
+  { id: "All", label: "Toutes les Catégories" },
+  { id: "Pizzas", label: "Pizzas" },
+  { id: "Burgers", label: "Burgers" },
+  { id: "Tacos", label: "Tacos" },
+  { id: "Plats", label: "Plats Principaux" },
+  { id: "Desserts", label: "Desserts" },
+  { id: "Boissons", label: "Boissons" },
+];
 
 const AnimatedCard = memo(function AnimatedCard({
   dish,
@@ -138,7 +148,27 @@ const AnimatedCard = memo(function AnimatedCard({
 });
 
 export function FeaturedFoodGrid({ onSelectItem, className }: FeaturedFoodGridProps) {
-  const featuredDishes = MENU_ITEMS.slice(0, 10);
+  const [selectedCategory, setSelectedCategory] = useState<MenuCategory | "All">("All");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const filteredDishes =
+    selectedCategory === "All"
+      ? MENU_ITEMS.slice(0, 10)
+      : MENU_ITEMS.filter((item) => item.category === selectedCategory);
+
+  const currentLabel =
+    CATEGORIES.find((c) => c.id === selectedCategory)?.label || "Toutes les Catégories";
 
   return (
     <section
@@ -147,9 +177,73 @@ export function FeaturedFoodGrid({ onSelectItem, className }: FeaturedFoodGridPr
         className
       )}
     >
-      {/* Grid of 10 Cards strictly 2 per line with high performance scroll reveal */}
+      {/* Category Selection Dropdown Bar */}
+      <div ref={dropdownRef} className="relative flex justify-center mb-10 z-30">
+        <button
+          type="button"
+          onClick={() => setIsDropdownOpen((prev) => !prev)}
+          className={cn(
+            "group flex items-center justify-between gap-4 px-6 py-3 rounded-full cursor-pointer transition-all duration-300",
+            "bg-neutral-950/90 backdrop-blur-xl border border-orange-500/40 text-white shadow-xl",
+            isDropdownOpen
+              ? "border-orange-400 shadow-[0_0_25px_rgba(249,115,22,0.4)] scale-105"
+              : "hover:border-orange-400/80 shadow-[0_0_15px_rgba(0,0,0,0.5)]"
+          )}
+        >
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-red-500 to-amber-500 flex items-center justify-center text-white shadow-md">
+              <Utensils className="w-3.5 h-3.5" />
+            </div>
+            <div className="flex flex-col text-left">
+              <span className="text-[10px] uppercase font-serif tracking-widest text-orange-300/70 leading-none">
+                Filtrer par Catégorie
+              </span>
+              <span className="text-xs sm:text-sm font-serif font-bold text-white tracking-wide">
+                {currentLabel}
+              </span>
+            </div>
+          </div>
+          <ChevronDown
+            className={cn(
+              "w-4 h-4 text-orange-400 transition-transform duration-300 ml-2",
+              isDropdownOpen && "rotate-180 text-amber-300"
+            )}
+          />
+        </button>
+
+        {isDropdownOpen && (
+          <div className="absolute top-full mt-2 w-72 p-2 rounded-2xl bg-neutral-950/95 backdrop-blur-2xl border border-orange-500/30 shadow-[0_20px_60px_rgba(0,0,0,0.8)] animate-in fade-in-0 zoom-in-95 duration-200 z-40">
+            <div className="flex flex-col gap-1">
+              {CATEGORIES.map((cat) => {
+                const isSelected = selectedCategory === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedCategory(cat.id);
+                      setIsDropdownOpen(false);
+                    }}
+                    className={cn(
+                      "flex items-center justify-between w-full p-2.5 rounded-xl text-left transition-all duration-200 cursor-pointer",
+                      isSelected
+                        ? "bg-gradient-to-r from-red-500/25 to-orange-500/25 border border-orange-400/40 text-orange-300 font-bold"
+                        : "hover:bg-white/5 text-neutral-300 hover:text-white border border-transparent"
+                    )}
+                  >
+                    <span className="text-xs sm:text-sm font-serif">{cat.label}</span>
+                    {isSelected && <Check className="w-4 h-4 text-orange-400" />}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Grid of Cards with smooth scroll reveal */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-y-12 gap-x-8 py-6">
-        {featuredDishes.map((dish, index) => (
+        {filteredDishes.map((dish, index) => (
           <AnimatedCard
             key={dish.id}
             dish={dish}
