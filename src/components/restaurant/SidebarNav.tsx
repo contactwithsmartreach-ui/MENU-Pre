@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Phone, MapPin, X, Wifi, Navigation, Sparkles, ExternalLink } from "lucide-react";
+import { Phone, MapPin, X, Wifi, Navigation, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { RestaurantInfoModals } from "./RestaurantInfoModals";
@@ -71,21 +71,6 @@ export function SidebarNav() {
               <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/10 pointer-events-none rounded-bl-full blur-3xl" />
 
               <div className="relative z-10 space-y-6 pt-12">
-                {/* Brand Header inside Sidebar */}
-                <div className="flex items-center gap-3.5 pb-6 border-b border-orange-500/30">
-                  <div className="w-12 h-12 rounded-2xl bg-black border border-orange-500 flex items-center justify-center text-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.4)] shrink-0">
-                    <Sparkles className="w-6 h-6 text-orange-400 animate-pulse" />
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-serif font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-200">
-                      L&apos;Aura Sahara
-                    </h2>
-                    <p className="text-[11px] font-serif uppercase tracking-widest text-neutral-400">
-                      Gastronomie & Bar 3D
-                    </p>
-                  </div>
-                </div>
-
                 {/* Quick Navigation Cards */}
                 <div className="space-y-3">
                   <button
