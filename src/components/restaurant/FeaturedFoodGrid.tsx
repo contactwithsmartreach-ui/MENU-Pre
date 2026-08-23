@@ -4,7 +4,7 @@ import React, { useRef, useEffect, useState, memo } from "react";
 import { MenuItem, MenuCategory } from "@/types/restaurant";
 import { MENU_ITEMS } from "@/data/menu-data";
 import { cn } from "@/lib/utils";
-import { Star, Flame, PhoneCall, ChevronDown, Check, Utensils } from "lucide-react";
+import { Star, Flame, PhoneCall, ChevronDown, Check, Utensils, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface FeaturedFoodGridProps {
@@ -78,7 +78,6 @@ const AnimatedCard = memo(function AnimatedCard({
       <div
         className={cn(
           "relative rounded-2xl w-[320px] sm:w-[380px] h-48 bg-zinc-800 text-gray-50 flex items-center p-4 gap-4",
-          "before:rounded-2xl before:absolute before:content-[''] before:bg-neutral-700 before:right-3 before:top-0 before:w-[320px] sm:before:w-[380px] before:h-48 before:-z-10 group-hover:before:right-1.5 before:transition-all before:duration-300",
           "border border-orange-500/30 shadow-xl overflow-hidden hover:-translate-y-1 transition-transform duration-200"
         )}
       >
@@ -177,43 +176,53 @@ export function FeaturedFoodGrid({ onSelectItem, className }: FeaturedFoodGridPr
         className
       )}
     >
-      {/* Category Selection Dropdown Bar */}
-      <div ref={dropdownRef} className="relative flex justify-center mb-10 z-30">
+      {/* Category Selection Dropdown Bar with High-End Styling */}
+      <div ref={dropdownRef} className="relative flex justify-center mb-12 z-30">
         <button
           type="button"
           onClick={() => setIsDropdownOpen((prev) => !prev)}
           className={cn(
-            "group flex items-center justify-between gap-4 px-6 py-3 rounded-full cursor-pointer transition-all duration-300",
-            "bg-neutral-950/90 backdrop-blur-xl border border-orange-500/40 text-white shadow-xl",
+            "group relative flex items-center justify-between gap-6 px-8 py-4 rounded-2xl cursor-pointer transition-all duration-300",
+            "bg-gradient-to-r from-zinc-900 via-neutral-900 to-zinc-900",
+            "border border-orange-500/50 hover:border-amber-400 text-white shadow-[0_10px_30px_rgba(0,0,0,0.6)]",
             isDropdownOpen
-              ? "border-orange-400 shadow-[0_0_25px_rgba(249,115,22,0.4)] scale-105"
-              : "hover:border-orange-400/80 shadow-[0_0_15px_rgba(0,0,0,0.5)]"
+              ? "border-amber-400 shadow-[0_0_30px_rgba(245,158,11,0.35)] scale-102 ring-2 ring-orange-500/20"
+              : "hover:shadow-[0_0_20px_rgba(249,115,22,0.25)]"
           )}
         >
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-red-500 to-amber-500 flex items-center justify-center text-white shadow-md">
-              <Utensils className="w-3.5 h-3.5" />
+          {/* Subtle glowing backdrop pill */}
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-orange-500/10 via-amber-500/10 to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+          <div className="relative flex items-center gap-3.5 z-10">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-orange-600 via-amber-500 to-yellow-400 flex items-center justify-center text-white shadow-lg shadow-orange-900/40 ring-1 ring-white/20">
+              <Utensils className="w-4 h-4 text-white drop-shadow-sm" />
             </div>
             <div className="flex flex-col text-left">
-              <span className="text-[10px] uppercase font-serif tracking-widest text-orange-300/70 leading-none">
-                Filtrer par Catégorie
-              </span>
-              <span className="text-xs sm:text-sm font-serif font-bold text-white tracking-wide">
+              <div className="flex items-center gap-1.5">
+                <Sparkles className="w-3 h-3 text-amber-400 animate-pulse" />
+                <span className="text-[10px] uppercase font-serif tracking-[0.2em] text-amber-300/90 font-semibold leading-none">
+                  Filtrer les Catégories
+                </span>
+              </div>
+              <span className="text-sm sm:text-base font-serif font-bold text-white tracking-wide mt-0.5 group-hover:text-amber-200 transition-colors">
                 {currentLabel}
               </span>
             </div>
           </div>
-          <ChevronDown
-            className={cn(
-              "w-4 h-4 text-orange-400 transition-transform duration-300 ml-2",
-              isDropdownOpen && "rotate-180 text-amber-300"
-            )}
-          />
+          
+          <div className="relative z-10 w-8 h-8 rounded-full bg-neutral-800/80 border border-orange-500/30 flex items-center justify-center group-hover:bg-orange-500/20 transition-colors">
+            <ChevronDown
+              className={cn(
+                "w-4 h-4 text-orange-400 transition-transform duration-300",
+                isDropdownOpen && "rotate-180 text-amber-300"
+              )}
+            />
+          </div>
         </button>
 
         {isDropdownOpen && (
-          <div className="absolute top-full mt-2 w-72 p-2 rounded-2xl bg-neutral-950/95 backdrop-blur-2xl border border-orange-500/30 shadow-[0_20px_60px_rgba(0,0,0,0.8)] animate-in fade-in-0 zoom-in-95 duration-200 z-40">
-            <div className="flex flex-col gap-1">
+          <div className="absolute top-full mt-3 w-80 p-2.5 rounded-2xl bg-zinc-950/95 backdrop-blur-2xl border border-orange-500/40 shadow-[0_25px_70px_rgba(0,0,0,0.9)] animate-in fade-in-0 zoom-in-95 duration-200 z-40 ring-1 ring-white/10">
+            <div className="flex flex-col gap-1.5">
               {CATEGORIES.map((cat) => {
                 const isSelected = selectedCategory === cat.id;
                 return (
@@ -225,14 +234,24 @@ export function FeaturedFoodGrid({ onSelectItem, className }: FeaturedFoodGridPr
                       setIsDropdownOpen(false);
                     }}
                     className={cn(
-                      "flex items-center justify-between w-full p-2.5 rounded-xl text-left transition-all duration-200 cursor-pointer",
+                      "flex items-center justify-between w-full px-4 py-3 rounded-xl text-left transition-all duration-200 cursor-pointer group/item",
                       isSelected
-                        ? "bg-gradient-to-r from-red-500/25 to-orange-500/25 border border-orange-400/40 text-orange-300 font-bold"
-                        : "hover:bg-white/5 text-neutral-300 hover:text-white border border-transparent"
+                        ? "bg-gradient-to-r from-red-600/30 via-orange-600/30 to-amber-600/30 border border-amber-400/60 text-amber-200 font-bold shadow-lg shadow-orange-950/50"
+                        : "hover:bg-gradient-to-r hover:from-zinc-900 hover:to-neutral-900 text-neutral-300 hover:text-white border border-transparent"
                     )}
                   >
-                    <span className="text-xs sm:text-sm font-serif">{cat.label}</span>
-                    {isSelected && <Check className="w-4 h-4 text-orange-400" />}
+                    <div className="flex items-center gap-2.5">
+                      <div className={cn(
+                        "w-2 h-2 rounded-full transition-all duration-300",
+                        isSelected ? "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)] scale-125" : "bg-neutral-600 group-hover/item:bg-orange-400"
+                      )} />
+                      <span className="text-sm font-serif tracking-wide">{cat.label}</span>
+                    </div>
+                    {isSelected && (
+                      <div className="w-6 h-6 rounded-full bg-amber-400/20 flex items-center justify-center text-amber-300">
+                        <Check className="w-3.5 h-3.5" />
+                      </div>
+                    )}
                   </button>
                 );
               })}
