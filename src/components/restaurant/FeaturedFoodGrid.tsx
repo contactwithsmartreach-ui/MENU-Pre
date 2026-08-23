@@ -4,7 +4,7 @@ import React, { useRef, useEffect, useState, memo } from "react";
 import { MenuItem, MenuCategory } from "@/types/restaurant";
 import { MENU_ITEMS } from "@/data/menu-data";
 import { cn } from "@/lib/utils";
-import { Star, Flame, PhoneCall, ChevronDown, Check, Utensils, Sparkles } from "lucide-react";
+import { Star, Flame, PhoneCall, ChevronDown, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface FeaturedFoodGridProps {
@@ -187,13 +187,6 @@ export function FeaturedFoodGrid({ onSelectItem, className }: FeaturedFoodGridPr
           )}
         >
           <div className="flex flex-col items-center">
-            <div className="flex items-center gap-2 mb-1">
-              <Sparkles className="w-4 h-4 text-orange-400 animate-pulse" />
-              <span className="text-xs uppercase font-serif tracking-[0.25em] text-orange-400/90 font-bold">
-                Filtrer par Catégorie
-              </span>
-            </div>
-            
             <div className="flex items-center gap-3">
               <span className="text-2xl sm:text-4xl font-serif font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-300 to-orange-500 drop-shadow-[0_4px_16px_rgba(249,115,22,0.5)] group-hover:scale-105 transition-transform duration-300">
                 {currentLabel}
