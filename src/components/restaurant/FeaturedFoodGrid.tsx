@@ -78,8 +78,8 @@ const AnimatedCard = memo(function AnimatedCard({
     >
       <div
         className={cn(
-          "relative w-[320px] sm:w-[380px] flex items-center gap-5 p-2 rounded-2xl transition-all duration-300",
-          "hover:scale-[1.03] hover:-translate-y-2 [transform-style:preserve-3d]"
+          "relative w-full max-w-[420px] flex items-center gap-4 sm:gap-5 p-3 rounded-2xl transition-all duration-300",
+          "hover:scale-[1.02] hover:-translate-y-1.5 [transform-style:preserve-3d]"
         )}
         style={{
           filter: "drop-shadow(0 20px 30px rgba(249, 115, 22, 0.15))",
@@ -87,7 +87,7 @@ const AnimatedCard = memo(function AnimatedCard({
       >
         {/* 3D Floating Dish Image Container */}
         <div 
-          className="relative w-36 h-36 rounded-2xl overflow-hidden shrink-0 shadow-[0_15px_35px_rgba(0,0,0,0.3)] border-2 border-orange-400/40 bg-neutral-100 transition-transform duration-500 group-hover:rotate-y-6 group-hover:scale-105"
+          className="relative w-36 h-36 sm:w-40 sm:h-40 rounded-2xl overflow-hidden shrink-0 shadow-[0_15px_35px_rgba(0,0,0,0.3)] border-2 border-orange-400/40 bg-neutral-100 transition-transform duration-500 group-hover:rotate-y-6 group-hover:scale-105"
           style={{ transform: "translateZ(30px)" }}
         >
           <img
@@ -112,7 +112,7 @@ const AnimatedCard = memo(function AnimatedCard({
           </div>
         </div>
 
-        {/* Card Text Content with 3D Pop Effect */}
+        {/* Card Text Content with 3D Pop Effect & Full Visibility */}
         <div 
           className="flex-1 min-w-0 flex flex-col justify-between py-1 h-full transition-transform duration-500 group-hover:translate-z-4"
           style={{ transform: "translateZ(20px)" }}
@@ -128,23 +128,23 @@ const AnimatedCard = memo(function AnimatedCard({
               </div>
             </div>
 
-            <h3 className="text-base sm:text-lg font-serif font-extrabold text-neutral-900 tracking-wide truncate group-hover:text-orange-600 transition-colors">
+            <h3 className="text-sm sm:text-base font-serif font-extrabold text-neutral-900 tracking-tight leading-snug break-words group-hover:text-orange-600 transition-colors">
               {dish.name}
             </h3>
-            <p className="text-xs text-neutral-600 line-clamp-2 font-light leading-snug">
+            <p className="text-xs text-neutral-600 line-clamp-2 font-light leading-relaxed">
               {dish.description}
             </p>
           </div>
 
-          <div className="pt-2.5 mt-2 border-t border-orange-500/20 flex items-center justify-between">
-            <span className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-600 to-amber-600 font-serif drop-shadow-[0_1px_6px_rgba(249,115,22,0.3)]">
+          <div className="pt-2 mt-2 border-t border-orange-500/20 flex items-center justify-between">
+            <span className="text-base sm:text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-600 to-amber-600 font-serif drop-shadow-[0_1px_6px_rgba(249,115,22,0.3)]">
               {dish.price.toLocaleString()} DA
             </span>
 
             <button
               type="button"
               onClick={handleCallOrder}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-green-600 to-emerald-500 text-white hover:brightness-110 transition-all shadow-md cursor-pointer text-[10px] font-serif uppercase font-bold tracking-wider"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-green-600 to-emerald-500 text-white hover:brightness-110 transition-all shadow-md cursor-pointer text-[10px] font-serif uppercase font-bold tracking-wider shrink-0"
             >
               <PhoneCall className="w-3 h-3 animate-pulse" />
               <span>Commander</span>
