@@ -29,10 +29,12 @@ function AnimatedCard({
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true);
-          observer.disconnect();
+        } else {
+          // Reset visibility so animation replays smoothly when scrolling back and forth
+          setIsVisible(false);
         }
       },
-      { threshold: 0.15 }
+      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
     );
 
     if (cardRef.current) {
@@ -55,22 +57,22 @@ function AnimatedCard({
       tabIndex={0}
       onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectItem(dish)}
       style={{
-        transitionDelay: `${(index % 2) * 120}ms`,
+        transitionDelay: `${(index % 2) * 150}ms`,
         WebkitBoxReflect:
           "below 4px linear-gradient(to bottom, transparent 65%, rgba(0, 0, 0, 0.15) 85%, rgba(249, 115, 22, 0.25) 100%)",
       }}
       className={cn(
-        "group duration-500 -rotate-12 hover:-rotate-0 hover:skew-x-1 skew-x-0 hover:translate-x-6 hover:translate-y-12 cursor-pointer py-6 transition-all transform-gpu w-full flex justify-center",
+        "group duration-700 ease-out cursor-pointer py-6 transition-all transform-gpu w-full flex justify-center",
         isVisible
-          ? "opacity-100 scale-100 translate-y-0"
-          : "opacity-0 scale-95 translate-y-16"
+          ? "opacity-100 scale-100 translate-y-0 rotate-0 skew-x-0"
+          : "opacity-0 scale-90 translate-y-20 -rotate-6 skew-x-3"
       )}
     >
       <div
         className={cn(
           "group-hover:duration-400 relative rounded-2xl w-[320px] sm:w-[380px] h-48 bg-zinc-800 text-gray-50 flex items-center p-4 gap-4",
-          "before:-skew-x-12 before:rounded-2xl before:absolute before:content-[''] before:bg-neutral-700 before:right-3 before:top-0 before:w-[320px] sm:before:w-[380px] before:h-48 before:-z-10",
-          "border border-orange-500/30 shadow-2xl overflow-hidden"
+          "before:-skew-x-12 before:rounded-2xl before:absolute before:content-[''] before:bg-neutral-700 before:right-3 before:top-0 before:w-[320px] sm:before:w-[380px] before:h-48 before:-z-10 group-hover:before:-right-3 group-hover:before:skew-x-12 before:duration-500",
+          "border border-orange-500/30 shadow-2xl overflow-hidden hover:-translate-y-2 transition-transform duration-300"
         )}
       >
         {/* Dish Image Container */}
@@ -148,7 +150,6 @@ export function FeaturedFoodGrid({ onSelectItem, className }: FeaturedFoodGridPr
       ([entry]) => {
         if (entry.isIntersecting) {
           setTitleVisible(true);
-          observer.disconnect();
         }
       },
       { threshold: 0.1 }
@@ -186,11 +187,11 @@ export function FeaturedFoodGrid({ onSelectItem, className }: FeaturedFoodGridPr
           Nos 10 Plats Phares en Surface
         </h2>
         <p className="text-xs sm:text-sm text-neutral-600 font-light mt-1">
-          Cartes dynamiques avec animation au défilement et effet 3D Uiverse.
+          Cartes dynamiques avec animation fluide au défilement automatique.
         </p>
       </div>
 
-      {/* Grid of 10 Cards strictly 2 per line with individual scroll reveal */}
+      {/* Grid of 10 Cards strictly 2 per line with automatic settle down scroll animation */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-y-16 gap-x-8 py-6">
         {featuredDishes.map((dish, index) => (
           <AnimatedCard
