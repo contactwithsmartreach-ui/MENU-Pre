@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, memo } from "react";
 import { MenuItem } from "@/types/restaurant";
 import { MENU_ITEMS } from "@/data/menu-data";
 import { cn } from "@/lib/utils";
@@ -12,7 +12,7 @@ interface FeaturedFoodGridProps {
   className?: string;
 }
 
-function AnimatedCard({
+const AnimatedCard = memo(function AnimatedCard({
   dish,
   index,
   onSelectItem,
@@ -30,11 +30,10 @@ function AnimatedCard({
         if (entry.isIntersecting) {
           setIsVisible(true);
         } else {
-          // Reset visibility so animation replays smoothly when scrolling back and forth
           setIsVisible(false);
         }
       },
-      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+      { threshold: 0.05, rootMargin: "0px 0px -100px 0px" }
     );
 
     if (cardRef.current) {
@@ -57,31 +56,30 @@ function AnimatedCard({
       tabIndex={0}
       onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelectItem(dish)}
       style={{
-        transitionDelay: `${(index % 2) * 150}ms`,
-        WebkitBoxReflect:
-          "below 4px linear-gradient(to bottom, transparent 65%, rgba(0, 0, 0, 0.15) 85%, rgba(249, 115, 22, 0.25) 100%)",
+        transitionDelay: `${(index % 2) * 60}ms`,
       }}
       className={cn(
-        "group duration-700 ease-out cursor-pointer py-6 transition-all transform-gpu w-full flex justify-center",
+        "group duration-500 ease-out cursor-pointer py-4 transition-all transform-gpu w-full flex justify-center will-change-transform",
         isVisible
-          ? "opacity-100 scale-100 translate-y-0 rotate-0 skew-x-0"
-          : "opacity-0 scale-90 translate-y-20 -rotate-6 skew-x-3"
+          ? "opacity-100 scale-100 translate-y-0"
+          : "opacity-0 scale-95 translate-y-12"
       )}
     >
       <div
         className={cn(
-          "group-hover:duration-400 relative rounded-2xl w-[320px] sm:w-[380px] h-48 bg-zinc-800 text-gray-50 flex items-center p-4 gap-4",
-          "before:-skew-x-12 before:rounded-2xl before:absolute before:content-[''] before:bg-neutral-700 before:right-3 before:top-0 before:w-[320px] sm:before:w-[380px] before:h-48 before:-z-10 group-hover:before:-right-3 group-hover:before:skew-x-12 before:duration-500",
-          "border border-orange-500/30 shadow-2xl overflow-hidden hover:-translate-y-2 transition-transform duration-300"
+          "relative rounded-2xl w-[320px] sm:w-[380px] h-48 bg-zinc-800 text-gray-50 flex items-center p-4 gap-4",
+          "before:rounded-2xl before:absolute before:content-[''] before:bg-neutral-700 before:right-3 before:top-0 before:w-[320px] sm:before:w-[380px] before:h-48 before:-z-10 group-hover:before:right-1.5 before:transition-all before:duration-300",
+          "border border-orange-500/30 shadow-xl overflow-hidden hover:-translate-y-1 transition-transform duration-200"
         )}
       >
         {/* Dish Image Container */}
-        <div className="relative w-36 h-36 rounded-xl overflow-hidden shrink-0 border border-orange-500/40 bg-neutral-950 shadow-lg">
+        <div className="relative w-36 h-36 rounded-xl overflow-hidden shrink-0 border border-orange-500/40 bg-neutral-950 shadow-md">
           <img
             src={dish.image}
             alt={dish.name}
-            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+            className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
             loading="lazy"
+            decoding="async"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
           <div className="absolute top-2 left-2">
@@ -137,7 +135,7 @@ function AnimatedCard({
       </div>
     </div>
   );
-}
+});
 
 export function FeaturedFoodGrid({ onSelectItem, className }: FeaturedFoodGridProps) {
   const [titleVisible, setTitleVisible] = useState(false);
@@ -173,7 +171,7 @@ export function FeaturedFoodGrid({ onSelectItem, className }: FeaturedFoodGridPr
       <div
         ref={titleRef}
         className={cn(
-          "flex flex-col items-start mb-12 sm:mb-16 transition-all duration-700 ease-out transform",
+          "flex flex-col items-start mb-12 sm:mb-16 transition-all duration-500 ease-out transform",
           titleVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"
         )}
       >
@@ -187,12 +185,12 @@ export function FeaturedFoodGrid({ onSelectItem, className }: FeaturedFoodGridPr
           Nos 10 Plats Phares en Surface
         </h2>
         <p className="text-xs sm:text-sm text-neutral-600 font-light mt-1">
-          Cartes dynamiques avec animation fluide au défilement automatique.
+          Cartes fluides avec animation optimisée au défilement.
         </p>
       </div>
 
-      {/* Grid of 10 Cards strictly 2 per line with automatic settle down scroll animation */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-y-16 gap-x-8 py-6">
+      {/* Grid of 10 Cards strictly 2 per line with high performance scroll reveal */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-y-12 gap-x-8 py-6">
         {featuredDishes.map((dish, index) => (
           <AnimatedCard
             key={dish.id}
