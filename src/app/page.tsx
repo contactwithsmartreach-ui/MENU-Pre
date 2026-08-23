@@ -10,6 +10,7 @@ import { MenuSectionDivider } from "@/components/restaurant/MenuSectionDivider";
 import { SidebarNav } from "@/components/restaurant/SidebarNav";
 import { OrderDrawer } from "@/components/restaurant/OrderDrawer";
 import { PreloadScreen } from "@/components/restaurant/PreloadScreen";
+import { FeaturedFoodGrid } from "@/components/restaurant/FeaturedFoodGrid";
 import { toast } from "sonner";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Loader2 } from "lucide-react";
@@ -42,7 +43,6 @@ export default function RestaurantMenuPage() {
   const menuSectionRef = useRef<HTMLDivElement>(null);
   const cylinderContainerRef = useRef<HTMLDivElement>(null);
 
-  // Exact filtering: when user clicks Pizzas -> only Pizzas; Burgers -> only Burgers, etc.
   const filteredItems =
     selectedCategory === "All"
       ? MENU_ITEMS
@@ -85,7 +85,6 @@ export default function RestaurantMenuPage() {
     setCart([]);
   };
 
-  // Smooth scrolling to center the cylinder cards
   const smoothScrollToMenu = useCallback(() => {
     const targetElement = cylinderContainerRef.current || menuSectionRef.current;
     
@@ -111,10 +110,8 @@ export default function RestaurantMenuPage() {
     <div className="relative min-h-screen w-full bg-[#e3efed] text-neutral-900 flex flex-col items-center justify-between select-none overflow-x-hidden">
       {isLoading && <PreloadScreen onComplete={() => setIsLoading(false)} />}
 
-      {/* Premium Animated Sidebar Nav */}
       <SidebarNav />
 
-      {/* Order Drawer Sheet */}
       <OrderDrawer
         isOpen={isOrderDrawerOpen}
         onClose={() => setIsOrderDrawerOpen(false)}
@@ -124,27 +121,21 @@ export default function RestaurantMenuPage() {
         onClearCart={handleClearCart}
       />
 
-      {/* 3D Matching Atmospheric Ambient Background */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden transform-gpu">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[450px] bg-gradient-to-tr from-orange-400/15 via-sky-300/20 to-amber-200/10 rounded-full blur-3xl" />
         <div className="absolute bottom-10 right-1/4 translate-x-1/2 w-[500px] h-[350px] bg-orange-500/10 rounded-full blur-3xl" />
       </div>
 
-      {/* Part 1: Top Hero Section with Floating Plate Experience */}
       <HeroPlateScrollExperience onScrollToMenu={smoothScrollToMenu} />
 
-      {/* Transitional Section Separation Divider */}
       <MenuSectionDivider />
 
-      {/* Part 2: Interactive 3D Cylinder Gastronomy Menu */}
       <section
         ref={menuSectionRef}
         id="cylinder-menu"
         className="relative z-10 w-full flex flex-col items-center justify-start pt-6 pb-4 px-2 sm:px-6 bg-gradient-to-b from-[#e3efed] via-[#d4e7e4] to-[#c6dedb]"
       >
-        {/* Main Presentation Area: Vertical Spotlight Navbar Tightly Coupled with 3D Cylinder */}
         <div className="relative z-10 w-full flex flex-col lg:flex-row items-center lg:items-center justify-center gap-3 lg:gap-2 max-w-7xl mx-auto py-1">
-          {/* Vertical Spotlight Navbar */}
           <div className="shrink-0 flex items-center justify-center lg:pr-2 z-35">
             <VerticalSpotlightNavbar
               items={CATEGORY_ITEMS}
@@ -153,7 +144,6 @@ export default function RestaurantMenuPage() {
             />
           </div>
 
-          {/* Dedicated 3D Cylinder Menu with Suspense Lazy Loading */}
           <div
             ref={cylinderContainerRef}
             className="flex-1 w-full flex items-center justify-center overflow-visible scroll-mt-6"
@@ -178,7 +168,9 @@ export default function RestaurantMenuPage() {
           </div>
         </div>
 
-        {/* Dish Detail Dialog */}
+        {/* Featured Food Grid with Scroll Reveal & Surface Reflections */}
+        <FeaturedFoodGrid onSelectItem={handleOpenDish} />
+
         <DishDetailModal
           dish={selectedDish}
           isOpen={isModalOpen}
@@ -189,7 +181,6 @@ export default function RestaurantMenuPage() {
           onAddToCart={handleAddToCart}
         />
 
-        {/* Footer */}
         <footer className="relative z-10 w-full py-3 mt-6 text-neutral-600">
           <MadeWithDyad />
         </footer>
