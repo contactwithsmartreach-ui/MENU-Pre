@@ -30,7 +30,7 @@ export function SidebarNav() {
       {/* Floating Toggle Button with Pure Neon Orange 3 bars and no background box */}
       <div className="fixed top-6 left-6 z-50 flex items-center">
         <motion.button
-          whileHover={{ scale: 1.15 }}
+          whileHover={{ scale: 1.12 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => setIsExpanded((prev) => !prev)}
           aria-label="Basculer le Menu & Info"
@@ -48,7 +48,7 @@ export function SidebarNav() {
         </motion.button>
       </div>
 
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {isExpanded && (
           <>
             {/* Backdrop */}
@@ -56,17 +56,24 @@ export function SidebarNav() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
               onClick={() => setIsExpanded(false)}
-              className="fixed inset-0 z-40 bg-black/85 backdrop-blur-md"
+              className="fixed inset-0 z-40 bg-black/85 backdrop-blur-md will-change-[opacity]"
             />
 
-            {/* Luxury Slide-out Sidebar */}
+            {/* Luxury Slide-out Sidebar with butter-smooth high-performance spring physics */}
             <motion.aside
-              initial={{ x: "-100%", opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: "-100%", opacity: 0 }}
-              transition={{ type: "spring", damping: 28, stiffness: 240 }}
-              className="fixed top-0 left-0 bottom-0 z-50 w-80 sm:w-96 bg-black text-white border-r border-orange-500/50 shadow-[30px_0_80px_rgba(249,115,22,0.25)] p-6 sm:p-8 flex flex-col justify-between overflow-y-auto"
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{
+                type: "spring",
+                stiffness: 320,
+                damping: 32,
+                mass: 0.8,
+              }}
+              style={{ willChange: "transform" }}
+              className="fixed top-0 left-0 bottom-0 z-50 w-80 sm:w-96 bg-black text-white border-r border-orange-500/50 shadow-[30px_0_80px_rgba(249,115,22,0.25)] p-6 sm:p-8 flex flex-col justify-between overflow-y-auto transform-gpu"
             >
               <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/10 pointer-events-none rounded-bl-full blur-3xl" />
 
